@@ -11,6 +11,24 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Cloudflare Pages Note
+
+This project currently runs on Next.js 14.2.x. Some OpenNext Cloudflare flows require Next.js 15+ unless you pass the unsupported-version override flag.
+
+Use this build command in Cloudflare Pages:
+
+```bash
+npm run cf:build
+```
+
+The script includes:
+
+```bash
+npx @opennextjs/cloudflare@latest build --dangerouslyUseUnsupportedNextVersion
+```
+
+If you prefer strict compatibility in the future, migrate to Next.js 15.5.15+ and remove the flag.
+
 ## Features
 
 - Marketing pages: home, plans, about, contact
