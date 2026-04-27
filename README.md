@@ -11,20 +11,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Cloudflare Pages Note
+## Cloudflare Workers Note
 
 This project currently runs on Next.js 14.2.x. Some OpenNext Cloudflare flows require Next.js 15+ unless you pass the unsupported-version override flag.
 
-Use this build command in Cloudflare Pages:
+For Cloudflare Workers Builds, use this build command:
 
 ```bash
-npm run cf:build
+npm run build
 ```
 
-The script includes:
+The repo build now does two steps:
 
 ```bash
-npx @opennextjs/cloudflare@latest build --dangerouslyUseUnsupportedNextVersion
+next build
+npx @opennextjs/cloudflare@latest build --dangerouslyUseUnsupportedNextVersion --skipNextBuild
 ```
 
 If you prefer strict compatibility in the future, migrate to Next.js 15.5.15+ and remove the flag.

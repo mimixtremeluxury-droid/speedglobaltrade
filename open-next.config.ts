@@ -1,14 +1,26 @@
-/**
- * OpenNext configuration for Cloudflare deployment.
- */
-
 const config = {
-    app: {
-        // Define your app settings here
+  default: {
+    override: {
+      wrapper: "cloudflare-node",
+      converter: "edge",
+      proxyExternalRequest: "fetch",
+      incrementalCache: "dummy",
+      tagCache: "dummy",
+      queue: "dummy",
     },
-    cloudflare: {
-        // Cloudflare specific settings
+  },
+  edgeExternals: ["node:crypto"],
+  middleware: {
+    external: true,
+    override: {
+      wrapper: "cloudflare-edge",
+      converter: "edge",
+      proxyExternalRequest: "fetch",
+      incrementalCache: "dummy",
+      tagCache: "dummy",
+      queue: "dummy",
     },
+  },
 };
 
 export default config;
