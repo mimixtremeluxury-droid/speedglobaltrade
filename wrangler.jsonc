@@ -1,1 +1,11 @@
-{"build":"npm run cf:build --dangerouslyUseUnsupportedNextVersion"}
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "speedglobaltrade",
+  "compatibility_date": "2026-04-27",
+  "main": ".open-next/worker.js",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "compatibility_flags": ["nodejs_compat"]
+}
