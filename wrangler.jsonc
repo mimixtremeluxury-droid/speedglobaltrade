@@ -1,0 +1,1 @@
+{"build":"npm run cf:build --dangerouslyUseUnsupportedNextVersion"}
