@@ -2,33 +2,40 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        deepNavy: "#0A0F2C",
-        gold: "#F5B042",
-        accentBlue: "#2A4B9C",
-        mutedText: "#A7AFD1",
+        midnight: "#050B14",
+        midnightSoft: "#0A111F",
+        gold: "#F5A623",
+        cyan: "#00F0FF",
+        body: "#C9D1D9",
+        ink: "#FFFFFF",
+        stroke: "rgba(255,255,255,0.08)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
-        heading: ["var(--font-poppins)", "sans-serif"],
+        heading: ["var(--font-space-grotesk)", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 40px rgba(245, 176, 66, 0.28)",
+        glow: "0 24px 80px rgba(245, 166, 35, 0.18)",
+        cyan: "0 16px 60px rgba(0, 240, 255, 0.12)",
       },
       backgroundImage: {
-        "gold-gradient": "linear-gradient(120deg, #F5B042 0%, #f59e0b 100%)",
-        "premium-gradient":
-          "radial-gradient(circle at 20% 20%, rgba(42,75,156,0.35), transparent 45%), radial-gradient(circle at 80% 0%, rgba(245,176,66,0.22), transparent 35%), linear-gradient(145deg, #070a1a 0%, #0A0F2C 55%, #0d1233 100%)",
+        "gold-gradient": "linear-gradient(135deg, #F5A623 0%, #FFD36F 100%)",
+        "cyan-gradient": "linear-gradient(135deg, rgba(0,240,255,0.25) 0%, rgba(0,240,255,0.02) 100%)",
+        "midnight-radial":
+          "radial-gradient(circle at top, rgba(245,166,35,0.12) 0%, rgba(5,11,20,0) 42%), radial-gradient(circle at 85% 10%, rgba(0,240,255,0.08) 0%, rgba(5,11,20,0) 34%), linear-gradient(180deg, #050B14 0%, #07111D 48%, #050B14 100%)",
       },
       animation: {
-        float: "float 6s ease-in-out infinite",
+        float: "float 9s ease-in-out infinite",
         pulseSoft: "pulseSoft 4s ease-in-out infinite",
+        marquee: "marquee 26s linear infinite",
+        shimmer: "shimmer 2.6s linear infinite",
       },
       keyframes: {
         float: {
@@ -38,6 +45,14 @@ const config: Config = {
         pulseSoft: {
           "0%,100%": { opacity: "0.5" },
           "50%": { opacity: "0.95" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        shimmer: {
+          from: { backgroundPosition: "200% 0" },
+          to: { backgroundPosition: "-200% 0" },
         },
       },
     },

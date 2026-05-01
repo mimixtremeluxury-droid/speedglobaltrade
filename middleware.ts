@@ -1,16 +1,29 @@
+import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
-import { STORAGE_KEYS } from "@/lib/constants";
+import { routing } from "@/i18n/routing";
+import { verifySessionToken } from "@/lib/session";
+import { SESSION_COOKIE } from "@/lib/constants";
 
-export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    const cookie = request.cookies.get(STORAGE_KEYS.authCookie);
-    if (!cookie) {
+const intlMiddleware = createMiddleware(routing);
+
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const session = await verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value);
+
+  if (pathname.startsWith("/dashboard")) {
+    if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
+    return NextResponse.next();
   }
-  return NextResponse.next();
+
+  if ((pathname === "/login" || pathname === "/signup") && session) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

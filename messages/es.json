@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Nosotros",
+    "plans": "Planes",
+    "contact": "Contacto",
+    "login": "Entrar",
+    "signup": "Abrir cuenta"
+  },
+  "hero": {
+    "eyebrow": "Inversión de nivel institucional, rediseñada",
+    "title": "Mercados globales. Acceso fluido. Velocidad incomparable.",
+    "description": "Una plataforma premium para inversionistas que esperan ejecución precisa, reportes refinados y confianza en cada interacción.",
+    "ctaPrimary": "Abrir portafolio",
+    "ctaSecondary": "Ver planes de inversión",
+    "emailPlaceholder": "Ingresa tu correo para acceso prioritario",
+    "emailButton": "Comenzar",
+    "statsOne": "Activos canalizados",
+    "statsTwo": "Inversionistas activos",
+    "statsThree": "Alpha mensual promedio"
+  },
+  "home": {
+    "topInvestors": "Inversores destacados",
+    "copyButton": "Copiar portafolio",
+    "trustTitle": "Diseñado para generar confianza antes de pedir capital",
+    "trustDescription": "Seguridad, incorporación guiada y rendimiento transparente en una sola experiencia premium.",
+    "sponsorsTitle": "Respaldado en círculos financieros de alto nivel",
+    "signalsTitle": "Por qué los inversionistas exigentes eligen Speed Global Trade",
+    "plansTitle": "Planes estructurados con presentación premium",
+    "plansDescription": "Opciones enfocadas, rangos claros y cero saturación."
+  },
+  "about": {
+    "title": "Una mesa de inversión moderna para clientes globales",
+    "intro": "Speed Global Trade combina atención privada, reportes con datos claros y acceso rápido al mercado en una sola plataforma refinada.",
+    "mission": "Hacer que la asignación global de capital se sienta inteligente, serena y confiable.",
+    "vision": "Convertirnos en el referente de inversión digital premium en mercados emergentes y establecidos."
+  },
+  "plans": {
+    "title": "Mandatos de inversión con claridad total",
+    "description": "Cada plan está diseñado para sentirse intencional, transparente y fácil de comparar."
+  },
+  "contact": {
+    "title": "Habla con el equipo de atención al cliente",
+    "description": "¿Dudas sobre el onboarding, copy trading o asignaciones estratégicas? Nuestro escritorio de concierge está listo.",
+    "name": "Nombre completo",
+    "email": "Correo electrónico",
+    "message": "Cuéntanos cómo podemos ayudarte",
+    "send": "Enviar mensaje"
+  },
+  "footer": {
+    "headline": "Acceso a capital con una ventaja premium.",
+    "subtext": "Creado para inversionistas modernos que buscan controles elegantes y señales confiables."
+  }
+}

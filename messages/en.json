@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "plans": "Plans",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Open Account"
+  },
+  "hero": {
+    "eyebrow": "Institutional-grade investing, reimagined",
+    "title": "Global Markets. Seamless Access. Unmatched Speed.",
+    "description": "A premium capital platform for investors who expect precision execution, refined reporting, and trust at every interaction.",
+    "ctaPrimary": "Open Your Portfolio",
+    "ctaSecondary": "View Investment Plans",
+    "emailPlaceholder": "Enter your email for priority onboarding",
+    "emailButton": "Get Started",
+    "statsOne": "Assets routed",
+    "statsTwo": "Active investors",
+    "statsThree": "Average monthly alpha"
+  },
+  "home": {
+    "topInvestors": "Top Investors",
+    "copyButton": "Copy Portfolio",
+    "trustTitle": "Built to earn confidence before it asks for capital",
+    "trustDescription": "Security posture, guided onboarding, and transparent performance in one high-touch experience.",
+    "sponsorsTitle": "Trusted in elite financial circles",
+    "signalsTitle": "Why discerning investors choose Speed Global Trade",
+    "plansTitle": "Structured plans with premium presentation",
+    "plansDescription": "Focused options, clear ranges, and no clutter."
+  },
+  "about": {
+    "title": "A modern investment desk for globally minded clients",
+    "intro": "Speed Global Trade blends private-client polish, data-rich reporting, and fast market access into one refined platform.",
+    "mission": "To make global capital allocation feel intelligent, calm, and deeply trustworthy.",
+    "vision": "To become the benchmark for premium digital investing across emerging and established markets."
+  },
+  "plans": {
+    "title": "Investment mandates, presented with clarity",
+    "description": "Each plan is structured to feel intentional, transparent, and easy to compare."
+  },
+  "contact": {
+    "title": "Speak with the client success desk",
+    "description": "Questions about onboarding, copy portfolios, or strategic allocations? Our mock concierge desk is ready.",
+    "name": "Full name",
+    "email": "Email address",
+    "message": "Tell us how we can help",
+    "send": "Send message"
+  },
+  "footer": {
+    "headline": "Capital access with a premium edge.",
+    "subtext": "Built for modern investors who want elegant controls and credible signals."
+  }
+}

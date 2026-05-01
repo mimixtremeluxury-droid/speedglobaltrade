@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans text-body;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(245, 166, 35, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 6%, rgba(0, 240, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, #050b14 0%, #07111d 38%, #050b14 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 92%);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 166, 35, 0.45) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(245, 166, 35, 0.3);
+}
+
+.surface {
+  @apply rounded-[28px] border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 90px rgba(0, 0, 0, 0.3);
+}
+
+.surface-soft {
+  @apply rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-xl;
+}
+
+.gold-button {
+  @apply inline-flex items-center justify-center rounded-full bg-gold-gradient px-5 py-3 text-sm font-semibold text-midnight transition duration-300 hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70;
+}
+
+.ghost-button {
+  @apply inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3 text-sm font-medium text-ink transition duration-300 hover:-translate-y-0.5 hover:border-cyan/60 hover:bg-cyan/10 hover:text-cyan;
+}
+
+.section-kicker {
+  @apply text-[11px] font-semibold uppercase tracking-[0.28em];
+  color: rgba(245, 166, 35, 0.9);
+}
+
+.section-title {
+  @apply font-heading text-3xl font-semibold tracking-[-0.03em] text-ink md:text-4xl;
+}
+
+.body-copy {
+  @apply text-base leading-8;
+  color: rgba(201, 209, 217, 0.82);
+}
+
+.hero-grid {
+  background:
+    radial-gradient(circle at top, rgba(245, 166, 35, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: auto, 120px 120px, 120px 120px;
+}
+
+.noise-mask {
+  position: relative;
+}
+
+.noise-mask::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(315deg, rgba(0, 240, 255, 0.08), transparent 24%);
+  opacity: 0.7;
+}
+
+.metric-label {
+  @apply text-[11px] uppercase tracking-[0.22em];
+  color: rgba(201, 209, 217, 0.55);
+}
+
+.metric-value {
+  @apply font-heading text-2xl font-semibold tracking-[-0.03em] text-ink;
+}
