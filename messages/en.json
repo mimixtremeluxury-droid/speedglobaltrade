@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "name": "Speed Global Trade",
+    "tagline": "Premium Capital Desk"
+  },
   "nav": {
     "home": "Home",
     "about": "About",
@@ -20,35 +24,267 @@
     "statsThree": "Average monthly alpha"
   },
   "home": {
+    "featureBadge": "Private-client signals, upgraded",
+    "featureSecurityTitle": "Security-first onboarding",
+    "featureSecurityBody": "High-trust flows with premium visual clarity and strong contrast.",
+    "featurePerformanceTitle": "Actionable performance views",
+    "featurePerformanceBody": "Decision-ready dashboards that keep the signal and remove the clutter.",
+    "featureCopyTitle": "Copy-trading credibility",
+    "featureCopyBody": "Elegant expert cards, clear stats, and frictionless portfolio mirroring.",
     "topInvestors": "Top Investors",
+    "copyHeading": "Expert-led allocations with cleaner copy-trading UX",
+    "copyBody": "Compare conviction, follower confidence, and style fit at a glance. Every card is designed to feel calm, polished, and ready for a premium investor.",
+    "traderWinRate": "Win Rate",
+    "traderRoi": "ROI",
+    "traderFollowers": "Followers",
     "copyButton": "Copy Portfolio",
     "trustTitle": "Built to earn confidence before it asks for capital",
     "trustDescription": "Security posture, guided onboarding, and transparent performance in one high-touch experience.",
-    "sponsorsTitle": "Trusted in elite financial circles",
-    "signalsTitle": "Why discerning investors choose Speed Global Trade",
+    "trustBadgeOneTitle": "AML & KYC Ready",
+    "trustBadgeOneCaption": "Institutional onboarding controls",
+    "trustBadgeTwoTitle": "256-bit Encryption",
+    "trustBadgeTwoCaption": "Bank-grade session protection",
+    "trustBadgeThreeTitle": "24/7 Concierge Desk",
+    "trustBadgeThreeCaption": "Priority support for every client",
     "plansTitle": "Structured plans with premium presentation",
-    "plansDescription": "Focused options, clear ranges, and no clutter."
+    "plansDescription": "Focused options, clear ranges, and no clutter.",
+    "plansFromLabel": "From {roi}%",
+    "plansMinimum": "Minimum {amount}",
+    "plansLearnMore": "Learn More",
+    "sponsorsTitle": "Trusted in elite financial circles",
+    "sponsorsHeading": "Signals of trust, styled like a premium market brand",
+    "testimonialsTitle": "Client Stories",
+    "testimonialsHeading": "What premium investors say after going live",
+    "testimonialsBody": "We built the experience to feel clear, global, and dependable from the first deposit to the daily portfolio view.",
+    "testimonials": {
+      "amaka": "The deposit flow felt orderly and credible, and the dashboard became useful the moment my balance settled.",
+      "liang": "I appreciate how calm the platform feels. The plan comparison and activity tracking are much cleaner than typical retail products.",
+      "sofia": "Everything important is easy to understand. I can see my funding status, portfolio value, and opportunities without any clutter.",
+      "aisha": "The copy-trading section feels polished and trustworthy. It gives me enough context before I allocate capital."
+    },
+    "ratingLabel": "5-star client feedback"
+  },
+  "feed": {
+    "headline": "{investor} from {region}",
+    "actions": {
+      "deposited": "just deposited {amount}",
+      "copied": "just copied an expert with {amount}",
+      "funded": "just funded a plan with {amount}",
+      "withdrew": "just requested a withdrawal of {amount}",
+      "joined": "just joined with {amount}"
+    }
   },
   "about": {
+    "eyebrow": "About Speed Global Trade",
     "title": "A modern investment desk for globally minded clients",
     "intro": "Speed Global Trade blends private-client polish, data-rich reporting, and fast market access into one refined platform.",
+    "missionTitle": "Mission",
     "mission": "To make global capital allocation feel intelligent, calm, and deeply trustworthy.",
-    "vision": "To become the benchmark for premium digital investing across emerging and established markets."
+    "visionTitle": "Vision",
+    "vision": "To become the benchmark for premium digital investing across emerging and established markets.",
+    "styleTitle": "Operating style",
+    "styleBody": "Quietly premium interfaces, investor-friendly clarity, and a strong bias toward trust signals.",
+    "philosophyKicker": "Leadership philosophy",
+    "philosophyTitle": "We design for reassurance, not noise.",
+    "philosophyBody": "From dashboard spacing to plan comparison, every detail is tuned to reduce doubt and support better investor decisions.",
+    "featureOne": "Secure sessions",
+    "featureTwo": "Institutional tone",
+    "featureThree": "Global access mindset"
   },
   "plans": {
+    "eyebrow": "Investment Plans",
     "title": "Investment mandates, presented with clarity",
-    "description": "Each plan is structured to feel intentional, transparent, and easy to compare."
+    "description": "Each plan is structured to feel intentional, transparent, and easy to compare.",
+    "fromLabel": "From {roi}%",
+    "minimumInvestment": "Minimum investment",
+    "learnMore": "Learn More",
+    "startPlan": "Start Plan"
   },
   "contact": {
+    "eyebrow": "Contact",
     "title": "Speak with the client success desk",
-    "description": "Questions about onboarding, copy portfolios, or strategic allocations? Our mock concierge desk is ready.",
+    "description": "Questions about onboarding, copy portfolios, or strategic allocations? Our support flow is ready.",
     "name": "Full name",
     "email": "Email address",
     "message": "Tell us how we can help",
-    "send": "Send message"
+    "send": "Send message",
+    "sending": "Sending...",
+    "successTitle": "Message queued",
+    "successDescription": "A relationship manager will typically respond within one business cycle.",
+    "emailDeskTitle": "Email Desk",
+    "phoneLineTitle": "Phone Line",
+    "clientSupportTitle": "Client Support",
+    "clientSupportBody": "24/7 guided responses for onboarding and allocations",
+    "officeTitle": "Relationship Office",
+    "officeBody": "Canary Wharf, London - client-facing mock address"
   },
   "footer": {
+    "eyebrow": "Global Reach",
     "headline": "Capital access with a premium edge.",
-    "subtext": "Built for modern investors who want elegant controls and credible signals."
+    "subtext": "Built for modern investors who want elegant controls, credible trust signals, and global-first support.",
+    "backToTop": "Back to Top",
+    "company": "Company",
+    "resources": "Resources",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "Copyright © {year} Speed Global Trade. All rights reserved.",
+    "links": {
+      "about": "About",
+      "careers": "Careers",
+      "blog": "Blog",
+      "helpCenter": "Help Center",
+      "security": "Security",
+      "contact": "Contact",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "riskDisclosure": "Risk Disclosure"
+    }
+  },
+  "contentPages": {
+    "careers": {
+      "eyebrow": "Careers",
+      "title": "Build the future of premium client investing",
+      "description": "We hire product-minded operators, designers, and market specialists who believe trust is a feature, not an afterthought.",
+      "sectionOneTitle": "Why join us",
+      "sectionOneBody": "You will help shape a calm, high-trust financial experience for clients across multiple markets.",
+      "sectionTwoTitle": "How we work",
+      "sectionTwoBody": "We value clarity, ownership, and careful execution over noise and unnecessary complexity.",
+      "sectionThreeTitle": "Open roles",
+      "sectionThreeBody": "Current openings span relationship operations, product design, compliance support, and platform engineering."
+    },
+    "blog": {
+      "eyebrow": "Blog",
+      "title": "Market perspectives for globally minded investors",
+      "description": "Our editorial desk shares platform updates, risk education, and allocation themes in a format built for clarity.",
+      "sectionOneTitle": "Research notes",
+      "sectionOneBody": "Short, focused reads that explain the major signals shaping investor decisions.",
+      "sectionTwoTitle": "Platform updates",
+      "sectionTwoBody": "Product releases are framed around usability, security posture, and transparent communication.",
+      "sectionThreeTitle": "Investor education",
+      "sectionThreeBody": "We publish practical guidance on funding, diversification, and reading portfolio performance."
+    },
+    "help-center": {
+      "eyebrow": "Help Center",
+      "title": "Answers for onboarding, deposits, and account access",
+      "description": "The help center is structured to keep clients moving with less friction and more confidence.",
+      "sectionOneTitle": "Getting started",
+      "sectionOneBody": "Learn how to open an account, complete your first deposit request, and activate your dashboard.",
+      "sectionTwoTitle": "Funding support",
+      "sectionTwoBody": "We explain accepted rails, settlement expectations, and how deposit confirmation affects portfolio visibility.",
+      "sectionThreeTitle": "Account assistance",
+      "sectionThreeBody": "Use contact and chat support when you need help with access, settings, or transaction questions."
+    },
+    "security": {
+      "eyebrow": "Security",
+      "title": "Security practices designed for a high-trust platform",
+      "description": "Our product direction prioritizes session protection, guided onboarding, and careful handling of sensitive workflows.",
+      "sectionOneTitle": "Session integrity",
+      "sectionOneBody": "Protected routes use signed sessions so access checks happen before the dashboard loads.",
+      "sectionTwoTitle": "Client safeguards",
+      "sectionTwoBody": "Clear states, visible confirmations, and controlled flows reduce ambiguity during funding actions.",
+      "sectionThreeTitle": "Operational posture",
+      "sectionThreeBody": "We design interfaces and process language to support safer decisions and more transparent expectations."
+    },
+    "privacy-policy": {
+      "eyebrow": "Privacy Policy",
+      "title": "A clear view of how account information is handled",
+      "description": "This mock product demonstrates how a premium platform can communicate data practices in a simple, readable way.",
+      "sectionOneTitle": "Profile data",
+      "sectionOneBody": "Account details are used to personalize access, dashboard views, and support experiences.",
+      "sectionTwoTitle": "Activity records",
+      "sectionTwoBody": "Deposits, withdrawals, and investment actions are retained to show consistent portfolio history.",
+      "sectionThreeTitle": "Support channels",
+      "sectionThreeBody": "Messages submitted through chat or forms may be used to improve response quality and service continuity."
+    },
+    "terms-of-service": {
+      "eyebrow": "Terms of Service",
+      "title": "Platform terms built around clarity and accountability",
+      "description": "These placeholder terms outline how clients access the platform and what operational standards they can expect.",
+      "sectionOneTitle": "Account usage",
+      "sectionOneBody": "Clients are responsible for accurate profile information and for protecting their login credentials.",
+      "sectionTwoTitle": "Service scope",
+      "sectionTwoBody": "Investment plans, copy-trading views, and portfolio metrics are presented as platform features and disclosures.",
+      "sectionThreeTitle": "Operational updates",
+      "sectionThreeBody": "We may revise workflows, features, or support channels as the platform evolves toward production use."
+    },
+    "risk-disclosure": {
+      "eyebrow": "Risk Disclosure",
+      "title": "Investment decisions require careful judgment",
+      "description": "All investing involves risk, including the possible loss of capital. A premium interface does not remove market uncertainty.",
+      "sectionOneTitle": "Market volatility",
+      "sectionOneBody": "Portfolio values may rise or fall due to macro events, liquidity shifts, and changing investor sentiment.",
+      "sectionTwoTitle": "Strategy risk",
+      "sectionTwoBody": "Copy trading, concentrated plans, and higher-return mandates can involve materially different risk profiles.",
+      "sectionThreeTitle": "Client responsibility",
+      "sectionThreeBody": "Clients should review plan details, ask questions, and consider whether an allocation fits their own objectives."
+    }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Secure Login",
+      "title": "Access your investor workspace",
+      "description": "Signed session cookies protect dashboard routes, while portfolio activity stays persisted locally in this mock environment.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "submitting": "Entering...",
+      "successTitle": "Welcome back",
+      "successDescription": "Your premium dashboard is ready.",
+      "errorTitle": "Login failed",
+      "demo": "Use Demo Account",
+      "demoTitle": "Demo account loaded",
+      "demoDescription": "Explore the premium dashboard with pre-seeded portfolio data.",
+      "demoErrorTitle": "Demo access failed",
+      "signupPrompt": "Need a new account?",
+      "signupLink": "Open one here"
+    },
+    "signup": {
+      "eyebrow": "Open Account",
+      "title": "Create your premium investor profile",
+      "description": "This secure mock flow issues a signed session cookie and prepares an empty dashboard that activates after your first completed deposit.",
+      "fullName": "Full name",
+      "email": "Email",
+      "country": "Country",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Create Account",
+      "submitting": "Provisioning...",
+      "successTitle": "Account created",
+      "successDescription": "Your workspace is ready. Complete your first deposit to activate portfolio tracking.",
+      "errorTitle": "Unable to create account",
+      "loginPrompt": "Already onboarded?",
+      "loginLink": "Login here"
+    }
+  },
+  "dashboard": {
+    "frame": {
+      "eyebrow": "Dashboard Overview",
+      "welcome": "Welcome back, {name}",
+      "loading": "Loading your workspace",
+      "portfolio": "{amount} portfolio",
+      "waiting": "Waiting for first deposit",
+      "pending": "Pending",
+      "preparing": "Preparing your premium dashboard experience..."
+    },
+    "nav": {
+      "title": "Investor Desk",
+      "subtitle": "Private workspace",
+      "overview": "Overview",
+      "investments": "Investment Plans",
+      "copyTrading": "Copy Trading",
+      "transactions": "Transactions",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "settings": "Settings",
+      "logout": "Logout",
+      "signedOutTitle": "Signed out",
+      "signedOutDescription": "Your secure session has been cleared."
+    },
+    "empty": {
+      "eyebrow": "Ready to get started?",
+      "title": "Your dashboard activates after your first completed deposit",
+      "description": "Create a deposit request, then use the simulation button to confirm it in this mock workflow. Once completed, your balance, chart, and transaction history will appear.",
+      "cta": "Make Your First Deposit"
+    }
   }
 }

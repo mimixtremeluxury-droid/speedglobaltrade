@@ -1,0 +1,290 @@
+{
+  "brand": {
+    "name": "Speed Global Trade",
+    "tagline": "高端资本交易台"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "plans": "投资方案",
+    "contact": "联系我们",
+    "login": "登录",
+    "signup": "开设账户"
+  },
+  "hero": {
+    "eyebrow": "重新定义机构级投资体验",
+    "title": "全球市场。无缝接入。极速执行。",
+    "description": "面向重视精确执行、精致报告与全流程信任体验的投资者打造的高端资本平台。",
+    "ctaPrimary": "开通投资组合",
+    "ctaSecondary": "查看投资方案",
+    "emailPlaceholder": "输入邮箱以获得优先开户支持",
+    "emailButton": "立即开始",
+    "statsOne": "已配置资产",
+    "statsTwo": "活跃投资者",
+    "statsThree": "平均月度超额收益"
+  },
+  "home": {
+    "featureBadge": "私享客户信号升级版",
+    "featureSecurityTitle": "安全优先的开户流程",
+    "featureSecurityBody": "以清晰视觉与高对比呈现高信任度流程。",
+    "featurePerformanceTitle": "可执行的绩效视图",
+    "featurePerformanceBody": "为决策而生的仪表盘，保留关键信号，移除杂讯。",
+    "featureCopyTitle": "跟单交易更可信",
+    "featureCopyBody": "优雅的专家卡片、清晰的数据和顺滑的组合复制体验。",
+    "topInvestors": "顶级投资者",
+    "copyHeading": "由专家主导的配置，更清爽的跟单体验",
+    "copyBody": "快速比较策略信心、粉丝认可与风格匹配。每张卡片都为高端投资者打造得更沉稳、更精致。",
+    "traderWinRate": "胜率",
+    "traderRoi": "回报率",
+    "traderFollowers": "关注者",
+    "copyButton": "复制组合",
+    "trustTitle": "先建立信任，再谈资本配置",
+    "trustDescription": "安全姿态、引导式开户与透明绩效融合为一体的高触达体验。",
+    "trustBadgeOneTitle": "支持 AML 与 KYC",
+    "trustBadgeOneCaption": "机构级开户控制",
+    "trustBadgeTwoTitle": "256 位加密",
+    "trustBadgeTwoCaption": "银行级会话保护",
+    "trustBadgeThreeTitle": "7x24 礼宾支持",
+    "trustBadgeThreeCaption": "为每位客户提供优先协助",
+    "plansTitle": "结构化方案，配以高端呈现",
+    "plansDescription": "选项聚焦、区间清晰、没有冗余。",
+    "plansFromLabel": "自 {roi}% 起",
+    "plansMinimum": "最低 {amount}",
+    "plansLearnMore": "了解更多",
+    "sponsorsTitle": "获高端金融圈信任",
+    "sponsorsHeading": "以高端金融品牌风格呈现的信任信号",
+    "testimonialsTitle": "客户评价",
+    "testimonialsHeading": "高端投资者在激活后如何评价我们",
+    "testimonialsBody": "从首次入金到每日组合视图，我们将体验设计得更清晰、全球化且可靠。",
+    "testimonials": {
+      "amaka": "入金流程井然有序且值得信赖，余额确认后仪表盘立刻变得有价值。",
+      "liang": "我很喜欢平台的沉稳感。方案对比和活动跟踪比常见零售产品清爽很多。",
+      "sofia": "重要信息都非常容易理解。我可以在没有杂乱干扰的情况下看到入金状态、组合价值和机会。",
+      "aisha": "跟单区域做得很精致，也更可信。在我分配资金前，它提供了足够的信息。"
+    },
+    "ratingLabel": "五星客户反馈"
+  },
+  "feed": {
+    "headline": "{investor}，来自 {region}",
+    "actions": {
+      "deposited": "刚刚存入 {amount}",
+      "copied": "刚刚以 {amount} 跟随专家",
+      "funded": "刚刚以 {amount} 配置了方案",
+      "withdrew": "刚刚申请提取 {amount}",
+      "joined": "刚刚以 {amount} 加入平台"
+    }
+  },
+  "about": {
+    "eyebrow": "关于 Speed Global Trade",
+    "title": "面向全球投资者的现代化投资平台",
+    "intro": "Speed Global Trade 将私享客户体验、数据驱动报告与快速市场接入整合到一个精致平台中。",
+    "missionTitle": "使命",
+    "mission": "让全球资本配置变得更理性、更从容、更值得信赖。",
+    "visionTitle": "愿景",
+    "vision": "成为新兴与成熟市场中的高端数字投资标杆。",
+    "styleTitle": "运营风格",
+    "styleBody": "低调奢华的界面、面向投资者的清晰表达，以及对信任信号的高度重视。",
+    "philosophyKicker": "管理理念",
+    "philosophyTitle": "我们为安心而设计，而不是为噪音而设计。",
+    "philosophyBody": "从仪表盘留白到方案对比，每个细节都旨在减少疑虑，帮助投资者做出更好的判断。",
+    "featureOne": "安全会话",
+    "featureTwo": "机构级表达",
+    "featureThree": "全球接入视角"
+  },
+  "plans": {
+    "eyebrow": "投资方案",
+    "title": "清晰呈现的投资授权方案",
+    "description": "每个方案都被设计得更有目的、更透明，也更便于比较。",
+    "fromLabel": "{roi}% 起",
+    "minimumInvestment": "最低投资额",
+    "learnMore": "了解更多",
+    "startPlan": "启动方案"
+  },
+  "contact": {
+    "eyebrow": "联系",
+    "title": "联系客户成功团队",
+    "description": "如需了解开户、跟单组合或策略配置，我们的支持流程随时就绪。",
+    "name": "姓名",
+    "email": "电子邮箱",
+    "message": "请告诉我们您的需求",
+    "send": "发送消息",
+    "sending": "发送中...",
+    "successTitle": "消息已排队",
+    "successDescription": "客户经理通常会在一个工作周期内回复。",
+    "emailDeskTitle": "邮箱支持",
+    "phoneLineTitle": "电话热线",
+    "clientSupportTitle": "客户支持",
+    "clientSupportBody": "7x24 引导式答复，覆盖开户与配置支持",
+    "officeTitle": "客户关系办公室",
+    "officeBody": "伦敦金丝雀码头 - 面向客户的示例地址"
+  },
+  "footer": {
+    "eyebrow": "全球布局",
+    "headline": "以高端优势连接资本机会。",
+    "subtext": "为希望获得优雅控制、可信信号与全球支持的现代投资者打造。",
+    "backToTop": "回到顶部",
+    "company": "公司",
+    "resources": "资源",
+    "legal": "法律",
+    "social": "社交",
+    "copyright": "Copyright © {year} Speed Global Trade。保留所有权利。",
+    "links": {
+      "about": "关于我们",
+      "careers": "加入我们",
+      "blog": "博客",
+      "helpCenter": "帮助中心",
+      "security": "安全",
+      "contact": "联系",
+      "privacyPolicy": "隐私政策",
+      "termsOfService": "服务条款",
+      "riskDisclosure": "风险披露"
+    }
+  },
+  "contentPages": {
+    "careers": {
+      "eyebrow": "加入我们",
+      "title": "共同打造高端客户投资平台的未来",
+      "description": "我们寻找相信“信任本身就是功能”的运营者、设计师与市场专家。",
+      "sectionOneTitle": "为什么加入",
+      "sectionOneBody": "你将帮助塑造一个更沉稳、更高信任度的全球金融体验。",
+      "sectionTwoTitle": "我们的工作方式",
+      "sectionTwoBody": "我们重视清晰、责任感与谨慎执行，而不是噪音与不必要的复杂性。",
+      "sectionThreeTitle": "开放职位",
+      "sectionThreeBody": "当前岗位覆盖客户关系运营、产品设计、合规支持与平台工程。"
+    },
+    "blog": {
+      "eyebrow": "博客",
+      "title": "面向全球投资者的市场观点",
+      "description": "我们的内容团队以清晰的形式分享平台更新、风险教育与配置主题。",
+      "sectionOneTitle": "研究笔记",
+      "sectionOneBody": "简短而聚焦的内容，解释影响投资决策的核心信号。",
+      "sectionTwoTitle": "平台更新",
+      "sectionTwoBody": "产品发布将从易用性、安全姿态与透明沟通角度进行说明。",
+      "sectionThreeTitle": "投资者教育",
+      "sectionThreeBody": "我们发布有关入金、分散配置与组合绩效解读的实用指引。"
+    },
+    "help-center": {
+      "eyebrow": "帮助中心",
+      "title": "关于开户、入金与账户访问的答案",
+      "description": "帮助中心旨在让客户以更少摩擦、更高信心继续前进。",
+      "sectionOneTitle": "开始使用",
+      "sectionOneBody": "了解如何开设账户、创建首次入金请求并激活仪表盘。",
+      "sectionTwoTitle": "资金支持",
+      "sectionTwoBody": "我们说明可用通道、结算预期，以及入金确认如何影响组合可见性。",
+      "sectionThreeTitle": "账户协助",
+      "sectionThreeBody": "当你需要访问、设置或交易相关帮助时，可使用联系表单与聊天支持。"
+    },
+    "security": {
+      "eyebrow": "安全",
+      "title": "为高信任平台设计的安全实践",
+      "description": "我们的产品方向优先考虑会话保护、引导式开户以及敏感流程的谨慎处理。",
+      "sectionOneTitle": "会话完整性",
+      "sectionOneBody": "受保护路由使用签名会话，在仪表盘加载前完成访问校验。",
+      "sectionTwoTitle": "客户保护",
+      "sectionTwoBody": "清晰状态、可见确认与受控流程可减少资金操作中的不确定性。",
+      "sectionThreeTitle": "运营姿态",
+      "sectionThreeBody": "我们通过界面与流程语言帮助客户做出更安全、更透明的决策。"
+    },
+    "privacy-policy": {
+      "eyebrow": "隐私政策",
+      "title": "清晰了解账户信息如何被处理",
+      "description": "这个模拟产品展示了高端平台如何以简单、易读的方式说明数据实践。",
+      "sectionOneTitle": "资料信息",
+      "sectionOneBody": "账户信息用于个性化访问、仪表盘视图与支持体验。",
+      "sectionTwoTitle": "活动记录",
+      "sectionTwoBody": "入金、提现与投资操作会被保留，以展示一致的组合历史。",
+      "sectionThreeTitle": "支持渠道",
+      "sectionThreeBody": "通过聊天或表单提交的消息可用于提升回复质量与服务连续性。"
+    },
+    "terms-of-service": {
+      "eyebrow": "服务条款",
+      "title": "围绕清晰与责任构建的平台条款",
+      "description": "这些占位条款概述了客户如何访问平台，以及他们可以期待的运营标准。",
+      "sectionOneTitle": "账户使用",
+      "sectionOneBody": "客户需确保资料准确，并妥善保护自己的登录凭证。",
+      "sectionTwoTitle": "服务范围",
+      "sectionTwoBody": "投资方案、跟单视图与组合指标均作为平台功能与披露内容呈现。",
+      "sectionThreeTitle": "运营更新",
+      "sectionThreeBody": "随着平台向生产环境演进，我们可能会调整流程、功能或支持渠道。"
+    },
+    "risk-disclosure": {
+      "eyebrow": "风险披露",
+      "title": "投资决策需要谨慎判断",
+      "description": "所有投资都伴随风险，包括本金损失的可能。高端界面并不能消除市场不确定性。",
+      "sectionOneTitle": "市场波动",
+      "sectionOneBody": "组合价值可能因宏观事件、流动性变化和投资者情绪而上下波动。",
+      "sectionTwoTitle": "策略风险",
+      "sectionTwoBody": "跟单、集中型方案和高回报授权可能具有显著不同的风险特征。",
+      "sectionThreeTitle": "客户责任",
+      "sectionThreeBody": "客户应审阅方案细节、主动提问，并评估配置是否符合自身目标。"
+    }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "安全登录",
+      "title": "进入你的投资工作台",
+      "description": "签名会话 Cookie 用于保护仪表盘路由，而组合活动在此模拟环境中保存在本地。",
+      "email": "邮箱",
+      "password": "密码",
+      "submit": "登录",
+      "submitting": "进入中...",
+      "successTitle": "欢迎回来",
+      "successDescription": "你的高端仪表盘已准备就绪。",
+      "errorTitle": "登录失败",
+      "demo": "使用演示账户",
+      "demoTitle": "已加载演示账户",
+      "demoDescription": "使用预置组合数据体验高端仪表盘。",
+      "demoErrorTitle": "演示访问失败",
+      "signupPrompt": "需要新账户？",
+      "signupLink": "在这里开设"
+    },
+    "signup": {
+      "eyebrow": "开设账户",
+      "title": "创建你的高端投资者资料",
+      "description": "此安全模拟流程会签发会话 Cookie，并准备一个在首次入金完成后才激活的空白仪表盘。",
+      "fullName": "姓名",
+      "email": "邮箱",
+      "country": "国家",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "submit": "创建账户",
+      "submitting": "创建中...",
+      "successTitle": "账户已创建",
+      "successDescription": "你的工作台已就绪。完成首次入金后即可激活组合跟踪。",
+      "errorTitle": "无法创建账户",
+      "loginPrompt": "已经开户？",
+      "loginLink": "在这里登录"
+    }
+  },
+  "dashboard": {
+    "frame": {
+      "eyebrow": "仪表盘总览",
+      "welcome": "欢迎回来，{name}",
+      "loading": "正在加载你的工作台",
+      "portfolio": "{amount} 组合",
+      "waiting": "等待首次入金",
+      "pending": "待处理",
+      "preparing": "正在准备你的高端仪表盘体验..."
+    },
+    "nav": {
+      "title": "投资者工作台",
+      "subtitle": "专属空间",
+      "overview": "总览",
+      "investments": "投资方案",
+      "copyTrading": "跟单交易",
+      "transactions": "交易记录",
+      "deposit": "入金",
+      "withdraw": "提现",
+      "settings": "设置",
+      "logout": "退出",
+      "signedOutTitle": "已退出登录",
+      "signedOutDescription": "你的安全会话已被清除。"
+    },
+    "empty": {
+      "eyebrow": "准备开始了吗？",
+      "title": "你的仪表盘将在首次入金完成后激活",
+      "description": "先创建入金请求，再使用模拟按钮完成确认。完成后，余额、图表和交易历史才会显示。",
+      "cta": "进行首次入金"
+    }
+  }
+}

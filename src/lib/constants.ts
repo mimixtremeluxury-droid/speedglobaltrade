@@ -1,11 +1,25 @@
-import { AppLocale, ExpertTrader, FeedActivity, InvestmentPlan, TrustBadge } from "@/lib/types";
+import { AppLocale, ExpertTrader, FeedActivity, InvestmentPlan, Testimonial, TrustBadge } from "@/lib/types";
 
 export const APP_NAME = "Speed Global Trade";
 export const SESSION_COOKIE = "sgt_session";
 export const MOCK_DB_KEY = "sgt_premium_mock_db";
 
-export const LOCALES: AppLocale[] = ["en", "es"];
+export const LOCALES = ["en", "zh", "es", "ar", "hi"] as const satisfies readonly AppLocale[];
 export const DEFAULT_LOCALE: AppLocale = "en";
+export const RTL_LOCALES: AppLocale[] = ["ar"];
+
+export const LANGUAGE_OPTIONS = [
+  { locale: "en", label: "English", nativeLabel: "English", flag: "GB" },
+  { locale: "zh", label: "Chinese", nativeLabel: "简体中文", flag: "CN" },
+  { locale: "es", label: "Spanish", nativeLabel: "Español", flag: "ES" },
+  { locale: "ar", label: "Arabic", nativeLabel: "العربية", flag: "SA" },
+  { locale: "hi", label: "Hindi", nativeLabel: "हिन्दी", flag: "IN" },
+] as const satisfies ReadonlyArray<{
+  locale: AppLocale;
+  label: string;
+  nativeLabel: string;
+  flag: string;
+}>;
 
 export const DEMO_CREDENTIALS = {
   email: "demo@speedglobaltrade.com",
@@ -108,10 +122,10 @@ export const EXPERT_TRADERS: ExpertTrader[] = [
 
 export const RECENT_ACTIVITY: FeedActivity[] = [
   { id: "1", investor: "Kgomotso", region: "Gauteng", action: "deposited", amount: 500, createdAt: "2m ago" },
-  { id: "2", investor: "Marisol", region: "Madrid", action: "copied Elena Navarro", amount: 2200, createdAt: "6m ago" },
-  { id: "3", investor: "Tariro", region: "Harare", action: "funded Velocity Core", amount: 1500, createdAt: "11m ago" },
-  { id: "4", investor: "Daniel", region: "Toronto", action: "withdrew profits", amount: 890, createdAt: "18m ago" },
-  { id: "5", investor: "Amina", region: "Doha", action: "joined Auric Alpha", amount: 5200, createdAt: "24m ago" },
+  { id: "2", investor: "Marisol", region: "Madrid", action: "copied", amount: 2200, createdAt: "6m ago" },
+  { id: "3", investor: "Tariro", region: "Harare", action: "funded", amount: 1500, createdAt: "11m ago" },
+  { id: "4", investor: "Daniel", region: "Toronto", action: "withdrew", amount: 890, createdAt: "18m ago" },
+  { id: "5", investor: "Amina", region: "Doha", action: "joined", amount: 5200, createdAt: "24m ago" },
 ];
 
 export const TRUST_BADGES: TrustBadge[] = [
@@ -130,3 +144,40 @@ export const SPONSORS = [
   "Reuters",
   "Visa",
 ];
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: "amaka",
+    name: "Amaka Okafor",
+    location: "Lagos, Nigeria",
+    avatar: "https://i.pravatar.cc/160?img=32",
+  },
+  {
+    id: "liang",
+    name: "Liang Chen",
+    location: "Shenzhen, China",
+    avatar: "https://i.pravatar.cc/160?img=13",
+  },
+  {
+    id: "sofia",
+    name: "Sofía Morales",
+    location: "Madrid, Spain",
+    avatar: "https://i.pravatar.cc/160?img=47",
+  },
+  {
+    id: "aisha",
+    name: "Aisha Khan",
+    location: "Dubai, UAE",
+    avatar: "https://i.pravatar.cc/160?img=5",
+  },
+];
+
+export const CONTENT_PAGE_SLUGS = [
+  "careers",
+  "blog",
+  "help-center",
+  "security",
+  "privacy-policy",
+  "terms-of-service",
+  "risk-disclosure",
+] as const;

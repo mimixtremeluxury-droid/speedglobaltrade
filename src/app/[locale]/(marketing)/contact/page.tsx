@@ -6,22 +6,24 @@ import { PageShell } from "@/components/ui/page-shell";
 export default async function ContactPage() {
   const t = await getTranslations("contact");
 
+  const cards = [
+    { icon: Mail, title: t("emailDeskTitle"), copy: "support@speedglobaltrade.com" },
+    { icon: PhoneCall, title: t("phoneLineTitle"), copy: "+1 (800) 555-0199" },
+    { icon: Headphones, title: t("clientSupportTitle"), copy: t("clientSupportBody") },
+    { icon: Landmark, title: t("officeTitle"), copy: t("officeBody") },
+  ];
+
   return (
     <PageShell className="space-y-12 pb-24 pt-12">
       <section className="surface px-6 py-10 md:px-10">
-        <p className="section-kicker">Contact</p>
+        <p className="section-kicker">{t("eyebrow")}</p>
         <h1 className="mt-4 max-w-4xl font-heading text-4xl tracking-[-0.04em] text-ink md:text-6xl">{t("title")}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-body/78">{t("description")}</p>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
         <div className="grid gap-4">
-          {[
-            { icon: Mail, title: "Email Desk", copy: "support@speedglobaltrade.com" },
-            { icon: PhoneCall, title: "Phone Line", copy: "+1 (800) 555-0199" },
-            { icon: Headphones, title: "Client Support", copy: "24/7 guided responses for onboarding and allocations" },
-            { icon: Landmark, title: "Relationship Office", copy: "Canary Wharf, London — client-facing mock address" },
-          ].map((item) => (
+          {cards.map((item) => (
             <article key={item.title} className="surface p-5">
               <item.icon className="h-5 w-5 text-cyan" />
               <h2 className="mt-4 font-heading text-xl text-ink">{item.title}</h2>

@@ -32,8 +32,8 @@ export function ContactForm() {
       onSubmit={handleSubmit(async () => {
         await wait(500);
         pushToast({
-          title: "Message queued",
-          description: "A relationship manager will typically respond here within one business cycle.",
+          title: t("successTitle"),
+          description: t("successDescription"),
           tone: "success",
         });
         reset();
@@ -66,7 +66,7 @@ export function ContactForm() {
         {errors.message ? <p className="mt-2 text-sm text-red-300">{errors.message.message}</p> : null}
       </div>
       <button type="submit" disabled={isSubmitting} className="gold-button w-full">
-        {isSubmitting ? "Sending..." : t("send")}
+        {isSubmitting ? t("sending") : t("send")}
       </button>
     </form>
   );

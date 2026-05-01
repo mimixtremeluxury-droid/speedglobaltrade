@@ -3,12 +3,13 @@
 import { create } from "zustand";
 import { DEMO_CREDENTIALS, EXPERT_TRADERS, INVESTMENT_PLANS, RECENT_ACTIVITY } from "@/lib/constants";
 import {
+  completePendingDeposit,
   copyTraderAllocation,
   createMockAccount,
-  depositToAccount,
   getDemoRecord,
   getUserRecord,
   investInPlan,
+  requestDeposit,
   seedMockDb,
   updateUserSettings,
   validateCredentials,
@@ -28,13 +29,13 @@ type AuthPayload = {
   email: string;
   password: string;
   country: string;
+  locale: UserRecord["profile"]["locale"];
 };
 
 type AppStore = {
   hydrated: boolean;
   session: SessionUser | null;
   user: UserRecord | null;
-  chatOpen: boolean;
   sidebarCollapsed: boolean;
   feed: FeedActivity[];
   toasts: Toast[];
@@ -44,12 +45,12 @@ type AppStore = {
   signUp: (payload: AuthPayload) => UserRecord;
   useDemoAccount: () => UserRecord;
   signOut: () => void;
-  deposit: (amount: number, method: string) => void;
+  requestDeposit: (amount: number, method: string) => void;
+  completeDeposit: (transactionId: string) => void;
   withdraw: (amount: number, method: string) => void;
   invest: (plan: InvestmentPlan, amount: number) => void;
   copyTrader: (trader: ExpertTrader) => void;
   updateSettings: (patch: Parameters<typeof updateUserSettings>[1]) => void;
-  setChatOpen: (open: boolean) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   pushToast: (toast: Omit<Toast, "id">) => void;
   dismissToast: (id: string) => void;
@@ -61,7 +62,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
   hydrated: false,
   session: null,
   user: null,
-  chatOpen: false,
   sidebarCollapsed: false,
   feed: RECENT_ACTIVITY,
   toasts: [],
@@ -97,11 +97,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set({ user, session: { email: user.profile.email, fullName: user.profile.fullName } });
     return user;
   },
-  signOut: () => set({ session: null, user: null, chatOpen: false }),
-  deposit: (amount, method) => {
+  signOut: () => set({ session: null, user: null }),
+  requestDeposit: (amount, method) => {
     const email = get().session?.email;
     if (!email) throw new Error("No active session.");
-    const user = depositToAccount(email, amount, method);
+    const user = requestDeposit(email, amount, method);
+    set({ user });
+  },
+  completeDeposit: (transactionId) => {
+    const email = get().session?.email;
+    if (!email) throw new Error("No active session.");
+    const user = completePendingDeposit(email, transactionId);
     set({ user });
   },
   withdraw: (amount, method) => {
@@ -128,7 +134,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const user = updateUserSettings(email, patch);
     set({ user });
   },
-  setChatOpen: (chatOpen) => set({ chatOpen }),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   pushToast: (toast) => {
     const nextToast = { ...toast, id: createToastId() };

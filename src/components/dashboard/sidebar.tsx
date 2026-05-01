@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowDownToLine,
   BarChart3,
@@ -15,20 +13,23 @@ import {
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useAppStore } from "@/lib/store";
 
 const links = [
-  { href: "/dashboard", label: "Overview", icon: BarChart3 },
-  { href: "/dashboard/investments", label: "Investment Plans", icon: Landmark },
-  { href: "/dashboard/copy-trading", label: "Copy Trading", icon: Copy },
-  { href: "/dashboard/transactions", label: "Transactions", icon: ReceiptText },
-  { href: "/dashboard/deposit", label: "Deposit", icon: Wallet },
-  { href: "/dashboard/withdraw", label: "Withdraw", icon: ArrowDownToLine },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings2 },
-];
+  { href: "/dashboard", label: "overview", icon: BarChart3 },
+  { href: "/dashboard/investments", label: "investments", icon: Landmark },
+  { href: "/dashboard/copy-trading", label: "copyTrading", icon: Copy },
+  { href: "/dashboard/transactions", label: "transactions", icon: ReceiptText },
+  { href: "/dashboard/deposit", label: "deposit", icon: Wallet },
+  { href: "/dashboard/withdraw", label: "withdraw", icon: ArrowDownToLine },
+  { href: "/dashboard/settings", label: "settings", icon: Settings2 },
+] as const;
 
 export function DashboardSidebar() {
+  const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
   const router = useRouter();
   const collapsed = useAppStore((state) => state.sidebarCollapsed);
@@ -41,11 +42,11 @@ export function DashboardSidebar() {
     await fetch("/api/auth/logout", { method: "POST" });
     signOut();
     pushToast({
-      title: "Signed out",
-      description: "Your secure session has been cleared.",
+      title: t("signedOutTitle"),
+      description: t("signedOutDescription"),
       tone: "info",
     });
-    router.push("/en");
+    router.push("/");
   };
 
   return (
@@ -67,8 +68,8 @@ export function DashboardSidebar() {
       >
         <div className="mb-6 flex items-center justify-between gap-3">
           <div className={cn("overflow-hidden transition", collapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100")}>
-            <p className="font-heading text-lg text-ink">Investor Desk</p>
-            <p className="text-xs uppercase tracking-[0.22em] text-body/45">Private workspace</p>
+            <p className="font-heading text-lg text-ink">{t("title")}</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-body/45">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -104,7 +105,7 @@ export function DashboardSidebar() {
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              <span className={cn(collapsed && "lg:hidden")}>{item.label}</span>
+              <span className={cn(collapsed && "lg:hidden")}>{t(item.label)}</span>
             </Link>
           ))}
         </nav>
@@ -118,7 +119,7 @@ export function DashboardSidebar() {
           )}
         >
           <LogOut className="h-4 w-4 shrink-0" />
-          <span className={cn(collapsed && "lg:hidden")}>Logout</span>
+          <span className={cn(collapsed && "lg:hidden")}>{t("logout")}</span>
         </button>
       </aside>
 

@@ -1,6 +1,5 @@
 "use client";
 
-import NextLink from "next/link";
 import { Menu, ShieldCheck, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,6 +16,7 @@ const links = [
 
 export function SiteHeader() {
   const t = useTranslations("nav");
+  const tBrand = useTranslations("brand");
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,8 +27,8 @@ export function SiteHeader() {
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
-            <p className="font-heading text-lg text-ink">Speed Global Trade</p>
-            <p className="text-xs uppercase tracking-[0.22em] text-body/50">Premium Capital Desk</p>
+            <p className="font-heading text-lg text-ink">{tBrand("name")}</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-body/50">{tBrand("tagline")}</p>
           </div>
         </Link>
 
@@ -42,12 +42,12 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <LanguageSwitcher />
-          <NextLink href="/login" className="ghost-button">
+          <Link href="/login" className="ghost-button">
             {t("login")}
-          </NextLink>
-          <NextLink href="/signup" className="gold-button">
+          </Link>
+          <Link href="/signup" className="gold-button">
             {t("signup")}
-          </NextLink>
+          </Link>
         </div>
 
         <button
@@ -82,12 +82,12 @@ export function SiteHeader() {
           ))}
           <div className="flex flex-col gap-3 pt-2">
             <LanguageSwitcher />
-            <NextLink href="/login" onClick={() => setOpen(false)} className="ghost-button w-full">
+            <Link href="/login" onClick={() => setOpen(false)} className="ghost-button w-full">
               {t("login")}
-            </NextLink>
-            <NextLink href="/signup" onClick={() => setOpen(false)} className="gold-button w-full">
+            </Link>
+            <Link href="/signup" onClick={() => setOpen(false)} className="gold-button w-full">
               {t("signup")}
-            </NextLink>
+            </Link>
           </div>
         </div>
       </div>

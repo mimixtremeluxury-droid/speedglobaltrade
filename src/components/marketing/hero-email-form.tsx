@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 export function HeroEmailForm({
   placeholder,
@@ -12,12 +13,13 @@ export function HeroEmailForm({
   cta: string;
 }) {
   const router = useRouter();
+  const locale = useLocale();
   const [email, setEmail] = useState("");
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const search = email ? `?email=${encodeURIComponent(email)}` : "";
-    router.push(`/signup${search}`);
+    router.push(`/${locale}/signup${search}`);
   };
 
   return (

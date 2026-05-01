@@ -1,7 +1,7 @@
-import NextLink from "next/link";
-import { ArrowRight, BadgeCheck, ChartNoAxesCombined, LockKeyhole, ShieldCheck, Users } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, BadgeCheck, ChartNoAxesCombined, LockKeyhole, ShieldCheck, Star, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { EXPERT_TRADERS, INVESTMENT_PLANS, TRUST_BADGES } from "@/lib/constants";
+import { EXPERT_TRADERS, INVESTMENT_PLANS, TESTIMONIALS } from "@/lib/constants";
 import { PageShell } from "@/components/ui/page-shell";
 import { HeroParticles } from "@/components/marketing/hero-particles";
 import { HeroEmailForm } from "@/components/marketing/hero-email-form";
@@ -19,6 +19,30 @@ export default async function MarketingHomePage() {
     { label: tHero("statsThree"), value: "12.8%" },
   ];
 
+  const featureCards = [
+    {
+      icon: ShieldCheck,
+      title: tHome("featureSecurityTitle"),
+      body: tHome("featureSecurityBody"),
+    },
+    {
+      icon: ChartNoAxesCombined,
+      title: tHome("featurePerformanceTitle"),
+      body: tHome("featurePerformanceBody"),
+    },
+    {
+      icon: Users,
+      title: tHome("featureCopyTitle"),
+      body: tHome("featureCopyBody"),
+    },
+  ];
+
+  const trustBadges = [
+    { title: tHome("trustBadgeOneTitle"), caption: tHome("trustBadgeOneCaption") },
+    { title: tHome("trustBadgeTwoTitle"), caption: tHome("trustBadgeTwoCaption") },
+    { title: tHome("trustBadgeThreeTitle"), caption: tHome("trustBadgeThreeCaption") },
+  ];
+
   return (
     <PageShell className="space-y-24 pb-24 pt-8 md:space-y-28">
       <section className="surface hero-grid noise-mask relative overflow-hidden px-6 py-10 sm:px-8 md:px-10 md:py-12">
@@ -32,9 +56,9 @@ export default async function MarketingHomePage() {
             <p className="max-w-2xl text-lg leading-8 text-body/82">{tHero("description")}</p>
             <HeroEmailForm placeholder={tHero("emailPlaceholder")} cta={tHero("emailButton")} />
             <div className="flex flex-wrap gap-3">
-              <NextLink href="/signup" className="gold-button">
+              <Link href="/signup" className="gold-button">
                 {tHero("ctaPrimary")}
-              </NextLink>
+              </Link>
               <Link href="/plans" className="ghost-button">
                 {tHero("ctaSecondary")}
               </Link>
@@ -55,26 +79,10 @@ export default async function MarketingHomePage() {
             <div className="surface-soft rounded-[32px] p-6">
               <div className="mb-6 flex items-center gap-2 text-sm text-cyan">
                 <BadgeCheck className="h-4 w-4" />
-                Private-client signals, upgraded
+                {tHome("featureBadge")}
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
-                {[
-                  {
-                    icon: ShieldCheck,
-                    title: "Security-first onboarding",
-                    body: "High-trust flows with premium visual clarity and strong contrast.",
-                  },
-                  {
-                    icon: ChartNoAxesCombined,
-                    title: "Actionable performance views",
-                    body: "Decision-ready dashboards that keep the signal and remove the clutter.",
-                  },
-                  {
-                    icon: Users,
-                    title: "Copy-trading credibility",
-                    body: "Elegant expert cards, clear stats, and frictionless portfolio mirroring.",
-                  },
-                ].map((item) => (
+                {featureCards.map((item) => (
                   <article key={item.title} className="rounded-3xl border border-white/8 bg-white/[0.03] p-4">
                     <item.icon className="h-5 w-5 text-gold" />
                     <h2 className="mt-4 font-heading text-xl text-ink">{item.title}</h2>
@@ -90,11 +98,8 @@ export default async function MarketingHomePage() {
       <section className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr]">
         <div className="space-y-5">
           <p className="section-kicker">{tHome("topInvestors")}</p>
-          <h2 className="section-title">Expert-led allocations with cleaner copy-trading UX</h2>
-          <p className="body-copy">
-            Compare conviction, follower confidence, and style fit at a glance. Every card is designed to feel calm,
-            polished, and ready for a premium investor.
-          </p>
+          <h2 className="section-title">{tHome("copyHeading")}</h2>
+          <p className="body-copy">{tHome("copyBody")}</p>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {EXPERT_TRADERS.map((trader) => (
@@ -106,21 +111,21 @@ export default async function MarketingHomePage() {
               </div>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <div>
-                  <p className="metric-label">Win Rate</p>
+                  <p className="metric-label">{tHome("traderWinRate")}</p>
                   <p className="mt-2 font-heading text-lg text-ink">{trader.winRate}%</p>
                 </div>
                 <div>
-                  <p className="metric-label">ROI</p>
+                  <p className="metric-label">{tHome("traderRoi")}</p>
                   <p className="mt-2 font-heading text-lg text-gold">+{trader.roi}%</p>
                 </div>
                 <div>
-                  <p className="metric-label">Followers</p>
+                  <p className="metric-label">{tHome("traderFollowers")}</p>
                   <p className="mt-2 font-heading text-lg text-ink">{trader.followers}</p>
                 </div>
               </div>
-              <NextLink href="/login" className="gold-button mt-5 w-full">
+              <Link href="/login" className="gold-button mt-5 w-full">
                 {tHome("copyButton")}
-              </NextLink>
+              </Link>
             </article>
           ))}
         </div>
@@ -131,7 +136,7 @@ export default async function MarketingHomePage() {
           <p className="section-kicker">{tHome("trustTitle")}</p>
           <h2 className="mt-3 section-title">{tHome("trustDescription")}</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {TRUST_BADGES.map((badge) => (
+            {trustBadges.map((badge) => (
               <div key={badge.title} className="rounded-3xl border border-white/8 bg-white/[0.03] p-4">
                 <LockKeyhole className="h-5 w-5 text-cyan" />
                 <h3 className="mt-4 font-heading text-lg text-ink">{badge.title}</h3>
@@ -153,13 +158,13 @@ export default async function MarketingHomePage() {
                     <p className="mt-3 max-w-md text-sm leading-7 text-body/78">{plan.summary}</p>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-ink">
-                    From {plan.roiFrom}%
+                    {tHome("plansFromLabel", { roi: plan.roiFrom })}
                   </div>
                 </div>
                 <div className="mt-5 flex items-center justify-between gap-4">
-                  <p className="text-sm text-body/70">Minimum {formatCurrency(plan.minInvestment)}</p>
+                  <p className="text-sm text-body/70">{tHome("plansMinimum", { amount: formatCurrency(plan.minInvestment) })}</p>
                   <Link href="/plans" className="ghost-button">
-                    Learn More
+                    {tHome("plansLearnMore")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </div>
@@ -173,10 +178,44 @@ export default async function MarketingHomePage() {
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="section-kicker">{tHome("sponsorsTitle")}</p>
-            <h2 className="section-title">Signals of trust, styled like a premium market brand</h2>
+            <h2 className="section-title">{tHome("sponsorsHeading")}</h2>
           </div>
         </div>
         <SponsorsMarquee />
+      </section>
+
+      <section className="space-y-8">
+        <div className="max-w-3xl">
+          <p className="section-kicker">{tHome("testimonialsTitle")}</p>
+          <h2 className="section-title">{tHome("testimonialsHeading")}</h2>
+          <p className="mt-4 text-base leading-8 text-body/74">{tHome("testimonialsBody")}</p>
+        </div>
+        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
+          {TESTIMONIALS.map((testimonial) => (
+            <article key={testimonial.id} className="surface p-5">
+              <div className="flex items-center gap-4">
+                <Image
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
+                  width={64}
+                  height={64}
+                  className="h-16 w-16 rounded-2xl object-cover"
+                />
+                <div>
+                  <h3 className="font-heading text-xl text-ink">{testimonial.name}</h3>
+                  <p className="text-sm text-body/65">{testimonial.location}</p>
+                </div>
+              </div>
+              <div className="mt-5 flex items-center gap-1 text-gold">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} className="h-4 w-4 fill-current" />
+                ))}
+              </div>
+              <p className="mt-4 text-sm leading-7 text-body/75">{tHome(`testimonials.${testimonial.id}`)}</p>
+              <p className="mt-4 text-xs uppercase tracking-[0.18em] text-body/45">{tHome("ratingLabel")}</p>
+            </article>
+          ))}
+        </div>
       </section>
     </PageShell>
   );

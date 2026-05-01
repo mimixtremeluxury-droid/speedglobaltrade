@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { RECENT_ACTIVITY } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 
 export function ActivityFeed() {
+  const t = useTranslations("feed");
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -33,12 +35,8 @@ export function ActivityFeed() {
               <ArrowUpRight className="h-4 w-4" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-ink">
-                {item.investor} from {item.region}
-              </p>
-              <p className="text-sm text-body/75">
-                just {item.action} {formatCurrency(item.amount)}
-              </p>
+              <p className="text-sm font-medium text-ink">{t("headline", { investor: item.investor, region: item.region })}</p>
+              <p className="text-sm text-body/75">{t(`actions.${item.action}`, { amount: formatCurrency(item.amount) })}</p>
               <p className="text-xs uppercase tracking-[0.2em] text-body/45">{item.createdAt}</p>
             </div>
           </div>

@@ -1,6 +1,21 @@
 # Speed Global Trade
 
-Premium investment platform built with Next.js 14 (App Router), TypeScript, Tailwind CSS, Framer Motion, React Hook Form + Zod, Recharts, and Lucide icons.
+## Live Chat Setup for Site Owner
+
+1. Go to [https://crisp.chat](https://crisp.chat) and create a free Crisp account.
+2. In the Crisp dashboard, open your website settings and copy the **Website ID**.
+3. Create or update `.env.local` in the project root and set:
+
+```bash
+NEXT_PUBLIC_CRISP_WEBSITE_ID=YOUR_CRISP_WEBSITE_ID
+SGT_SESSION_SECRET=replace-this-with-a-long-random-secret
+```
+
+4. Replace `YOUR_CRISP_WEBSITE_ID` with the real Website ID from Crisp.
+5. Download the Crisp mobile or desktop app from Crisp or your app store.
+6. Sign in to the Crisp app with the same account to start receiving and replying to website chats.
+
+Premium investment platform built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Framer Motion, React Hook Form + Zod, Recharts, Lucide icons, `next-intl`, Zustand, and OpenNext for Cloudflare Workers.
 
 ## Setup
 
@@ -11,38 +26,38 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Cloudflare Workers Note
+## Environment
 
-This project currently runs on Next.js 14.2.x. Some OpenNext Cloudflare flows require Next.js 15+ unless you pass the unsupported-version override flag.
+Copy `.env.example` to `.env.local` and provide your values before production use.
 
-For Cloudflare Workers Builds, use this build command:
+## Build
+
+For local and Cloudflare-compatible builds:
 
 ```bash
 npm run build
 ```
 
-The repo build now does two steps:
+This runs:
 
 ```bash
 next build
-npx @opennextjs/cloudflare@latest build --dangerouslyUseUnsupportedNextVersion --skipNextBuild
+npx @opennextjs/cloudflare@latest build --skipNextBuild
 ```
-
-If you prefer strict compatibility in the future, migrate to Next.js 15.5.15+ and remove the flag.
 
 ## Features
 
-- Marketing pages: home, plans, about, contact
-- Mock auth: signup/login + demo login (localStorage persistence)
-- Middleware-protected dashboard routes
-- Dashboard modules: overview, deposit, withdraw, investments, transactions, settings
-- Recharts pie chart for active investments
-- Form validation using React Hook Form + Zod
-- Toasts, loading skeletons, responsive glassmorphism UI
+- Five-language marketing experience with `next-intl`: English, Simplified Chinese, Spanish, Arabic, and Hindi
+- Locale-aware auth and dashboard routes such as `/en/dashboard` and `/es/login`
+- Crisp chat integration via `NEXT_PUBLIC_CRISP_WEBSITE_ID`
+- Deposit-first mock business logic with an empty onboarding dashboard for new users
+- Protected dashboard routes backed by signed session cookies
+- Premium marketing pages, testimonials, sponsor marquee, activity feed, and upgraded footer
+- Mock local persistence for users, transactions, allocations, and settings
 
 ## Demo Credentials
 
 - Email: `demo@speedglobaltrade.com`
 - Password: `Demo@12345`
 
-Use **Demo Login** to auto-create and sign in with seeded account data.
+Use **Demo Login** to explore a pre-seeded active account.

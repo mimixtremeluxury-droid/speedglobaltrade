@@ -1,6 +1,7 @@
 "use client";
 
 import { DEFAULT_LOCALE, DEMO_CREDENTIALS, EXPERT_TRADERS, INVESTMENT_PLANS, MOCK_DB_KEY } from "@/lib/constants";
+import { hasCompletedDeposit } from "@/lib/account";
 import {
   CopiedTraderPosition,
   ExpertTrader,
@@ -19,6 +20,7 @@ type SignupInput = {
   email: string;
   password: string;
   country: string;
+  locale: UserProfile["locale"];
 };
 
 type SettingsPatch = Partial<Pick<UserProfile, "fullName" | "country" | "locale" | "twoFactorEnabled">>;
@@ -29,6 +31,19 @@ function buildPerformanceSeries(seed = 18240) {
   const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const deltas = [0, 320, 180, 610, 540, 920, 1120, 910, 1380, 1640, 1980, 2260];
   return labels.map((label, index) => ({ label, value: seed + deltas[index] }));
+}
+
+function buildActivationPerformanceSeries(seed: number) {
+  const labels = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - index));
+    return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
+  });
+
+  return labels.map((label, index) => ({
+    label,
+    value: Math.round(seed * (0.985 + index * 0.003)),
+  }));
 }
 
 function calculateSummary(record: UserRecord): UserSummary {
@@ -57,15 +72,28 @@ function withUpdatedSummary(record: UserRecord) {
   return { ...record, summary };
 }
 
-function appendPerformance(record: UserRecord) {
-  const nextSummary = calculateSummary(record);
-  const trimmed = record.performance.slice(-11);
+function syncPerformance(record: UserRecord) {
+  const withSummary = withUpdatedSummary(record);
+  if (!hasCompletedDeposit(withSummary) || withSummary.summary.totalPortfolioValue <= 0) {
+    return {
+      ...withSummary,
+      performance: [],
+    };
+  }
+
+  if (withSummary.performance.length === 0) {
+    return {
+      ...withSummary,
+      performance: buildActivationPerformanceSeries(withSummary.summary.totalPortfolioValue),
+    };
+  }
+
+  const trimmed = withSummary.performance.slice(-11);
   const label = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date());
-  return withUpdatedSummary({
-    ...record,
-    summary: nextSummary,
-    performance: [...trimmed, { label, value: nextSummary.totalPortfolioValue }],
-  });
+  return {
+    ...withSummary,
+    performance: [...trimmed, { label, value: withSummary.summary.totalPortfolioValue }],
+  };
 }
 
 function createTransaction(partial: Omit<TransactionRecord, "id" | "createdAt">): TransactionRecord {
@@ -173,7 +201,7 @@ function mutateUser(email: string, updater: (user: UserRecord) => UserRecord) {
   const database = readDatabase();
   const target = database.users[email];
   if (!target) throw new Error("Unable to locate this investor profile.");
-  const updated = appendPerformance(updater(target));
+  const updated = syncPerformance(updater(target));
   database.users[email] = updated;
   writeDatabase(database);
   return updated;
@@ -206,31 +234,22 @@ export function createMockAccount(input: SignupInput) {
       password: input.password,
       country: input.country,
       joinedAt: new Date().toISOString(),
-      locale: DEFAULT_LOCALE,
+      locale: input.locale,
       tier: "Signature",
       twoFactorEnabled: false,
     },
     summary: {
-      cashBalance: 3200,
+      cashBalance: 0,
       totalPortfolioValue: 0,
       activeCapital: 0,
       totalReturnsPct: 0,
       dailyChange: 0,
       totalEarnings: 0,
     },
-    performance: buildPerformanceSeries(9600),
+    performance: [],
     investments: [],
     copiedTraders: [],
-    transactions: [
-      createTransaction({
-        kind: "deposit",
-        label: "Welcome Allocation",
-        amount: 3200,
-        status: "completed",
-        note: "Investor onboarding funding pool",
-        method: "Internal Desk",
-      }),
-    ],
+    transactions: [],
   });
   database.users[email] = record;
   writeDatabase(database);
@@ -260,26 +279,60 @@ export function updateUserSettings(email: string, patch: SettingsPatch) {
   }));
 }
 
-export function depositToAccount(email: string, amount: number, method: string) {
+export function requestDeposit(email: string, amount: number, method: string) {
   if (amount <= 0) throw new Error("Deposit amount must be greater than zero.");
-  return mutateUser(email, (record) => ({
-    ...record,
-    summary: {
-      ...record.summary,
-      cashBalance: record.summary.cashBalance + amount,
-    },
-    transactions: [
-      createTransaction({
-        kind: "deposit",
-        label: "Capital Added",
-        amount,
-        status: "completed",
-        note: `${method} confirmed and settled`,
-        method,
-      }),
-      ...record.transactions,
-    ],
-  }));
+  return mutateUser(email, (record) => {
+    const pendingDeposit = record.transactions.find(
+      (transaction) => transaction.kind === "deposit" && transaction.status === "pending",
+    );
+    if (pendingDeposit) {
+      throw new Error("Complete or clear the pending deposit request before creating another one.");
+    }
+
+    return {
+      ...record,
+      transactions: [
+        createTransaction({
+          kind: "deposit",
+          label: "Deposit request",
+          amount,
+          status: "pending",
+          note: `Awaiting ${method} confirmation`,
+          method,
+        }),
+        ...record.transactions,
+      ],
+    };
+  });
+}
+
+export function completePendingDeposit(email: string, transactionId: string) {
+  return mutateUser(email, (record) => {
+    const target = record.transactions.find(
+      (transaction) => transaction.id === transactionId && transaction.kind === "deposit" && transaction.status === "pending",
+    );
+
+    if (!target) {
+      throw new Error("We couldn't find a pending deposit to complete.");
+    }
+
+    return {
+      ...record,
+      summary: {
+        ...record.summary,
+        cashBalance: record.summary.cashBalance + target.amount,
+      },
+      transactions: record.transactions.map((transaction) =>
+        transaction.id === transactionId
+          ? {
+              ...transaction,
+              status: "completed",
+              note: `${transaction.method ?? "Deposit"} confirmed and settled`,
+            }
+          : transaction,
+      ),
+    };
+  });
 }
 
 export function withdrawFromAccount(email: string, amount: number, method: string) {

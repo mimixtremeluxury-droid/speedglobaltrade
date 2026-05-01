@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "name": "Speed Global Trade",
+    "tagline": "Mesa de capital premium"
+  },
   "nav": {
     "home": "Inicio",
     "about": "Nosotros",
@@ -11,7 +15,7 @@
     "eyebrow": "Inversión de nivel institucional, rediseñada",
     "title": "Mercados globales. Acceso fluido. Velocidad incomparable.",
     "description": "Una plataforma premium para inversionistas que esperan ejecución precisa, reportes refinados y confianza en cada interacción.",
-    "ctaPrimary": "Abrir portafolio",
+    "ctaPrimary": "Abrir tu portafolio",
     "ctaSecondary": "Ver planes de inversión",
     "emailPlaceholder": "Ingresa tu correo para acceso prioritario",
     "emailButton": "Comenzar",
@@ -20,35 +24,267 @@
     "statsThree": "Alpha mensual promedio"
   },
   "home": {
-    "topInvestors": "Inversores destacados",
+    "featureBadge": "Señales de cliente privado, mejoradas",
+    "featureSecurityTitle": "Onboarding centrado en seguridad",
+    "featureSecurityBody": "Flujos de alta confianza con claridad visual premium y contraste sólido.",
+    "featurePerformanceTitle": "Vistas de rendimiento accionables",
+    "featurePerformanceBody": "Paneles listos para decidir que mantienen la señal y eliminan el ruido.",
+    "featureCopyTitle": "Credibilidad en copy trading",
+    "featureCopyBody": "Tarjetas elegantes, métricas claras y réplica de portafolio sin fricción.",
+    "topInvestors": "Inversionistas destacados",
+    "copyHeading": "Asignaciones lideradas por expertos con una experiencia de copy trading más limpia",
+    "copyBody": "Compara convicción, confianza de seguidores y estilo en un vistazo. Cada tarjeta está diseñada para sentirse calmada, pulida y lista para un inversionista premium.",
+    "traderWinRate": "Tasa de acierto",
+    "traderRoi": "ROI",
+    "traderFollowers": "Seguidores",
     "copyButton": "Copiar portafolio",
-    "trustTitle": "Diseñado para generar confianza antes de pedir capital",
-    "trustDescription": "Seguridad, incorporación guiada y rendimiento transparente en una sola experiencia premium.",
-    "sponsorsTitle": "Respaldado en círculos financieros de alto nivel",
-    "signalsTitle": "Por qué los inversionistas exigentes eligen Speed Global Trade",
+    "trustTitle": "Diseñado para ganar confianza antes de pedir capital",
+    "trustDescription": "Postura de seguridad, onboarding guiado y rendimiento transparente en una sola experiencia de alto nivel.",
+    "trustBadgeOneTitle": "Listo para AML y KYC",
+    "trustBadgeOneCaption": "Controles institucionales de incorporación",
+    "trustBadgeTwoTitle": "Encriptación de 256 bits",
+    "trustBadgeTwoCaption": "Protección de sesión con nivel bancario",
+    "trustBadgeThreeTitle": "Mesa concierge 24/7",
+    "trustBadgeThreeCaption": "Soporte prioritario para cada cliente",
     "plansTitle": "Planes estructurados con presentación premium",
-    "plansDescription": "Opciones enfocadas, rangos claros y cero saturación."
+    "plansDescription": "Opciones enfocadas, rangos claros y nada de saturación.",
+    "plansFromLabel": "Desde {roi}%",
+    "plansMinimum": "Mínimo {amount}",
+    "plansLearnMore": "Más información",
+    "sponsorsTitle": "Confiado en círculos financieros de alto nivel",
+    "sponsorsHeading": "Señales de confianza con el estilo de una marca financiera premium",
+    "testimonialsTitle": "Historias de clientes",
+    "testimonialsHeading": "Lo que dicen los inversionistas premium después de activarse",
+    "testimonialsBody": "Diseñamos la experiencia para sentirse clara, global y confiable desde el primer depósito hasta la vista diaria del portafolio.",
+    "testimonials": {
+      "amaka": "El flujo de depósito se sintió ordenado y creíble, y el panel se volvió útil en el momento en que mi saldo se liquidó.",
+      "liang": "Aprecio lo calmada que se siente la plataforma. La comparación de planes y el seguimiento de actividad son mucho más limpios que en productos minoristas típicos.",
+      "sofia": "Todo lo importante es fácil de entender. Puedo ver mi estado de fondeo, el valor de mi portafolio y las oportunidades sin saturación.",
+      "aisha": "La sección de copy trading se siente pulida y confiable. Me da suficiente contexto antes de asignar capital."
+    },
+    "ratingLabel": "Opiniones de clientes de 5 estrellas"
+  },
+  "feed": {
+    "headline": "{investor} desde {region}",
+    "actions": {
+      "deposited": "acaba de depositar {amount}",
+      "copied": "acaba de copiar a un experto con {amount}",
+      "funded": "acaba de financiar un plan con {amount}",
+      "withdrew": "acaba de solicitar un retiro de {amount}",
+      "joined": "acaba de unirse con {amount}"
+    }
   },
   "about": {
-    "title": "Una mesa de inversión moderna para clientes globales",
-    "intro": "Speed Global Trade combina atención privada, reportes con datos claros y acceso rápido al mercado en una sola plataforma refinada.",
-    "mission": "Hacer que la asignación global de capital se sienta inteligente, serena y confiable.",
-    "vision": "Convertirnos en el referente de inversión digital premium en mercados emergentes y establecidos."
+    "eyebrow": "Sobre Speed Global Trade",
+    "title": "Una mesa de inversión moderna para clientes con visión global",
+    "intro": "Speed Global Trade combina atención privada, reportes ricos en datos y acceso rápido a mercados en una sola plataforma refinada.",
+    "missionTitle": "Misión",
+    "mission": "Hacer que la asignación global de capital se sienta inteligente, serena y profundamente confiable.",
+    "visionTitle": "Visión",
+    "vision": "Convertirnos en el referente de inversión digital premium en mercados emergentes y establecidos.",
+    "styleTitle": "Estilo operativo",
+    "styleBody": "Interfaces silenciosamente premium, claridad para el inversionista y una fuerte inclinación hacia señales de confianza.",
+    "philosophyKicker": "Filosofía de liderazgo",
+    "philosophyTitle": "Diseñamos para la tranquilidad, no para el ruido.",
+    "philosophyBody": "Desde el espaciado del dashboard hasta la comparación de planes, cada detalle busca reducir dudas y apoyar mejores decisiones.",
+    "featureOne": "Sesiones seguras",
+    "featureTwo": "Tono institucional",
+    "featureThree": "Mentalidad de acceso global"
   },
   "plans": {
-    "title": "Mandatos de inversión con claridad total",
-    "description": "Cada plan está diseñado para sentirse intencional, transparente y fácil de comparar."
+    "eyebrow": "Planes de inversión",
+    "title": "Mandatos de inversión presentados con claridad",
+    "description": "Cada plan está estructurado para sentirse intencional, transparente y fácil de comparar.",
+    "fromLabel": "Desde {roi}%",
+    "minimumInvestment": "Inversión mínima",
+    "learnMore": "Más información",
+    "startPlan": "Iniciar plan"
   },
   "contact": {
-    "title": "Habla con el equipo de atención al cliente",
-    "description": "¿Dudas sobre el onboarding, copy trading o asignaciones estratégicas? Nuestro escritorio de concierge está listo.",
+    "eyebrow": "Contacto",
+    "title": "Habla con el equipo de éxito del cliente",
+    "description": "¿Preguntas sobre onboarding, portafolios copiados o asignaciones estratégicas? Nuestro flujo de soporte está listo.",
     "name": "Nombre completo",
     "email": "Correo electrónico",
     "message": "Cuéntanos cómo podemos ayudarte",
-    "send": "Enviar mensaje"
+    "send": "Enviar mensaje",
+    "sending": "Enviando...",
+    "successTitle": "Mensaje en cola",
+    "successDescription": "Un gestor de relaciones normalmente responderá dentro de un ciclo hábil.",
+    "emailDeskTitle": "Mesa de correo",
+    "phoneLineTitle": "Línea telefónica",
+    "clientSupportTitle": "Soporte al cliente",
+    "clientSupportBody": "Respuestas guiadas 24/7 para onboarding y asignaciones",
+    "officeTitle": "Oficina de relaciones",
+    "officeBody": "Canary Wharf, Londres - dirección simulada para clientes"
   },
   "footer": {
+    "eyebrow": "Alcance global",
     "headline": "Acceso a capital con una ventaja premium.",
-    "subtext": "Creado para inversionistas modernos que buscan controles elegantes y señales confiables."
+    "subtext": "Creado para inversionistas modernos que buscan controles elegantes, señales de confianza y soporte global.",
+    "backToTop": "Volver arriba",
+    "company": "Compañía",
+    "resources": "Recursos",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "Copyright © {year} Speed Global Trade. Todos los derechos reservados.",
+    "links": {
+      "about": "Nosotros",
+      "careers": "Carreras",
+      "blog": "Blog",
+      "helpCenter": "Centro de ayuda",
+      "security": "Seguridad",
+      "contact": "Contacto",
+      "privacyPolicy": "Política de privacidad",
+      "termsOfService": "Términos del servicio",
+      "riskDisclosure": "Divulgación de riesgos"
+    }
+  },
+  "contentPages": {
+    "careers": {
+      "eyebrow": "Carreras",
+      "title": "Construye el futuro de la inversión premium para clientes",
+      "description": "Contratamos operadores, diseñadores y especialistas de mercado que creen que la confianza es una función, no un detalle.",
+      "sectionOneTitle": "Por qué unirte",
+      "sectionOneBody": "Ayudarás a dar forma a una experiencia financiera calmada y de alta confianza para clientes en múltiples mercados.",
+      "sectionTwoTitle": "Cómo trabajamos",
+      "sectionTwoBody": "Valoramos claridad, responsabilidad y ejecución cuidadosa por encima del ruido y la complejidad innecesaria.",
+      "sectionThreeTitle": "Roles abiertos",
+      "sectionThreeBody": "Las vacantes actuales abarcan operaciones de relación, diseño de producto, soporte de cumplimiento e ingeniería de plataforma."
+    },
+    "blog": {
+      "eyebrow": "Blog",
+      "title": "Perspectivas de mercado para inversionistas globales",
+      "description": "Nuestra mesa editorial comparte actualizaciones de plataforma, educación de riesgo y temas de asignación en un formato claro.",
+      "sectionOneTitle": "Notas de investigación",
+      "sectionOneBody": "Lecturas cortas y enfocadas que explican las señales que moldean decisiones de inversión.",
+      "sectionTwoTitle": "Actualizaciones de plataforma",
+      "sectionTwoBody": "Los lanzamientos de producto se explican desde la usabilidad, la seguridad y la comunicación transparente.",
+      "sectionThreeTitle": "Educación del inversionista",
+      "sectionThreeBody": "Publicamos guías prácticas sobre fondeo, diversificación y lectura del rendimiento del portafolio."
+    },
+    "help-center": {
+      "eyebrow": "Centro de ayuda",
+      "title": "Respuestas sobre onboarding, depósitos y acceso a cuenta",
+      "description": "El centro de ayuda está estructurado para que los clientes avancen con menos fricción y más confianza.",
+      "sectionOneTitle": "Primeros pasos",
+      "sectionOneBody": "Aprende cómo abrir una cuenta, crear tu primera solicitud de depósito y activar el dashboard.",
+      "sectionTwoTitle": "Soporte de fondeo",
+      "sectionTwoBody": "Explicamos rieles aceptados, tiempos de liquidación y cómo la confirmación del depósito afecta la visibilidad del portafolio.",
+      "sectionThreeTitle": "Asistencia de cuenta",
+      "sectionThreeBody": "Usa contacto y chat cuando necesites ayuda con acceso, ajustes o preguntas de transacciones."
+    },
+    "security": {
+      "eyebrow": "Seguridad",
+      "title": "Prácticas de seguridad diseñadas para una plataforma de alta confianza",
+      "description": "Nuestra dirección de producto prioriza protección de sesiones, onboarding guiado y manejo cuidadoso de flujos sensibles.",
+      "sectionOneTitle": "Integridad de sesión",
+      "sectionOneBody": "Las rutas protegidas usan sesiones firmadas para validar acceso antes de que cargue el dashboard.",
+      "sectionTwoTitle": "Protecciones del cliente",
+      "sectionTwoBody": "Estados claros, confirmaciones visibles y flujos controlados reducen ambigüedad durante acciones de fondeo.",
+      "sectionThreeTitle": "Postura operativa",
+      "sectionThreeBody": "Diseñamos interfaces y lenguaje de proceso para apoyar decisiones más seguras y expectativas transparentes."
+    },
+    "privacy-policy": {
+      "eyebrow": "Política de privacidad",
+      "title": "Una visión clara de cómo se maneja la información de cuenta",
+      "description": "Este producto simulado demuestra cómo una plataforma premium puede comunicar prácticas de datos de forma simple y legible.",
+      "sectionOneTitle": "Datos de perfil",
+      "sectionOneBody": "Los detalles de cuenta se usan para personalizar acceso, vistas del dashboard y experiencias de soporte.",
+      "sectionTwoTitle": "Registros de actividad",
+      "sectionTwoBody": "Depósitos, retiros y acciones de inversión se conservan para mostrar un historial consistente del portafolio.",
+      "sectionThreeTitle": "Canales de soporte",
+      "sectionThreeBody": "Los mensajes enviados por chat o formularios pueden usarse para mejorar la calidad de respuesta y la continuidad del servicio."
+    },
+    "terms-of-service": {
+      "eyebrow": "Términos del servicio",
+      "title": "Términos de plataforma construidos alrededor de claridad y responsabilidad",
+      "description": "Estos términos de marcador describen cómo los clientes acceden a la plataforma y qué estándares operativos pueden esperar.",
+      "sectionOneTitle": "Uso de cuenta",
+      "sectionOneBody": "Los clientes son responsables de la precisión de su información de perfil y de proteger sus credenciales.",
+      "sectionTwoTitle": "Alcance del servicio",
+      "sectionTwoBody": "Planes de inversión, vistas de copy trading y métricas de portafolio se presentan como funciones y divulgaciones de la plataforma.",
+      "sectionThreeTitle": "Actualizaciones operativas",
+      "sectionThreeBody": "Podemos revisar flujos, funciones o canales de soporte a medida que la plataforma evoluciona hacia producción."
+    },
+    "risk-disclosure": {
+      "eyebrow": "Divulgación de riesgos",
+      "title": "Las decisiones de inversión requieren juicio cuidadoso",
+      "description": "Toda inversión implica riesgo, incluida la posible pérdida de capital. Una interfaz premium no elimina la incertidumbre del mercado.",
+      "sectionOneTitle": "Volatilidad del mercado",
+      "sectionOneBody": "Los valores de portafolio pueden subir o bajar por eventos macro, cambios de liquidez y sentimiento del inversionista.",
+      "sectionTwoTitle": "Riesgo de estrategia",
+      "sectionTwoBody": "El copy trading, los planes concentrados y los mandatos de mayor retorno pueden implicar perfiles de riesgo muy distintos.",
+      "sectionThreeTitle": "Responsabilidad del cliente",
+      "sectionThreeBody": "Los clientes deben revisar detalles de planes, hacer preguntas y considerar si una asignación encaja con sus objetivos."
+    }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Acceso seguro",
+      "title": "Entra a tu espacio de inversión",
+      "description": "Las cookies de sesión firmadas protegen las rutas del dashboard, mientras la actividad del portafolio se conserva localmente en este entorno simulado.",
+      "email": "Correo",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "submitting": "Ingresando...",
+      "successTitle": "Bienvenido de nuevo",
+      "successDescription": "Tu dashboard premium está listo.",
+      "errorTitle": "Error de acceso",
+      "demo": "Usar cuenta demo",
+      "demoTitle": "Cuenta demo cargada",
+      "demoDescription": "Explora el dashboard premium con datos precargados.",
+      "demoErrorTitle": "Falló el acceso demo",
+      "signupPrompt": "¿Necesitas una cuenta nueva?",
+      "signupLink": "Ábrela aquí"
+    },
+    "signup": {
+      "eyebrow": "Abrir cuenta",
+      "title": "Crea tu perfil premium de inversionista",
+      "description": "Este flujo seguro emite una cookie de sesión firmada y prepara un dashboard vacío que se activa después de tu primer depósito completado.",
+      "fullName": "Nombre completo",
+      "email": "Correo",
+      "country": "País",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Preparando...",
+      "successTitle": "Cuenta creada",
+      "successDescription": "Tu espacio está listo. Completa tu primer depósito para activar el seguimiento del portafolio.",
+      "errorTitle": "No se pudo crear la cuenta",
+      "loginPrompt": "¿Ya estás registrado?",
+      "loginLink": "Entra aquí"
+    }
+  },
+  "dashboard": {
+    "frame": {
+      "eyebrow": "Resumen del dashboard",
+      "welcome": "Bienvenido de nuevo, {name}",
+      "loading": "Cargando tu espacio",
+      "portfolio": "Portafolio de {amount}",
+      "waiting": "Esperando el primer depósito",
+      "pending": "Pendiente",
+      "preparing": "Preparando tu experiencia premium..."
+    },
+    "nav": {
+      "title": "Mesa del inversionista",
+      "subtitle": "Espacio privado",
+      "overview": "Resumen",
+      "investments": "Planes",
+      "copyTrading": "Copy trading",
+      "transactions": "Transacciones",
+      "deposit": "Depósito",
+      "withdraw": "Retiro",
+      "settings": "Ajustes",
+      "logout": "Salir",
+      "signedOutTitle": "Sesión cerrada",
+      "signedOutDescription": "Tu sesión segura ha sido eliminada."
+    },
+    "empty": {
+      "eyebrow": "¿Listo para empezar?",
+      "title": "Tu dashboard se activa después de tu primer depósito completado",
+      "description": "Crea una solicitud de depósito y luego usa el botón de simulación para confirmarla. Cuando se complete, verás saldo, gráfico e historial.",
+      "cta": "Haz tu primer depósito"
+    }
   }
 }

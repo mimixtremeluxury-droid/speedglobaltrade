@@ -1,7 +1,8 @@
-export type AppLocale = "en" | "es";
+export type AppLocale = "en" | "zh" | "es" | "ar" | "hi";
 export type RiskLabel = "Low" | "Balanced" | "High";
 export type TransactionKind = "deposit" | "withdrawal" | "earning" | "investment" | "copy_trade";
 export type TransactionStatus = "completed" | "pending";
+export type FeedActivityAction = "deposited" | "copied" | "funded" | "withdrew" | "joined";
 
 export interface SessionUser {
   email: string;
@@ -94,7 +95,7 @@ export interface FeedActivity {
   id: string;
   investor: string;
   region: string;
-  action: string;
+  action: FeedActivityAction;
   amount: number;
   createdAt: string;
 }
@@ -102,6 +103,13 @@ export interface FeedActivity {
 export interface TrustBadge {
   title: string;
   caption: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  avatar: string;
 }
 
 export interface UserRecord {

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { INVESTMENT_PLANS } from "@/lib/constants";
 import { PageShell } from "@/components/ui/page-shell";
+import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
 
 export default async function PublicPlansPage() {
@@ -11,7 +11,7 @@ export default async function PublicPlansPage() {
   return (
     <PageShell className="space-y-12 pb-24 pt-12">
       <section className="surface px-6 py-10 md:px-10">
-        <p className="section-kicker">Investment Plans</p>
+        <p className="section-kicker">{t("eyebrow")}</p>
         <h1 className="mt-4 max-w-4xl font-heading text-4xl tracking-[-0.04em] text-ink md:text-6xl">{t("title")}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-body/78">{t("description")}</p>
       </section>
@@ -26,7 +26,7 @@ export default async function PublicPlansPage() {
                   <h2 className="mt-2 font-heading text-3xl text-ink">{plan.name}</h2>
                 </div>
                 <div className="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-sm text-gold">
-                  From {plan.roiFrom}%
+                  {t("fromLabel", { roi: plan.roiFrom })}
                 </div>
               </div>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-body/78">{plan.summary}</p>
@@ -40,15 +40,15 @@ export default async function PublicPlansPage() {
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="metric-label">Minimum investment</p>
+                <p className="metric-label">{t("minimumInvestment")}</p>
                 <p className="font-heading text-2xl text-ink">{formatCurrency(plan.minInvestment)}</p>
               </div>
               <div className="flex gap-3">
                 <Link href="/signup" className="ghost-button">
-                  Learn More
+                  {t("learnMore")}
                 </Link>
                 <Link href="/signup" className="gold-button">
-                  Start Plan
+                  {t("startPlan")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
