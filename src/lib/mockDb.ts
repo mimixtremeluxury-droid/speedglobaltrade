@@ -182,6 +182,71 @@ function createEmptyDatabase(): MockDatabase {
   };
 }
 
+function shouldResetLegacyAccount(record: UserRecord) {
+  if (record.profile.email === DEMO_CREDENTIALS.email) {
+    return false;
+  }
+
+  const hasLegacyStarterDeposit = record.transactions.some(
+    (transaction) =>
+      transaction.kind === "deposit" &&
+      transaction.status === "completed" &&
+      (transaction.label === "Welcome Allocation" || transaction.note === "Investor onboarding funding pool"),
+  );
+
+  const hasRealCompletedDeposit = record.transactions.some(
+    (transaction) =>
+      transaction.kind === "deposit" &&
+      transaction.status === "completed" &&
+      transaction.label !== "Welcome Allocation" &&
+      transaction.note !== "Investor onboarding funding pool",
+  );
+
+  return !hasRealCompletedDeposit && (hasLegacyStarterDeposit || record.summary.cashBalance > 0);
+}
+
+function resetLegacyAccount(record: UserRecord) {
+  return withUpdatedSummary({
+    ...record,
+    summary: {
+      cashBalance: 0,
+      totalPortfolioValue: 0,
+      activeCapital: 0,
+      totalReturnsPct: 0,
+      dailyChange: 0,
+      totalEarnings: 0,
+    },
+    performance: [],
+    investments: [],
+    copiedTraders: [],
+    transactions: record.transactions.filter(
+      (transaction) =>
+        !(
+          transaction.kind === "deposit" &&
+          transaction.status === "completed" &&
+          (transaction.label === "Welcome Allocation" || transaction.note === "Investor onboarding funding pool")
+        ),
+    ),
+  });
+}
+
+function migrateDatabase(database: MockDatabase) {
+  let changed = false;
+
+  const users = Object.fromEntries(
+    Object.entries(database.users).map(([email, record]) => {
+      if (shouldResetLegacyAccount(record)) {
+        changed = true;
+        return [email, resetLegacyAccount(record)];
+      }
+
+      return [email, record];
+    }),
+  );
+
+  return changed ? { users } : database;
+}
+
 function readDatabase(): MockDatabase {
   if (!isBrowser()) return createEmptyDatabase();
   const raw = localStorage.getItem(MOCK_DB_KEY);
@@ -190,7 +255,12 @@ function readDatabase(): MockDatabase {
     localStorage.setItem(MOCK_DB_KEY, JSON.stringify(initial));
     return initial;
   }
-  return JSON.parse(raw) as MockDatabase;
+  const parsed = JSON.parse(raw) as MockDatabase;
+  const migrated = migrateDatabase(parsed);
+  if (migrated !== parsed) {
+    localStorage.setItem(MOCK_DB_KEY, JSON.stringify(migrated));
+  }
+  return migrated;
 }
 
 function writeDatabase(database: MockDatabase) {

@@ -13,5 +13,12 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "speedglobaltrade"
     }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "speedglobaltrade-db",
+      "database_id": "c031e612-fa0b-4b61-bfb3-5d689a9826da"
+    }
   ]
 }

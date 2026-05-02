@@ -4,19 +4,31 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDown, Languages } from "lucide-react";
 import { startTransition } from "react";
 import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { LANGUAGE_OPTIONS } from "@/lib/constants";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { LANGUAGE_OPTIONS, LOCALES } from "@/lib/constants";
 
 const toFlagEmoji = (countryCode: string) =>
   countryCode
     .toUpperCase()
     .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
 
+const localePattern = new RegExp(`^/(${LOCALES.join("|")})(?=/|$)`);
+
 export function LanguageSwitcher() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const current = LANGUAGE_OPTIONS.find((item) => item.locale === locale) ?? LANGUAGE_OPTIONS[0];
+
+  const buildLocalizedPath = (nextLocale: (typeof LANGUAGE_OPTIONS)[number]["locale"]) => {
+    const currentPath = pathname || "/";
+    const normalizedPath = localePattern.test(currentPath)
+      ? currentPath.replace(localePattern, `/${nextLocale}`)
+      : `/${nextLocale}${currentPath === "/" ? "" : currentPath}`;
+    const query = searchParams.toString();
+    return query ? `${normalizedPath}?${query}` : normalizedPath;
+  };
 
   return (
     <DropdownMenu.Root>
@@ -34,11 +46,12 @@ export function LanguageSwitcher() {
           {LANGUAGE_OPTIONS.map((item) => (
             <DropdownMenu.Item
               key={item.locale}
-              onSelect={() =>
+              onSelect={(event) => {
+                event.preventDefault();
                 startTransition(() => {
-                  router.replace(pathname, { locale: item.locale });
-                })
-              }
+                  router.replace(buildLocalizedPath(item.locale));
+                });
+              }}
               className="flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-sm text-body/80 outline-none transition hover:bg-white/5 hover:text-ink"
             >
               <span>{toFlagEmoji(item.flag)}</span>

@@ -147,28 +147,28 @@ export const SPONSORS = [
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    id: "amaka",
-    name: "Amaka Okafor",
-    location: "Lagos, Nigeria",
-    avatar: "https://i.pravatar.cc/160?img=32",
+    id: "daniel",
+    name: "Daniel Mercer",
+    location: "Manchester, United Kingdom",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
-    id: "liang",
-    name: "Liang Chen",
-    location: "Shenzhen, China",
-    avatar: "https://i.pravatar.cc/160?img=13",
+    id: "liam",
+    name: "Liam Carter",
+    location: "Toronto, Canada",
+    avatar: "https://randomuser.me/api/portraits/men/41.jpg",
   },
   {
     id: "sofia",
-    name: "Sofía Morales",
+    name: "Sofia Morales",
     location: "Madrid, Spain",
-    avatar: "https://i.pravatar.cc/160?img=47",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
     id: "aisha",
     name: "Aisha Khan",
     location: "Dubai, UAE",
-    avatar: "https://i.pravatar.cc/160?img=5",
+    avatar: "https://randomuser.me/api/portraits/women/63.jpg",
   },
 ];
 
