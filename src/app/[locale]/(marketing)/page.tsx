@@ -9,9 +9,14 @@ import { SponsorsMarquee } from "@/components/marketing/sponsors-marquee";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
 
-export default async function MarketingHomePage() {
-  const tHero = await getTranslations("hero");
-  const tHome = await getTranslations("home");
+export default async function MarketingHomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const tHero = await getTranslations({ locale, namespace: "hero" });
+  const tHome = await getTranslations({ locale, namespace: "home" });
 
   const stats = [
     { label: tHero("statsOne"), value: "$142M+" },

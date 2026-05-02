@@ -3,8 +3,13 @@ import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { PageShell } from "@/components/ui/page-shell";
 
-export default async function ContactPage() {
-  const t = await getTranslations("contact");
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "contact" });
 
   const cards = [
     { icon: Mail, title: t("emailDeskTitle"), copy: "support@speedglobaltrade.com" },

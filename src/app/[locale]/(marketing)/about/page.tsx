@@ -2,8 +2,13 @@ import { Building2, Globe2, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { PageShell } from "@/components/ui/page-shell";
 
-export default async function AboutPage() {
-  const t = await getTranslations("about");
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "about" });
 
   const values = [
     { icon: Target, title: t("missionTitle"), copy: t("mission") },

@@ -18,15 +18,15 @@ type ContentPage = {
 export default async function MarketingInfoPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
 
   if (!CONTENT_PAGE_SLUGS.includes(slug as (typeof CONTENT_PAGE_SLUGS)[number])) {
     notFound();
   }
 
-  const messages = (await getMessages()) as {
+  const messages = (await getMessages({ locale })) as {
     contentPages?: Record<string, ContentPage>;
   };
   const page = messages.contentPages?.[slug];

@@ -5,8 +5,13 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
 
-export default async function PublicPlansPage() {
-  const t = await getTranslations("plans");
+export default async function PublicPlansPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "plans" });
 
   return (
     <PageShell className="space-y-12 pb-24 pt-12">
