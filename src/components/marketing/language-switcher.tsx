@@ -12,6 +12,7 @@ import {
   clearStoredDisplayLanguage,
   getLanguageOptionByCode,
   getLanguageOptionForLocale,
+  isGoogleTranslateOnlyLanguage,
   readStoredDisplayLanguage,
   setGoogleTranslateCookies,
   storeDisplayLanguage,
@@ -65,6 +66,8 @@ export function LanguageSwitcher() {
   };
 
   const handleRouteLanguageChange = (option: SwitcherLanguageOption) => {
+    const storedLanguage = readStoredDisplayLanguage();
+    const shouldHardResetTranslatedDom = isGoogleTranslateOnlyLanguage(storedLanguage);
     clearStoredDisplayLanguage();
     clearGoogleTranslateCookies();
     setSelectedLanguage(option);
@@ -72,9 +75,19 @@ export function LanguageSwitcher() {
 
     if (option.locale && option.locale !== locale) {
       const nextLocale = option.locale;
+      if (shouldHardResetTranslatedDom) {
+        window.location.assign(buildLocalizedPath(nextLocale));
+        return;
+      }
+
       startTransition(() => {
         router.replace(buildLocalizedPath(nextLocale));
       });
+      return;
+    }
+
+    if (shouldHardResetTranslatedDom) {
+      window.location.assign(buildLocalizedPath(option.locale ?? locale));
       return;
     }
 
@@ -89,6 +102,9 @@ export function LanguageSwitcher() {
     setSelectedLanguage(option);
     dispatchLanguageChangeEvent();
     applyGoogleTranslateSelection(option.code);
+    window.setTimeout(() => {
+      window.location.reload();
+    }, 120);
   };
 
   return (
@@ -102,7 +118,7 @@ export function LanguageSwitcher() {
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={10}
-          className="z-[80] min-w-60 rounded-3xl border border-white/10 bg-[#08111e]/95 p-2 shadow-2xl backdrop-blur-xl"
+          className="z-[80] max-h-[26rem] min-w-60 overflow-y-auto rounded-3xl border border-white/10 bg-[#08111e]/95 p-2 shadow-2xl backdrop-blur-xl"
         >
           {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
             <DropdownMenu.Item

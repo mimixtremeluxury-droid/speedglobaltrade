@@ -39,6 +39,11 @@ export function getLanguageOptionByCode(code: string | null | undefined) {
   return SWITCHER_LANGUAGE_OPTIONS.find((option) => option.code === code) ?? null;
 }
 
+export function isGoogleTranslateOnlyLanguage(code: string | null | undefined) {
+  const option = getLanguageOptionByCode(code);
+  return Boolean(option && !option.locale);
+}
+
 export function getLanguageOptionForLocale(locale: AppLocale) {
   const match = SWITCHER_LANGUAGE_OPTIONS.find((option) => option.locale === locale);
   return match ?? SWITCHER_LANGUAGE_OPTIONS[0];
@@ -100,7 +105,7 @@ export function clearGoogleTranslateCookies() {
 
 export function applyGoogleTranslateSelection(code: string, attempt = 0) {
   if (typeof document === "undefined") {
-    return;
+    return false;
   }
 
   const select = document.querySelector(".goog-te-combo") as HTMLSelectElement | null;
@@ -108,7 +113,7 @@ export function applyGoogleTranslateSelection(code: string, attempt = 0) {
     if (attempt < 16) {
       window.setTimeout(() => applyGoogleTranslateSelection(code, attempt + 1), 250);
     }
-    return;
+    return false;
   }
 
   if (select.value !== code) {
@@ -116,4 +121,5 @@ export function applyGoogleTranslateSelection(code: string, attempt = 0) {
   }
 
   select.dispatchEvent(new Event("change"));
+  return true;
 }

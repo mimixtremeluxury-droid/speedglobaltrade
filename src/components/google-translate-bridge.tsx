@@ -2,6 +2,7 @@
 
 import GoogleTranslate from "next-google-translate-widget";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import {
   applyGoogleTranslateSelection,
   readStoredDisplayLanguage,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/display-language";
 
 export function GoogleTranslateBridge({ pageLanguage }: { pageLanguage: string }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     const preferredLanguage = readStoredDisplayLanguage();
     if (!preferredLanguage || preferredLanguage === pageLanguage) {
@@ -18,7 +21,7 @@ export function GoogleTranslateBridge({ pageLanguage }: { pageLanguage: string }
 
     setGoogleTranslateCookies(preferredLanguage);
     applyGoogleTranslateSelection(preferredLanguage);
-  }, [pageLanguage]);
+  }, [pageLanguage, pathname]);
 
   return (
     <div className="hidden" aria-hidden="true">
