@@ -1,27 +1,61 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Languages } from "lucide-react";
-import { startTransition } from "react";
+import { ChevronDown, Globe } from "lucide-react";
+import { startTransition, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { LANGUAGE_OPTIONS, LOCALES } from "@/lib/constants";
+import { LOCALES } from "@/lib/constants";
+import {
+  applyGoogleTranslateSelection,
+  clearGoogleTranslateCookies,
+  clearStoredDisplayLanguage,
+  getLanguageOptionByCode,
+  getLanguageOptionForLocale,
+  readStoredDisplayLanguage,
+  setGoogleTranslateCookies,
+  storeDisplayLanguage,
+  SWITCHER_LANGUAGE_OPTIONS,
+  SwitcherLanguageOption,
+} from "@/lib/display-language";
+import { AppLocale } from "@/lib/types";
+
+const localePattern = new RegExp(`^/(${LOCALES.join("|")})(?=/|$)`);
 
 const toFlagEmoji = (countryCode: string) =>
   countryCode
     .toUpperCase()
     .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
 
-const localePattern = new RegExp(`^/(${LOCALES.join("|")})(?=/|$)`);
+const dispatchLanguageChangeEvent = () => {
+  window.dispatchEvent(new Event("sgt-language-change"));
+};
 
 export function LanguageSwitcher() {
-  const locale = useLocale();
+  const locale = useLocale() as AppLocale;
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const current = LANGUAGE_OPTIONS.find((item) => item.locale === locale) ?? LANGUAGE_OPTIONS[0];
+  const [selectedLanguage, setSelectedLanguage] = useState<SwitcherLanguageOption>(() => getLanguageOptionForLocale(locale));
 
-  const buildLocalizedPath = (nextLocale: (typeof LANGUAGE_OPTIONS)[number]["locale"]) => {
+  useEffect(() => {
+    const syncSelection = () => {
+      const storedLanguage = readStoredDisplayLanguage();
+      const preferredOption = getLanguageOptionByCode(storedLanguage);
+      setSelectedLanguage(preferredOption ?? getLanguageOptionForLocale(locale));
+    };
+
+    syncSelection();
+    window.addEventListener("storage", syncSelection);
+    window.addEventListener("sgt-language-change", syncSelection);
+
+    return () => {
+      window.removeEventListener("storage", syncSelection);
+      window.removeEventListener("sgt-language-change", syncSelection);
+    };
+  }, [locale]);
+
+  const buildLocalizedPath = (nextLocale: AppLocale) => {
     const currentPath = pathname || "/";
     const normalizedPath = localePattern.test(currentPath)
       ? currentPath.replace(localePattern, `/${nextLocale}`)
@@ -30,34 +64,64 @@ export function LanguageSwitcher() {
     return query ? `${normalizedPath}?${query}` : normalizedPath;
   };
 
+  const handleRouteLanguageChange = (option: SwitcherLanguageOption) => {
+    clearStoredDisplayLanguage();
+    clearGoogleTranslateCookies();
+    setSelectedLanguage(option);
+    dispatchLanguageChangeEvent();
+
+    if (option.locale && option.locale !== locale) {
+      const nextLocale = option.locale;
+      startTransition(() => {
+        router.replace(buildLocalizedPath(nextLocale));
+      });
+      return;
+    }
+
+    startTransition(() => {
+      router.refresh();
+    });
+  };
+
+  const handleGoogleLanguageChange = (option: SwitcherLanguageOption) => {
+    storeDisplayLanguage(option.code);
+    setGoogleTranslateCookies(option.code);
+    setSelectedLanguage(option);
+    dispatchLanguageChangeEvent();
+    applyGoogleTranslateSelection(option.code);
+  };
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-body/85 outline-none transition hover:border-cyan/40 hover:text-cyan">
-        <Languages className="h-4 w-4" />
-        <span>{toFlagEmoji(current.flag)}</span>
-        <span>{current.nativeLabel}</span>
+        <Globe className="h-4 w-4" />
+        <span>{toFlagEmoji(selectedLanguage.flag)}</span>
+        <span>{selectedLanguage.nativeLabel}</span>
         <ChevronDown className="h-4 w-4" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={10}
-          className="z-[80] min-w-56 rounded-3xl border border-white/10 bg-[#08111e]/95 p-2 shadow-2xl backdrop-blur-xl"
+          className="z-[80] min-w-60 rounded-3xl border border-white/10 bg-[#08111e]/95 p-2 shadow-2xl backdrop-blur-xl"
         >
-          {LANGUAGE_OPTIONS.map((item) => (
+          {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
             <DropdownMenu.Item
-              key={item.locale}
+              key={option.code}
               onSelect={(event) => {
                 event.preventDefault();
-                startTransition(() => {
-                  router.replace(buildLocalizedPath(item.locale));
-                });
+                if (option.locale) {
+                  handleRouteLanguageChange(option);
+                  return;
+                }
+
+                handleGoogleLanguageChange(option);
               }}
               className="flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-sm text-body/80 outline-none transition hover:bg-white/5 hover:text-ink"
             >
-              <span>{toFlagEmoji(item.flag)}</span>
+              <span>{toFlagEmoji(option.flag)}</span>
               <div>
-                <p>{item.nativeLabel}</p>
-                <p className="text-xs text-body/55">{item.label}</p>
+                <p className={selectedLanguage.code === option.code ? "text-gold" : ""}>{option.nativeLabel}</p>
+                <p className="text-xs text-body/55">{option.label}</p>
               </div>
             </DropdownMenu.Item>
           ))}
