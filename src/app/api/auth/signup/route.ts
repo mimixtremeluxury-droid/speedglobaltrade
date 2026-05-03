@@ -21,6 +21,7 @@ export async function POST(request: Request) {
       password: body.password,
       country: body.country,
       locale: body.locale,
+      appBaseUrl: new URL(request.url).origin,
     });
 
     return NextResponse.json({

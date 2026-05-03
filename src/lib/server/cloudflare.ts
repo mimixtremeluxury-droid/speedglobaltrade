@@ -18,6 +18,12 @@ export function getCloudflareContext() {
   return context;
 }
 
+export function readCloudflareEnv(name: string) {
+  const context = readCloudflareContext();
+  const value = context?.env?.[name as keyof CloudflareEnv];
+  return typeof value === "string" ? value : undefined;
+}
+
 export function getCloudflareDb() {
   return getCloudflareContext().env.DB;
 }

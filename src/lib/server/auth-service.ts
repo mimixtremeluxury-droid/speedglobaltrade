@@ -93,12 +93,14 @@ export async function requestSignupVerification({
   password,
   country,
   locale,
+  appBaseUrl,
 }: {
   fullName: string;
   email: string;
   password: string;
   country: string;
   locale?: string | null;
+  appBaseUrl?: string | null;
 }) {
   const nextEmail = normalizeEmail(email);
   const existingUser = await getUserRowByEmail(nextEmail);
@@ -141,11 +143,12 @@ export async function requestSignupVerification({
     token,
     locale: nextLocale,
     intent: "signup",
+    appBaseUrl,
   });
 
   return {
     email: nextEmail,
-    verifyUrl: buildVerificationUrl(token, nextLocale),
+    verifyUrl: buildVerificationUrl(token, nextLocale, appBaseUrl),
   };
 }
 
@@ -153,10 +156,12 @@ export async function requestLoginVerification({
   email,
   password,
   locale,
+  appBaseUrl,
 }: {
   email: string;
   password: string;
   locale?: string | null;
+  appBaseUrl?: string | null;
 }) {
   const nextEmail = normalizeEmail(email);
   const nextLocale = normalizeLocale(locale);
@@ -182,11 +187,12 @@ export async function requestLoginVerification({
     token,
     locale: nextLocale,
     intent: "login",
+    appBaseUrl,
   });
 
   return {
     email: user.email,
-    verifyUrl: buildVerificationUrl(token, nextLocale),
+    verifyUrl: buildVerificationUrl(token, nextLocale, appBaseUrl),
   };
 }
 

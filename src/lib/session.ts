@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/constants";
 import { SessionUser } from "@/lib/types";
+import { readCloudflareEnv } from "@/lib/server/cloudflare";
 
 type SessionPayload = SessionUser & {
   exp: number;
@@ -10,7 +11,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 function getSessionSecret() {
-  const configuredSecret = process.env.SGT_SESSION_SECRET;
+  const configuredSecret = readCloudflareEnv("SGT_SESSION_SECRET") || process.env.SGT_SESSION_SECRET;
   if (configuredSecret) {
     return configuredSecret;
   }

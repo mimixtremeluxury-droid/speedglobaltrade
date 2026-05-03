@@ -12,6 +12,7 @@ export async function POST(request: Request) {
       email: body.email,
       password: body.password,
       locale: body.locale,
+      appBaseUrl: new URL(request.url).origin,
     });
 
     return NextResponse.json({
