@@ -3,7 +3,6 @@ import "./globals.css";
 import { AppProviders } from "@/app/providers";
 import { getUserRecordById } from "@/lib/server/account-service";
 import { getSessionUser } from "@/lib/session";
-import { SmartsuppChat } from "@/components/smartsupp-chat";
 import { ToastStack } from "@/components/ui/toast-stack";
 
 export const metadata: Metadata = {
@@ -22,7 +21,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           {children}
           <ToastStack />
         </AppProviders>
-        <SmartsuppChat />
       </body>
     </html>
   );

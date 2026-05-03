@@ -2,6 +2,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { LocaleEnhancers } from "@/components/locale-enhancers";
+import { SmartsuppChat } from "@/components/smartsupp-chat";
 import { RTL_LOCALES } from "@/lib/constants";
 import { routing } from "@/i18n/routing";
 import { AppLocale } from "@/lib/types";
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
       <div className="min-h-screen" dir={dir}>
         {children}
       </div>
+      <SmartsuppChat locale={locale as AppLocale} />
     </NextIntlClientProvider>
   );
 }

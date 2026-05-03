@@ -10,11 +10,12 @@ export default async function ContactPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "contact" });
+  const whatsappUrl = "https://wa.me/13432556574";
 
   const cards = [
-    { icon: Mail, title: t("emailDeskTitle"), copy: "support@speedglobaltrade.com" },
-    { icon: PhoneCall, title: t("phoneLineTitle"), copy: "+1 (800) 555-0199" },
-    { icon: Headphones, title: t("clientSupportTitle"), copy: t("clientSupportBody") },
+    { icon: Mail, title: t("emailDeskTitle"), copy: "speedglobaltrade@gmail.com", href: "mailto:speedglobaltrade@gmail.com" },
+    { icon: PhoneCall, title: t("phoneLineTitle"), copy: "+1 (343) 255-6574", href: whatsappUrl, badge: "WhatsApp" },
+    { icon: Headphones, title: t("clientSupportTitle"), copy: t("clientSupportBody"), href: whatsappUrl, badge: "Fast reply" },
     { icon: Landmark, title: t("officeTitle"), copy: t("officeBody") },
   ];
 
@@ -30,9 +31,27 @@ export default async function ContactPage({
         <div className="grid gap-4">
           {cards.map((item) => (
             <article key={item.title} className="surface p-5">
-              <item.icon className="h-5 w-5 text-cyan" />
+              <div className="flex items-start justify-between gap-4">
+                <item.icon className="h-5 w-5 text-cyan" />
+                {item.badge ? (
+                  <span className="rounded-full border border-cyan/20 bg-cyan/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan">
+                    {item.badge}
+                  </span>
+                ) : null}
+              </div>
               <h2 className="mt-4 font-heading text-xl text-ink">{item.title}</h2>
-              <p className="mt-2 text-sm leading-7 text-body/74">{item.copy}</p>
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
+                  rel={item.href.startsWith("http") ? "noreferrer" : undefined}
+                  className="mt-2 block text-sm leading-7 text-body/74 transition hover:text-ink"
+                >
+                  {item.copy}
+                </a>
+              ) : (
+                <p className="mt-2 text-sm leading-7 text-body/74">{item.copy}</p>
+              )}
             </article>
           ))}
         </div>
