@@ -2,14 +2,25 @@ import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/constants";
 import { SessionUser } from "@/lib/types";
 
-const SESSION_SECRET = process.env.SGT_SESSION_SECRET ?? "speed-global-trade-session-secret";
-
 type SessionPayload = SessionUser & {
   exp: number;
 };
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+
+function getSessionSecret() {
+  const configuredSecret = process.env.SGT_SESSION_SECRET;
+  if (configuredSecret) {
+    return configuredSecret;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("SGT_SESSION_SECRET is required in production.");
+  }
+
+  return "speed-global-trade-session-secret";
+}
 
 function toBase64Url(value: string) {
   const bytes = encoder.encode(value);
@@ -39,7 +50,7 @@ function fromBase64Url(value: string) {
 async function getSigningKey() {
   return crypto.subtle.importKey(
     "raw",
-    encoder.encode(SESSION_SECRET),
+    encoder.encode(getSessionSecret()),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign", "verify"],
@@ -70,7 +81,7 @@ export async function verifySessionToken(token?: string | null) {
   if (expected !== signature) return null;
   const payload = JSON.parse(fromBase64Url(encoded)) as SessionPayload;
   if (payload.exp < Date.now()) return null;
-  return { email: payload.email, fullName: payload.fullName } satisfies SessionUser;
+  return { userId: payload.userId, email: payload.email, fullName: payload.fullName } satisfies SessionUser;
 }
 
 export async function getSessionUser() {

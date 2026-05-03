@@ -25,15 +25,6 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>;
 
-async function establishSession(email: string, fullName: string) {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, fullName }),
-  });
-  if (!response.ok) throw new Error("Unable to establish a secure session.");
-}
-
 export default function SignupPage() {
   const t = useTranslations("auth.signup");
   const locale = useLocale();
@@ -63,20 +54,19 @@ export default function SignupPage() {
         <form
           onSubmit={handleSubmit(async (values) => {
             try {
-              const user = signUp({
+              await signUp({
                 fullName: values.fullName,
                 email: values.email,
                 password: values.password,
                 country: values.country,
                 locale: locale as AppLocale,
               });
-              await establishSession(user.profile.email, user.profile.fullName);
               pushToast({
-                title: t("successTitle"),
+                title: t("verificationTitle"),
                 description: t("successDescription"),
                 tone: "success",
               });
-              router.push("/dashboard");
+              router.push(`/login?email=${encodeURIComponent(values.email)}&notice=verify-signup`);
             } catch (error) {
               pushToast({
                 title: t("errorTitle"),

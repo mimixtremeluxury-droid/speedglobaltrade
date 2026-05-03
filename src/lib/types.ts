@@ -3,8 +3,10 @@ export type RiskLabel = "Low" | "Balanced" | "High";
 export type TransactionKind = "deposit" | "withdrawal" | "earning" | "investment" | "copy_trade";
 export type TransactionStatus = "completed" | "pending";
 export type FeedActivityAction = "deposited" | "copied" | "funded" | "withdrew" | "joined";
+export type VerificationIntent = "signup" | "login";
 
 export interface SessionUser {
+  userId: string;
   email: string;
   fullName: string;
 }
@@ -13,12 +15,12 @@ export interface UserProfile {
   id: string;
   fullName: string;
   email: string;
-  password: string;
   country: string;
   joinedAt: string;
   locale: AppLocale;
   tier: "Signature" | "Premier" | "Institutional";
   twoFactorEnabled: boolean;
+  emailVerifiedAt: string | null;
 }
 
 export interface UserSummary {
@@ -121,6 +123,14 @@ export interface UserRecord {
   transactions: TransactionRecord[];
 }
 
-export interface MockDatabase {
-  users: Record<string, UserRecord>;
+export interface VerificationTokenRecord {
+  id: string;
+  userId: string;
+  email: string;
+  intent: VerificationIntent;
+  locale: AppLocale;
+  redirectPath: string;
+  expiresAt: string;
+  consumedAt: string | null;
+  createdAt: string;
 }

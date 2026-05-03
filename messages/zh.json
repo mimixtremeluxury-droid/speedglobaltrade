@@ -60,7 +60,7 @@
       "daniel": "入金流程井然有序且值得信赖，余额确认后仪表盘立刻变得有价值。",
       "liam": "我很喜欢平台的沉稳感。方案对比和活动跟踪比常见零售产品清爽很多。",
       "sofia": "重要信息都非常容易理解。我可以在没有杂乱干扰的情况下看到入金状态、组合价值和机会。",
-      "aisha": "跟单区域做得很精致，也更可信。在我分配资金前，它提供了足够的信息。"
+      "claire": "跟单交易区域看起来很精致也值得信赖。在我分配资金之前，它给了我足够清晰的背景信息。"
     },
     "ratingLabel": "五星客户反馈"
   },
@@ -127,7 +127,7 @@
     "resources": "资源",
     "legal": "法律",
     "social": "社交",
-    "copyright": "Copyright © {year} Speed Global Trade。保留所有权利。",
+    "copyright": "Copyright (c) {year} Speed Global Trade。保留所有权利。",
     "links": {
       "about": "关于我们",
       "careers": "加入我们",
@@ -223,25 +223,25 @@
     "login": {
       "eyebrow": "安全登录",
       "title": "进入你的投资工作台",
-      "description": "签名会话 Cookie 用于保护仪表盘路由，而组合活动在此模拟环境中保存在本地。",
+      "description": "输入你的凭据后，我们会向你的邮箱发送一个安全验证链接，以完成本次登录。",
       "email": "邮箱",
       "password": "密码",
       "submit": "登录",
       "submitting": "进入中...",
-      "successTitle": "欢迎回来",
-      "successDescription": "你的高端仪表盘已准备就绪。",
+      "successDescription": "请打开我们刚刚发送的安全邮件，完成登录并进入你的投资工作区。",
       "errorTitle": "登录失败",
-      "demo": "使用演示账户",
-      "demoTitle": "已加载演示账户",
-      "demoDescription": "使用预置组合数据体验高端仪表盘。",
-      "demoErrorTitle": "演示访问失败",
       "signupPrompt": "需要新账户？",
-      "signupLink": "在这里开设"
+      "signupLink": "在这里开设",
+      "verificationTitle": "验证链接已发送",
+      "verifySignupNotice": "请先检查邮箱并验证账户，然后使用安全链接完成首次登录。",
+      "verifyLoginNotice": "我们已向你的邮箱发送新的安全链接。打开它即可完成本次登录请求。",
+      "verificationExpiredNotice": "该验证链接已过期。请重新提交表单，我们会发送新的链接。",
+      "verificationInvalidNotice": "该验证链接无效或已被使用。请重新请求新的安全链接。"
     },
     "signup": {
       "eyebrow": "开设账户",
       "title": "创建你的高端投资者资料",
-      "description": "此安全模拟流程会签发会话 Cookie，并准备一个在首次入金完成后才激活的空白仪表盘。",
+      "description": "创建你的资料后，请确认安全验证邮件以完成投资工作区的开通。",
       "fullName": "姓名",
       "email": "邮箱",
       "country": "国家",
@@ -249,11 +249,11 @@
       "confirmPassword": "确认密码",
       "submit": "创建账户",
       "submitting": "创建中...",
-      "successTitle": "账户已创建",
-      "successDescription": "你的工作台已就绪。完成首次入金后即可激活组合跟踪。",
+      "successDescription": "我们已向你的邮箱发送安全验证链接。确认后即可完成开户流程。",
       "errorTitle": "无法创建账户",
-      "loginPrompt": "已经开户？",
-      "loginLink": "在这里登录"
+      "loginPrompt": "已经完成注册？",
+      "loginLink": "在这里登录",
+      "verificationTitle": "请验证你的邮箱"
     }
   },
   "dashboard": {

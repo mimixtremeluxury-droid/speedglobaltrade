@@ -12,10 +12,13 @@
     "cf:preview": "npm run build && npx @opennextjs/cloudflare@latest preview",
     "cf:deploy": "npm run build && npx @opennextjs/cloudflare@latest deploy",
     "cf:upload": "npm run build && npx @opennextjs/cloudflare@latest upload",
-    "cf:typegen": "npx wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf:typegen": "npx wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "db:migrate:local": "npx wrangler d1 migrations apply speedglobaltrade-db --local",
+    "db:migrate:remote": "npx wrangler d1 migrations apply speedglobaltrade-db --remote"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@opennextjs/cloudflare": "^1.19.5",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "clsx": "^2.1.1",
     "crisp-sdk-web": "^1.1.2",
@@ -28,6 +31,8 @@
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.53.1",
     "recharts": "^2.12.7",
+    "resend": "^6.12.2",
+    "wrangler": "^4.86.0",
     "zod": "^3.23.8",
     "zustand": "^5.0.8"
   },

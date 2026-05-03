@@ -60,7 +60,7 @@
       "daniel": "The deposit flow felt orderly and credible, and the dashboard became useful the moment my balance settled.",
       "liam": "I appreciate how calm the platform feels. The plan comparison and activity tracking are much cleaner than typical retail products.",
       "sofia": "Everything important is easy to understand. I can see my funding status, portfolio value, and opportunities without any clutter.",
-      "aisha": "The copy-trading section feels polished and trustworthy. It gives me enough context before I allocate capital."
+      "claire": "The copy-trading section feels polished and trustworthy. It gives me enough context before I allocate capital."
     },
     "ratingLabel": "5-star client feedback"
   },
@@ -127,7 +127,7 @@
     "resources": "Resources",
     "legal": "Legal",
     "social": "Social",
-    "copyright": "Copyright © {year} Speed Global Trade. All rights reserved.",
+    "copyright": "Copyright (c) {year} Speed Global Trade. All rights reserved.",
     "links": {
       "about": "About",
       "careers": "Careers",
@@ -223,25 +223,25 @@
     "login": {
       "eyebrow": "Secure Login",
       "title": "Access your investor workspace",
-      "description": "Signed session cookies protect dashboard routes, while portfolio activity stays persisted locally in this mock environment.",
+      "description": "Enter your credentials and we will send a secure verification link to complete the login from your inbox.",
       "email": "Email",
       "password": "Password",
       "submit": "Login",
       "submitting": "Entering...",
-      "successTitle": "Welcome back",
-      "successDescription": "Your premium dashboard is ready.",
+      "verificationTitle": "Verification link sent",
+      "successDescription": "Open the secure email we just sent to finish signing in to your workspace.",
       "errorTitle": "Login failed",
-      "demo": "Use Demo Account",
-      "demoTitle": "Demo account loaded",
-      "demoDescription": "Explore the premium dashboard with pre-seeded portfolio data.",
-      "demoErrorTitle": "Demo access failed",
+      "verifySignupNotice": "Check your inbox to verify your account, then use the secure link to complete your first sign-in.",
+      "verifyLoginNotice": "We sent a fresh secure link to your inbox. Open it to complete this login request.",
+      "verificationExpiredNotice": "That verification link has expired. Submit the form again and we will send a new one.",
+      "verificationInvalidNotice": "That verification link is invalid or has already been used. Request a new secure link to continue.",
       "signupPrompt": "Need a new account?",
       "signupLink": "Open one here"
     },
     "signup": {
       "eyebrow": "Open Account",
       "title": "Create your premium investor profile",
-      "description": "This secure mock flow issues a signed session cookie and prepares an empty dashboard that activates after your first completed deposit.",
+      "description": "Create your profile and confirm the secure verification email to finish opening your investor workspace.",
       "fullName": "Full name",
       "email": "Email",
       "country": "Country",
@@ -249,8 +249,8 @@
       "confirmPassword": "Confirm password",
       "submit": "Create Account",
       "submitting": "Provisioning...",
-      "successTitle": "Account created",
-      "successDescription": "Your workspace is ready. Complete your first deposit to activate portfolio tracking.",
+      "verificationTitle": "Verify your email",
+      "successDescription": "We sent a secure verification link to your inbox. Confirm it to finish opening your account.",
       "errorTitle": "Unable to create account",
       "loginPrompt": "Already onboarded?",
       "loginLink": "Login here"

@@ -48,10 +48,10 @@ export default function SettingsPage() {
       <form
         onSubmit={handleSubmit(async (values) => {
           try {
-            updateSettings(values);
+            await updateSettings(values);
             pushToast({
               title: "Preferences saved",
-              description: "Your investor profile has been updated locally.",
+              description: "Your investor profile has been updated securely.",
               tone: "success",
             });
           } catch (error) {

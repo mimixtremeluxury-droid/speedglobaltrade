@@ -60,7 +60,7 @@
       "daniel": "El flujo de depósito se sintió ordenado y creíble, y el panel se volvió útil en el momento en que mi saldo se liquidó.",
       "liam": "Aprecio lo calmada que se siente la plataforma. La comparación de planes y el seguimiento de actividad son mucho más limpios que en productos minoristas típicos.",
       "sofia": "Todo lo importante es fácil de entender. Puedo ver mi estado de fondeo, el valor de mi portafolio y las oportunidades sin saturación.",
-      "aisha": "La sección de copy trading se siente pulida y confiable. Me da suficiente contexto antes de asignar capital."
+      "claire": "La seccion de copy trading se siente pulida y confiable. Me da suficiente contexto antes de asignar capital."
     },
     "ratingLabel": "Opiniones de clientes de 5 estrellas"
   },
@@ -127,7 +127,7 @@
     "resources": "Recursos",
     "legal": "Legal",
     "social": "Social",
-    "copyright": "Copyright © {year} Speed Global Trade. Todos los derechos reservados.",
+    "copyright": "Copyright (c) {year} Speed Global Trade. Todos los derechos reservados.",
     "links": {
       "about": "Nosotros",
       "careers": "Carreras",
@@ -223,25 +223,25 @@
     "login": {
       "eyebrow": "Acceso seguro",
       "title": "Entra a tu espacio de inversión",
-      "description": "Las cookies de sesión firmadas protegen las rutas del dashboard, mientras la actividad del portafolio se conserva localmente en este entorno simulado.",
+      "description": "Ingresa tus credenciales y te enviaremos un enlace seguro de verificacion para completar el acceso desde tu correo.",
       "email": "Correo",
       "password": "Contraseña",
       "submit": "Entrar",
       "submitting": "Ingresando...",
-      "successTitle": "Bienvenido de nuevo",
-      "successDescription": "Tu dashboard premium está listo.",
+      "successDescription": "Abre el correo seguro que te acabamos de enviar para terminar de entrar a tu espacio.",
       "errorTitle": "Error de acceso",
-      "demo": "Usar cuenta demo",
-      "demoTitle": "Cuenta demo cargada",
-      "demoDescription": "Explora el dashboard premium con datos precargados.",
-      "demoErrorTitle": "Falló el acceso demo",
-      "signupPrompt": "¿Necesitas una cuenta nueva?",
-      "signupLink": "Ábrela aquí"
+      "signupPrompt": "Necesitas una cuenta nueva?",
+      "signupLink": "Abrela aqui",
+      "verificationTitle": "Enlace de verificacion enviado",
+      "verifySignupNotice": "Revisa tu bandeja de entrada para verificar tu cuenta y luego usa el enlace seguro para completar tu primer acceso.",
+      "verifyLoginNotice": "Enviamos un nuevo enlace seguro a tu correo. Abrelo para completar este acceso.",
+      "verificationExpiredNotice": "Ese enlace de verificacion ha expirado. Envia el formulario otra vez y te mandaremos uno nuevo.",
+      "verificationInvalidNotice": "Ese enlace de verificacion no es valido o ya fue usado. Solicita un nuevo enlace seguro para continuar."
     },
     "signup": {
       "eyebrow": "Abrir cuenta",
       "title": "Crea tu perfil premium de inversionista",
-      "description": "Este flujo seguro emite una cookie de sesión firmada y prepara un dashboard vacío que se activa después de tu primer depósito completado.",
+      "description": "Crea tu perfil y confirma el correo seguro de verificacion para terminar de abrir tu espacio de inversion.",
       "fullName": "Nombre completo",
       "email": "Correo",
       "country": "País",
@@ -249,11 +249,11 @@
       "confirmPassword": "Confirmar contraseña",
       "submit": "Crear cuenta",
       "submitting": "Preparando...",
-      "successTitle": "Cuenta creada",
-      "successDescription": "Tu espacio está listo. Completa tu primer depósito para activar el seguimiento del portafolio.",
+      "successDescription": "Enviamos un enlace seguro de verificacion a tu correo. Confirmalo para terminar de abrir tu cuenta.",
       "errorTitle": "No se pudo crear la cuenta",
-      "loginPrompt": "¿Ya estás registrado?",
-      "loginLink": "Entra aquí"
+      "loginPrompt": "Ya estas registrado?",
+      "loginLink": "Entra aqui",
+      "verificationTitle": "Verifica tu correo"
     }
   },
   "dashboard": {

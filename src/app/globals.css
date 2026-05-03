@@ -4,6 +4,8 @@
 
 :root {
   color-scheme: dark;
+  --font-inter: "Inter";
+  --font-space-grotesk: "Space Grotesk";
 }
 
 html {

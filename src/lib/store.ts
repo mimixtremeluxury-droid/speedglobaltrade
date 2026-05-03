@@ -1,21 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { DEMO_CREDENTIALS, EXPERT_TRADERS, INVESTMENT_PLANS, RECENT_ACTIVITY } from "@/lib/constants";
-import {
-  completePendingDeposit,
-  copyTraderAllocation,
-  createMockAccount,
-  getDemoRecord,
-  getUserRecord,
-  investInPlan,
-  requestDeposit,
-  seedMockDb,
-  updateUserSettings,
-  validateCredentials,
-  withdrawFromAccount,
-} from "@/lib/mockDb";
-import { ExpertTrader, FeedActivity, InvestmentPlan, SessionUser, UserRecord } from "@/lib/types";
+import { EXPERT_TRADERS, INVESTMENT_PLANS, RECENT_ACTIVITY } from "@/lib/constants";
+import { FeedActivity, SessionUser, UserRecord } from "@/lib/types";
 
 type Toast = {
   id: string;
@@ -32,6 +19,11 @@ type AuthPayload = {
   locale: UserRecord["profile"]["locale"];
 };
 
+type MutationResponse = {
+  ok: boolean;
+  user: UserRecord;
+};
+
 type AppStore = {
   hydrated: boolean;
   session: SessionUser | null;
@@ -39,24 +31,38 @@ type AppStore = {
   sidebarCollapsed: boolean;
   feed: FeedActivity[];
   toasts: Toast[];
-  hydrate: (session: SessionUser | null) => void;
-  setSessionUser: (session: SessionUser | null) => void;
-  signIn: (email: string, password: string) => UserRecord;
-  signUp: (payload: AuthPayload) => UserRecord;
-  useDemoAccount: () => UserRecord;
+  hydrate: (session: SessionUser | null, user: UserRecord | null) => void;
+  setSessionUser: (session: SessionUser | null, user?: UserRecord | null) => void;
+  signIn: (email: string, password: string, locale: UserRecord["profile"]["locale"]) => Promise<void>;
+  signUp: (payload: AuthPayload) => Promise<void>;
   signOut: () => void;
-  requestDeposit: (amount: number, method: string) => void;
-  completeDeposit: (transactionId: string) => void;
-  withdraw: (amount: number, method: string) => void;
-  invest: (plan: InvestmentPlan, amount: number) => void;
-  copyTrader: (trader: ExpertTrader) => void;
-  updateSettings: (patch: Parameters<typeof updateUserSettings>[1]) => void;
+  requestDeposit: (amount: number, method: string) => Promise<void>;
+  completeDeposit: (transactionId: string) => Promise<void>;
+  withdraw: (amount: number, method: string) => Promise<void>;
+  invest: (planId: string, amount: number) => Promise<void>;
+  copyTrader: (traderId: string) => Promise<void>;
+  updateSettings: (patch: Partial<Pick<UserRecord["profile"], "fullName" | "country" | "locale" | "twoFactorEnabled">>) => Promise<void>;
   setSidebarCollapsed: (collapsed: boolean) => void;
   pushToast: (toast: Omit<Toast, "id">) => void;
   dismissToast: (id: string) => void;
 };
 
 const createToastId = () => crypto.randomUUID();
+
+async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
+  const response = await fetch(input, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+  });
+  const payload = (await response.json()) as T & { error?: string };
+  if (!response.ok) {
+    throw new Error(payload.error ?? "The request could not be completed.");
+  }
+  return payload;
+}
 
 export const useAppStore = create<AppStore>((set, get) => ({
   hydrated: false,
@@ -65,74 +71,73 @@ export const useAppStore = create<AppStore>((set, get) => ({
   sidebarCollapsed: false,
   feed: RECENT_ACTIVITY,
   toasts: [],
-  hydrate: (session) => {
-    seedMockDb();
-    const nextUser = session ? getUserRecord(session.email) : null;
+  hydrate: (session, user) => {
     set({
       hydrated: true,
       session,
-      user: nextUser,
+      user,
       feed: RECENT_ACTIVITY,
     });
   },
-  setSessionUser: (session) => {
+  setSessionUser: (session, user) => {
     set({
       session,
-      user: session ? getUserRecord(session.email) : null,
+      user: user ?? get().user,
     });
   },
-  signIn: (email, password) => {
-    const user = validateCredentials(email, password);
-    set({ user, session: { email: user.profile.email, fullName: user.profile.fullName } });
-    return user;
+  signIn: async (email, password, locale) => {
+    await requestJson<{ ok: true; message: string }>("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password, locale }),
+    });
   },
-  signUp: (payload) => {
-    const user = createMockAccount(payload);
-    set({ user, session: { email: user.profile.email, fullName: user.profile.fullName } });
-    return user;
-  },
-  useDemoAccount: () => {
-    const user = getDemoRecord();
-    if (!user) throw new Error(`Demo account ${DEMO_CREDENTIALS.email} is unavailable.`);
-    set({ user, session: { email: user.profile.email, fullName: user.profile.fullName } });
-    return user;
+  signUp: async (payload) => {
+    await requestJson<{ ok: true; message: string }>("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   },
   signOut: () => set({ session: null, user: null }),
-  requestDeposit: (amount, method) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = requestDeposit(email, amount, method);
-    set({ user });
+  requestDeposit: async (amount, method) => {
+    const payload = await requestJson<MutationResponse>("/api/dashboard/deposits", {
+      method: "POST",
+      body: JSON.stringify({ amount, method }),
+    });
+    set({ user: payload.user });
   },
-  completeDeposit: (transactionId) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = completePendingDeposit(email, transactionId);
-    set({ user });
+  completeDeposit: async (transactionId) => {
+    const payload = await requestJson<MutationResponse>(`/api/dashboard/deposits/${transactionId}/complete`, {
+      method: "POST",
+    });
+    set({ user: payload.user });
   },
-  withdraw: (amount, method) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = withdrawFromAccount(email, amount, method);
-    set({ user });
+  withdraw: async (amount, method) => {
+    const payload = await requestJson<MutationResponse>("/api/dashboard/withdrawals", {
+      method: "POST",
+      body: JSON.stringify({ amount, method }),
+    });
+    set({ user: payload.user });
   },
-  invest: (plan, amount) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = investInPlan(email, plan, amount);
-    set({ user });
+  invest: async (planId, amount) => {
+    const payload = await requestJson<MutationResponse>("/api/dashboard/investments", {
+      method: "POST",
+      body: JSON.stringify({ planId, amount }),
+    });
+    set({ user: payload.user });
   },
-  copyTrader: (trader) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = copyTraderAllocation(email, trader);
-    set({ user });
+  copyTrader: async (traderId) => {
+    const payload = await requestJson<MutationResponse>("/api/dashboard/copy-trading", {
+      method: "POST",
+      body: JSON.stringify({ traderId }),
+    });
+    set({ user: payload.user });
   },
-  updateSettings: (patch) => {
-    const email = get().session?.email;
-    if (!email) throw new Error("No active session.");
-    const user = updateUserSettings(email, patch);
-    set({ user });
+  updateSettings: async (patch) => {
+    const payload = await requestJson<MutationResponse>("/api/dashboard/settings", {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    });
+    set({ user: payload.user });
   },
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   pushToast: (toast) => {

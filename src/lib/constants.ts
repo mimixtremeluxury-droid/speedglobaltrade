@@ -2,7 +2,8 @@ import { AppLocale, ExpertTrader, FeedActivity, InvestmentPlan, Testimonial, Tru
 
 export const APP_NAME = "Speed Global Trade";
 export const SESSION_COOKIE = "sgt_session";
-export const MOCK_DB_KEY = "sgt_premium_mock_db";
+export const VERIFICATION_TOKEN_TTL_MS = 1000 * 60 * 20;
+export const VERIFICATION_RESEND_COOLDOWN_MS = 1000 * 60;
 
 export const LOCALES = ["en", "zh", "es", "ar", "hi"] as const satisfies readonly AppLocale[];
 export const DEFAULT_LOCALE: AppLocale = "en";
@@ -20,11 +21,6 @@ export const LANGUAGE_OPTIONS = [
   nativeLabel: string;
   flag: string;
 }>;
-
-export const DEMO_CREDENTIALS = {
-  email: "demo@speedglobaltrade.com",
-  password: "Demo@12345",
-};
 
 export const INVESTMENT_PLANS: InvestmentPlan[] = [
   {
@@ -83,8 +79,8 @@ export const INVESTMENT_PLANS: InvestmentPlan[] = [
 
 export const EXPERT_TRADERS: ExpertTrader[] = [
   {
-    id: "ayanda-dlamini",
-    name: "Ayanda Dlamini",
+    id: "adrian-cole",
+    name: "Adrian Cole",
     specialty: "Global Macro",
     winRate: 78,
     roi: 24.6,
@@ -107,8 +103,8 @@ export const EXPERT_TRADERS: ExpertTrader[] = [
     bio: "High-conviction momentum operator focused on liquid growth sectors.",
   },
   {
-    id: "michael-adebayo",
-    name: "Michael Adebayo",
+    id: "marcus-bennett",
+    name: "Marcus Bennett",
     specialty: "Structured Income",
     winRate: 74,
     roi: 18.4,
@@ -121,11 +117,11 @@ export const EXPERT_TRADERS: ExpertTrader[] = [
 ];
 
 export const RECENT_ACTIVITY: FeedActivity[] = [
-  { id: "1", investor: "Kgomotso", region: "Gauteng", action: "deposited", amount: 500, createdAt: "2m ago" },
+  { id: "1", investor: "Olivia", region: "Sydney", action: "deposited", amount: 500, createdAt: "2m ago" },
   { id: "2", investor: "Marisol", region: "Madrid", action: "copied", amount: 2200, createdAt: "6m ago" },
-  { id: "3", investor: "Tariro", region: "Harare", action: "funded", amount: 1500, createdAt: "11m ago" },
+  { id: "3", investor: "Yuki", region: "Tokyo", action: "funded", amount: 1500, createdAt: "11m ago" },
   { id: "4", investor: "Daniel", region: "Toronto", action: "withdrew", amount: 890, createdAt: "18m ago" },
-  { id: "5", investor: "Amina", region: "Doha", action: "joined", amount: 5200, createdAt: "24m ago" },
+  { id: "5", investor: "Nora", region: "Zurich", action: "joined", amount: 5200, createdAt: "24m ago" },
 ];
 
 export const TRUST_BADGES: TrustBadge[] = [
@@ -134,16 +130,7 @@ export const TRUST_BADGES: TrustBadge[] = [
   { title: "24/7 Concierge Desk", caption: "Priority support for every client" },
 ];
 
-export const SPONSORS = [
-  "Arsenal",
-  "Bloomberg",
-  "Nasdaq",
-  "Barclays",
-  "PwC",
-  "Mastercard",
-  "Reuters",
-  "Visa",
-];
+export const SPONSORS = ["Arsenal", "Bloomberg", "Nasdaq", "Barclays", "PwC", "Mastercard", "Reuters", "Visa"];
 
 export const TESTIMONIALS: Testimonial[] = [
   {
@@ -165,9 +152,9 @@ export const TESTIMONIALS: Testimonial[] = [
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
-    id: "aisha",
-    name: "Aisha Khan",
-    location: "Dubai, UAE",
+    id: "claire",
+    name: "Claire Dubois",
+    location: "Geneva, Switzerland",
     avatar: "https://randomuser.me/api/portraits/women/63.jpg",
   },
 ];

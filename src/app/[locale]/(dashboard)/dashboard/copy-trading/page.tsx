@@ -51,9 +51,9 @@ export default function CopyTradingPage() {
               <button
                 type="button"
                 disabled={copied}
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    copyTrader(trader);
+                    await copyTrader(trader.id);
                     pushToast({
                       title: "Trader copied",
                       description: `${trader.name} has been added to your copied allocation.`,

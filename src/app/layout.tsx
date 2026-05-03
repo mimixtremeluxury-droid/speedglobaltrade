@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/app/providers";
+import { getUserRecordById } from "@/lib/server/account-service";
 import { getSessionUser } from "@/lib/session";
 import { ToastStack } from "@/components/ui/toast-stack";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Speed Global Trade",
@@ -22,11 +12,12 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSessionUser();
+  const user = session ? await getUserRecordById(session.userId) : null;
 
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en">
       <body className="min-h-screen bg-midnight text-body antialiased">
-        <AppProviders initialSession={session}>
+        <AppProviders initialSession={session} initialUser={user}>
           {children}
           <ToastStack />
         </AppProviders>

@@ -41,7 +41,7 @@ export default function WithdrawPage() {
       <form
         onSubmit={handleSubmit(async (values) => {
           try {
-            withdraw(values.amount, values.method);
+            await withdraw(values.amount, values.method);
             pushToast({
               title: "Withdrawal queued",
               description: `${values.method} has been added to the release queue.`,

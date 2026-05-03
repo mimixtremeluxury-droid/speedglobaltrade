@@ -71,9 +71,9 @@ export default function InvestmentsPage() {
               <button type="button" className="ghost-button">Learn More</button>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    invest(plan, drafts[plan.id]);
+                    await invest(plan.id, drafts[plan.id]);
                     pushToast({
                       title: "Plan activated",
                       description: `${plan.name} has been added to your live allocations.`,

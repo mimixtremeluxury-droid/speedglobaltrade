@@ -1,13 +1,14 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { DEMO_CREDENTIALS } from "@/lib/constants";
 import { PageShell } from "@/components/ui/page-shell";
 import { useAppStore } from "@/lib/store";
+import { AppLocale } from "@/lib/types";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email."),
@@ -16,28 +17,24 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-async function establishSession(email: string, fullName: string) {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, fullName }),
-  });
-  if (!response.ok) throw new Error("Unable to establish a secure session.");
-}
-
 export default function LoginPage() {
   const t = useTranslations("auth.login");
+  const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const signIn = useAppStore((state) => state.signIn);
-  const loadDemoAccount = useAppStore((state) => state.useDemoAccount);
   const pushToast = useAppStore((state) => state.pushToast);
+  const notice = searchParams.get("notice");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: DEMO_CREDENTIALS,
+    defaultValues: {
+      email: searchParams.get("email") ?? "",
+      password: "",
+    },
   });
 
   return (
@@ -47,17 +44,28 @@ export default function LoginPage() {
         <h1 className="mt-3 font-heading text-4xl text-ink">{t("title")}</h1>
         <p className="mt-4 text-sm leading-7 text-body/72">{t("description")}</p>
 
+        {notice ? (
+          <div className="mt-6 rounded-3xl border border-cyan/20 bg-cyan/10 px-4 py-4 text-sm leading-7 text-body/82">
+            {notice === "verify-signup"
+              ? t("verifySignupNotice")
+              : notice === "verify-login"
+                ? t("verifyLoginNotice")
+                : notice === "verification-expired"
+                  ? t("verificationExpiredNotice")
+                  : t("verificationInvalidNotice")}
+          </div>
+        ) : null}
+
         <form
           onSubmit={handleSubmit(async (values) => {
             try {
-              const user = signIn(values.email, values.password);
-              await establishSession(user.profile.email, user.profile.fullName);
+              await signIn(values.email, values.password, locale as AppLocale);
               pushToast({
-                title: t("successTitle"),
+                title: t("verificationTitle"),
                 description: t("successDescription"),
-                tone: "success",
+                tone: "info",
               });
-              router.push("/dashboard");
+              router.replace(`/login?email=${encodeURIComponent(values.email)}&notice=verify-login`);
             } catch (error) {
               pushToast({
                 title: t("errorTitle"),
@@ -89,31 +97,6 @@ export default function LoginPage() {
             {isSubmitting ? t("submitting") : t("submit")}
           </button>
         </form>
-
-        <button
-          type="button"
-          onClick={async () => {
-            try {
-              const user = loadDemoAccount();
-              await establishSession(user.profile.email, user.profile.fullName);
-              pushToast({
-                title: t("demoTitle"),
-                description: t("demoDescription"),
-                tone: "info",
-              });
-              router.push("/dashboard");
-            } catch (error) {
-              pushToast({
-                title: t("demoErrorTitle"),
-                description: (error as Error).message,
-                tone: "error",
-              });
-            }
-          }}
-          className="ghost-button mt-4 w-full"
-        >
-          {t("demo")}
-        </button>
 
         <p className="mt-6 text-sm text-body/68">
           {t("signupPrompt")}{" "}

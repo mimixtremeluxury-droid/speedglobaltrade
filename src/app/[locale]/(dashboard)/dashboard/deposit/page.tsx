@@ -50,7 +50,7 @@ export default function DepositPage() {
         <form
           onSubmit={handleSubmit(async (values) => {
             try {
-              requestDeposit(values.amount, values.method);
+              await requestDeposit(values.amount, values.method);
               pushToast({
                 title: "Deposit request created",
                 description: `${values.method} is now waiting for confirmation.`,
@@ -116,9 +116,9 @@ export default function DepositPage() {
             </div>
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 try {
-                  completeDeposit(pendingDeposit.id);
+                  await completeDeposit(pendingDeposit.id);
                   pushToast({
                     title: "Deposit completed",
                     description: "Your balance has been credited and dashboard tracking is now active.",
