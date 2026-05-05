@@ -50,10 +50,12 @@ const CHAT_COPY: Record<
   },
 };
 
-type SmartsuppCommand = [string, ...string[]];
+type SmartsuppCallback = (...args: unknown[]) => void;
+type SmartsuppArgument = string | SmartsuppCallback;
+type SmartsuppInvocation = [string, ...SmartsuppArgument[]];
 
-type SmartsuppCallable = ((...args: SmartsuppCommand) => void) & {
-  _: SmartsuppCommand[];
+type SmartsuppCallable = ((...args: SmartsuppInvocation) => void) & {
+  _: SmartsuppInvocation[];
 };
 
 type SmartsuppConfig = {
@@ -68,6 +70,7 @@ declare global {
   interface Window {
     _smartsupp?: SmartsuppConfig;
     smartsupp?: SmartsuppCallable;
+    __sgtSmartsuppCloseBound?: boolean;
   }
 }
 
@@ -77,7 +80,7 @@ function ensureSmartsuppStub() {
   }
 
   if (!window.smartsupp) {
-    const queue = ((...args: SmartsuppCommand) => {
+    const queue = ((...args: SmartsuppInvocation) => {
       queue._.push(args);
     }) as SmartsuppCallable;
     queue._ = [];
@@ -85,6 +88,19 @@ function ensureSmartsuppStub() {
   }
 
   return window.smartsupp;
+}
+
+function setWidgetContainerInteractivity(interactive: boolean) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const container = document.getElementById("smartsupp-widget-container");
+  if (!container) {
+    return;
+  }
+
+  container.style.pointerEvents = interactive ? "auto" : "none";
 }
 
 export function SmartsuppChat({ locale }: { locale: AppLocale }) {
@@ -112,11 +128,18 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
     }
 
     smartsupp("language", SMARTSUPP_LANGUAGE_MAP[locale] ?? "en");
+    if (!window.__sgtSmartsuppCloseBound) {
+      smartsupp("on", "messenger_close", () => {
+        setWidgetContainerInteractivity(false);
+      });
+      window.__sgtSmartsuppCloseBound = true;
+    }
 
     const existingScript = document.getElementById("smartsupp-loader") as HTMLScriptElement | null;
     if (existingScript) {
       setIsReady(true);
-      smartsupp("chat:show");
+      smartsupp("chat:hide");
+      setWidgetContainerInteractivity(false);
       return;
     }
 
@@ -129,7 +152,8 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
     script.onload = () => {
       setIsReady(true);
       window.smartsupp?.("language", SMARTSUPP_LANGUAGE_MAP[locale] ?? "en");
-      window.smartsupp?.("chat:show");
+      window.smartsupp?.("chat:hide");
+      setWidgetContainerInteractivity(false);
     };
     document.head.appendChild(script);
   }, [locale, smartsuppKey]);
@@ -137,6 +161,7 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
   function openChat() {
     const smartsupp = ensureSmartsuppStub();
     if (smartsupp) {
+      setWidgetContainerInteractivity(true);
       smartsupp("chat:show");
       smartsupp("chat:open");
       return;
@@ -153,19 +178,14 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
     <button
       type="button"
       onClick={openChat}
-      className="group fixed bottom-5 right-5 z-[75] flex max-w-[18rem] items-center gap-3 rounded-full border border-cyan/25 bg-[#08111f]/94 px-4 py-3 text-left shadow-2xl backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
+      title={copy.title}
+      className="group fixed bottom-5 right-4 z-[75] inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold/20 bg-[#07111d]/92 text-gold shadow-[0_18px_45px_rgba(0,0,0,0.38)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 sm:bottom-6 sm:right-6 sm:h-14 sm:w-14"
       aria-label={copy.title}
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold-gradient text-midnight shadow-lg shadow-gold/20">
-        <MessageCircleMore className="h-5 w-5" />
-      </span>
-      <span className="min-w-0">
-        <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-gold/90">
-          {copy.eyebrow}
-        </span>
-        <span className="mt-0.5 block text-sm font-semibold text-ink">{copy.title}</span>
-        <span className="block text-xs text-body/68">{isReady ? copy.subtitle : "Loading support channel..."}</span>
-      </span>
+      <span className="absolute inset-0 rounded-full border border-cyan/15 opacity-70 transition group-hover:opacity-100" />
+      <span className="absolute inset-[5px] rounded-full bg-gold-gradient opacity-95" />
+      <MessageCircleMore className="relative z-10 h-4 w-4 text-midnight sm:h-5 sm:w-5" />
+      <span className="sr-only">{isReady ? copy.subtitle : "Loading support channel..."}</span>
     </button>
   );
 }

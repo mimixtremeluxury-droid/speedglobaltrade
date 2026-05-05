@@ -14,9 +14,9 @@ export function DashboardFrame({ children }: { children: React.ReactNode }) {
   const activated = hasCompletedDeposit(user);
 
   return (
-    <div className="mx-auto flex max-w-[96rem] gap-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="mx-auto flex max-w-[96rem] flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start lg:px-8">
       <DashboardSidebar />
-      <div className="min-w-0 flex-1 lg:pl-[calc(18rem+1rem)]">
+      <div className="min-w-0 flex-1">
         <div className="surface mb-6 flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="section-kicker">{t("eyebrow")}</p>
