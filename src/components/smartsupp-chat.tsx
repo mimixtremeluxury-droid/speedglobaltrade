@@ -115,6 +115,17 @@ function hasSmartsuppWidget() {
   );
 }
 
+function warnSmartsuppFailure(message: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const hostname = window.location.hostname;
+  console.warn(
+    `[Speed Global Trade] ${message} Check the Smartsupp domain whitelist for "${hostname}", confirm the chat is not hidden or visitor-blocked, and allow Smartsupp domains in CSP if you use one.`,
+  );
+}
+
 export function SmartsuppChat({ locale }: { locale: AppLocale }) {
   const [isReady, setIsReady] = useState(false);
   const [scriptFailed, setScriptFailed] = useState(false);
@@ -172,6 +183,7 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
     script.onerror = () => {
       setScriptFailed(true);
       setIsReady(false);
+      warnSmartsuppFailure("Smartsupp loader failed to initialize.");
     };
     document.head.appendChild(script);
   }, [locale, smartsuppKey]);
@@ -190,6 +202,7 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
       window.setTimeout(() => {
         if (!hasSmartsuppWidget()) {
           setWidgetContainerInteractivity(false);
+          warnSmartsuppFailure("Smartsupp loader returned but no widget became available.");
           window.location.assign(WHATSAPP_URL);
         }
       }, 1400);

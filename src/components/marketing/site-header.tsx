@@ -1,11 +1,12 @@
 "use client";
 
 import { Menu, ShieldCheck, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher, MobileLanguageSwitcher } from "@/components/marketing/language-switcher";
 import { cn } from "@/lib/cn";
+import { AppLocale } from "@/lib/types";
 
 const links = [
   { href: "/", key: "home" },
@@ -14,9 +15,26 @@ const links = [
   { href: "/contact", key: "contact" },
 ] as const;
 
+const mobileLanguageLabel: Record<AppLocale, string> = {
+  en: "Display language",
+  es: "Idioma de visualizacion",
+  zh: "显示语言",
+  ar: "لغة العرض",
+  hi: "डिस्प्ले भाषा",
+};
+
+function isActivePath(pathname: string, href: (typeof links)[number]["href"]) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SiteHeader() {
   const t = useTranslations("nav");
   const tBrand = useTranslations("brand");
+  const locale = useLocale() as AppLocale;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -55,7 +73,14 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-8 lg:flex">
           {links.map((item) => (
-            <Link key={item.key} href={item.href} className="text-sm text-body/72 transition hover:text-ink">
+            <Link
+              key={item.key}
+              href={item.href}
+              className={cn(
+                "text-sm transition",
+                isActivePath(pathname, item.href) ? "text-ink" : "text-body/72 hover:text-ink",
+              )}
+            >
               {t(item.key)}
             </Link>
           ))}
@@ -84,59 +109,88 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <button
-          type="button"
-          aria-label="Close navigation"
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[70] bg-midnight/78 backdrop-blur-md lg:hidden"
-        />
-      ) : null}
+        <>
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-[90] bg-midnight/80 lg:hidden"
+          />
 
-      <div
-        id="mobile-site-nav"
-        className={cn(
-          "fixed inset-x-0 bottom-0 top-[5.1rem] z-[80] overflow-hidden border-t border-white/10 bg-[#040a14]/96 shadow-[0_-28px_80px_rgba(0,0,0,0.46)] backdrop-blur-2xl transition duration-300 overscroll-contain lg:hidden",
-          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0",
-        )}
-      >
-        <div className="flex h-full min-h-0 flex-col px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 sm:px-6">
-          <div className="rounded-[1.9rem] border border-white/8 bg-white/[0.03] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)]">
-            <div>
-              <p className="font-heading text-lg text-ink">{tBrand("name")}</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-body/45">{tBrand("tagline")}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
-            <nav className="space-y-3">
-              {links.map((item) => (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-[1.5rem] border border-white/8 bg-white/[0.02] px-4 py-4 text-base text-body/82 transition hover:border-cyan/30 hover:bg-white/5 hover:text-ink"
-                >
-                  {t(item.key)}
+          <aside
+            id="mobile-site-nav"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="fixed inset-x-0 bottom-0 top-0 z-[100] flex flex-col overflow-hidden bg-[#040a14] lg:hidden"
+          >
+            <div className="border-b border-white/8 bg-[#040a14]/98 px-4 py-4 shadow-[0_12px_35px_rgba(0,0,0,0.32)] backdrop-blur sm:px-6">
+              <div className="flex items-center justify-between gap-3">
+                <Link href="/" onClick={() => setOpen(false)} className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-heading text-lg text-ink">{tBrand("name")}</p>
+                    <p className="truncate text-xs uppercase tracking-[0.22em] text-body/45">{tBrand("tagline")}</p>
+                  </div>
                 </Link>
-              ))}
-            </nav>
 
-            <div className="mt-5 rounded-[1.7rem] border border-white/8 bg-white/[0.02] p-4">
-              <p className="mb-3 text-[11px] uppercase tracking-[0.24em] text-body/42">Display language</p>
-              <MobileLanguageSwitcher className="border-white/8 bg-midnight/20" />
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex rounded-full border border-white/10 p-3 text-body/80 transition hover:border-cyan/40 hover:text-cyan"
+                  aria-label="Close navigation"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="mt-4 flex flex-col gap-3 border-t border-white/8 pt-4">
-            <Link href="/login" onClick={() => setOpen(false)} className="ghost-button w-full">
-              {t("login")}
-            </Link>
-            <Link href="/signup" onClick={() => setOpen(false)} className="gold-button w-full">
-              {t("signup")}
-            </Link>
-          </div>
-        </div>
-      </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-5 sm:px-6">
+              <div className="rounded-[1.9rem] border border-white/8 bg-white/[0.03] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)]">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-gold/80">{tBrand("tagline")}</p>
+                <p className="mt-3 text-sm leading-6 text-body/68">{t("signup")}</p>
+              </div>
+
+              <nav className="mt-5 space-y-3">
+                {links.map((item) => (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
+                    className={cn(
+                      "block rounded-[1.5rem] border px-4 py-4 text-base transition",
+                      isActivePath(pathname, item.href)
+                        ? "border-gold/25 bg-gold/10 text-ink"
+                        : "border-white/8 bg-white/[0.02] text-body/82 hover:border-cyan/30 hover:bg-white/5 hover:text-ink",
+                    )}
+                  >
+                    {t(item.key)}
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="mt-5 rounded-[1.7rem] border border-white/8 bg-white/[0.02] p-4">
+                <p className="mb-3 text-[11px] uppercase tracking-[0.24em] text-body/42">
+                  {mobileLanguageLabel[locale] ?? mobileLanguageLabel.en}
+                </p>
+                <MobileLanguageSwitcher className="border-white/8 bg-midnight/20" />
+              </div>
+
+              <div className="mt-5 grid gap-3">
+                <Link href="/login" onClick={() => setOpen(false)} className="ghost-button w-full">
+                  {t("login")}
+                </Link>
+                <Link href="/signup" onClick={() => setOpen(false)} className="gold-button w-full">
+                  {t("signup")}
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </>
+      ) : null}
     </header>
   );
 }

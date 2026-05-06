@@ -18,6 +18,16 @@ RESEND_FROM_EMAIL=Speed Global Trade <no-reply@yourdomain.com>
 5. `APP_BASE_URL` must match the deployed site origin so verification links return users to the correct environment.
 6. After deployment, log into the Smartsupp app with the same account to start receiving and replying to website chats.
 
+### Smartsupp 403 Checklist
+
+If the browser console shows a `403` from `https://www.smartsuppchat.com/loader.js`, the app code is already falling back safely, but the Smartsupp account still needs configuration:
+
+1. In Smartsupp, open `Settings -> General -> Domain whitelist` and add your live host exactly as a domain, for example `speedglobaltrade.mimixtremeluxury.workers.dev`.
+2. Do not include protocol or path in the whitelist entry. Smartsupp's help center shows valid examples like `website.com`, `www.website.com`, or `*.website.com`.
+3. In `Settings -> Chat box -> Options`, confirm the chat box is not fully hidden and not hidden while offline.
+4. Make sure the current visitor or office IP is not blocked in Smartsupp.
+5. If you later add a CSP, allow Smartsupp domains including `smartsupp.com`, `smartsuppchat.com`, `smartsuppcdn.com`, and the websocket/connect domains documented by Smartsupp.
+
 Premium investment platform built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Framer Motion, React Hook Form + Zod, Recharts, Lucide icons, `next-intl`, Zustand, and OpenNext for Cloudflare Workers.
 
 ## Setup
