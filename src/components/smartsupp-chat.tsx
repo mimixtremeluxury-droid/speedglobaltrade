@@ -103,8 +103,21 @@ function setWidgetContainerInteractivity(interactive: boolean) {
   container.style.pointerEvents = interactive ? "auto" : "none";
 }
 
+function hasSmartsuppWidget() {
+  if (typeof document === "undefined") {
+    return false;
+  }
+
+  return Boolean(
+    document.getElementById("smartsupp-widget-container") ||
+      document.getElementById("widgetMessengerFrame") ||
+      document.querySelector('iframe[src*="smartsupp"]'),
+  );
+}
+
 export function SmartsuppChat({ locale }: { locale: AppLocale }) {
   const [isReady, setIsReady] = useState(false);
+  const [scriptFailed, setScriptFailed] = useState(false);
   const smartsuppKey = process.env.NEXT_PUBLIC_SMARTSUPP_KEY || DEFAULT_SMARTSUPP_KEY;
   const copy = useMemo(() => CHAT_COPY[locale] ?? CHAT_COPY.en, [locale]);
 
@@ -151,19 +164,35 @@ export function SmartsuppChat({ locale }: { locale: AppLocale }) {
     script.src = "https://www.smartsuppchat.com/loader.js?";
     script.onload = () => {
       setIsReady(true);
+      setScriptFailed(false);
       window.smartsupp?.("language", SMARTSUPP_LANGUAGE_MAP[locale] ?? "en");
       window.smartsupp?.("chat:hide");
       setWidgetContainerInteractivity(false);
+    };
+    script.onerror = () => {
+      setScriptFailed(true);
+      setIsReady(false);
     };
     document.head.appendChild(script);
   }, [locale, smartsuppKey]);
 
   function openChat() {
+    if (!isReady || scriptFailed) {
+      window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     const smartsupp = ensureSmartsuppStub();
     if (smartsupp) {
       setWidgetContainerInteractivity(true);
       smartsupp("chat:show");
       smartsupp("chat:open");
+      window.setTimeout(() => {
+        if (!hasSmartsuppWidget()) {
+          setWidgetContainerInteractivity(false);
+          window.location.assign(WHATSAPP_URL);
+        }
+      }, 1400);
       return;
     }
 

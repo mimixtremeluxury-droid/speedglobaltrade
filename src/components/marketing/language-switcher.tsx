@@ -185,34 +185,41 @@ export function MobileLanguageSwitcher({ className }: { className?: string } = {
   const { selectedLanguage, selectOption } = useLanguageSwitcherController();
 
   return (
-    <label
+    <div
       className={cn(
-        "flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-body/85",
+        "rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-body/85",
         className,
       )}
     >
-      <Globe className="h-4 w-4 shrink-0" />
-      <span className="shrink-0">{toFlagEmoji(selectedLanguage.flag)}</span>
-      <div className="relative min-w-0 flex-1">
-        <select
-          name="display-language"
-          value={selectedLanguage.code}
-          onChange={(event) => {
-            const option = getLanguageOptionByCode(event.target.value);
-            if (option) {
-              selectOption(option);
-            }
-          }}
-          className="h-6 w-full appearance-none bg-transparent pr-6 text-left text-sm text-ink outline-none"
-        >
-          {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
-            <option key={option.code} value={option.code}>
-              {option.nativeLabel} - {option.label}
-            </option>
-          ))}
-        </select>
-        <ChevronDown className="pointer-events-none absolute right-0 top-1 h-4 w-4 text-body/55" />
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
+          <Globe className="h-4 w-4 text-body/80" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-body/42">{selectedLanguage.label}</p>
+          <div className="relative mt-1">
+            <span className="pointer-events-none absolute left-0 top-1 text-sm">{toFlagEmoji(selectedLanguage.flag)}</span>
+            <select
+              name="display-language"
+              value={selectedLanguage.code}
+              onChange={(event) => {
+                const option = getLanguageOptionByCode(event.target.value);
+                if (option) {
+                  selectOption(option);
+                }
+              }}
+              className="h-7 w-full appearance-none bg-transparent pl-7 pr-6 text-left text-sm text-ink outline-none"
+            >
+              {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
+                <option key={option.code} value={option.code}>
+                  {option.nativeLabel} - {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-0 top-1 h-4 w-4 text-body/55" />
+          </div>
+        </div>
       </div>
-    </label>
+    </div>
   );
 }
