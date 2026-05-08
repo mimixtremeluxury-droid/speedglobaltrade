@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import {
   applyGoogleTranslateSelection,
   readStoredDisplayLanguage,
   setGoogleTranslateCookies,
+  storeDisplayLanguage,
   SWITCHER_LANGUAGE_OPTIONS,
 } from "@/lib/display-language";
 
@@ -108,40 +109,65 @@ export function GoogleTranslateRoot({ pageLanguage }: { pageLanguage: string }) 
 }
 
 export default function useGoogleTranslate() {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const syncLoadedState = () => {
-      setIsLoaded(Boolean(document.querySelector(".goog-te-combo")));
-    };
+    const savedLanguage = readStoredDisplayLanguage();
+    if (!savedLanguage) {
+      return;
+    }
 
-    syncLoadedState();
-    window.addEventListener("sgt-google-translate-ready", syncLoadedState);
+    const checkInterval = window.setInterval(() => {
+      const selectElement = document.querySelector(".goog-te-combo") as HTMLSelectElement | null;
+      if (!selectElement) {
+        return;
+      }
 
-    const intervalId = window.setInterval(syncLoadedState, 300);
+      window.clearInterval(checkInterval);
+      setGoogleTranslateCookies(savedLanguage);
+      if (selectElement.value !== savedLanguage) {
+        selectElement.value = savedLanguage;
+      }
+      selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+    }, 500);
+
+    const timeoutId = window.setTimeout(() => {
+      window.clearInterval(checkInterval);
+    }, 5000);
 
     return () => {
-      window.removeEventListener("sgt-google-translate-ready", syncLoadedState);
-      window.clearInterval(intervalId);
+      window.clearInterval(checkInterval);
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
   const setLanguage = useCallback((langCode: string) => {
+    storeDisplayLanguage(langCode);
     setGoogleTranslateCookies(langCode);
-    const applied = applyGoogleTranslateSelection(langCode);
-    if (applied) {
-      setIsLoaded(true);
+    const selectElement = document.querySelector(".goog-te-combo") as HTMLSelectElement | null;
+
+    if (selectElement) {
+      if (selectElement.value !== langCode) {
+        selectElement.value = langCode;
+      }
+      selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+      window.setTimeout(() => {
+        window.location.reload();
+      }, 300);
+      return true;
     }
+
+    const applied = applyGoogleTranslateSelection(langCode);
+    window.setTimeout(() => {
+      window.location.reload();
+    }, applied ? 300 : 0);
     return applied;
   }, []);
 
   return {
     setLanguage,
-    isLoaded,
     languages: SWITCHER_LANGUAGE_OPTIONS,
   };
 }

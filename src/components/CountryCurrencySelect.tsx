@@ -1,6 +1,7 @@
 "use client";
 
-import { BadgeCheck, ChevronDown, Globe2 } from "lucide-react";
+import { BadgeCheck, Check, ChevronDown, Globe2, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type CountryCurrencyOption = {
   code: string;
@@ -23,6 +24,11 @@ type CountryCurrencySelectProps = {
     currencyLabel: string;
     flag: string;
   }) => void;
+};
+
+type CurrencyOption = {
+  code: string;
+  label: string;
 };
 
 const currencyDisplayNames = new Intl.DisplayNames(["en"], { type: "currency" });
@@ -237,7 +243,7 @@ export function getCurrencyLabel(currencyCode: string) {
   return currencyDisplayNames.of(currencyCode) ?? currencyCode;
 }
 
-const CURRENCIES = Array.from(new Set(COUNTRIES.map((country) => country.currency)))
+const CURRENCIES: CurrencyOption[] = Array.from(new Set(COUNTRIES.map((country) => country.currency)))
   .sort((left, right) => left.localeCompare(right))
   .map((currency) => ({
     code: currency,
@@ -256,16 +262,48 @@ function FieldShell({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block">
+    <div className="block">
       <span className="mb-2 block text-sm text-body/70">{label}</span>
       <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.035] px-4 py-3 transition focus-within:border-cyan/45 focus-within:bg-white/[0.05]">
-        <div className="flex items-center gap-3">
-          <Icon className="h-4 w-4 shrink-0 text-gold/80" />
+        <div className="flex items-start gap-3">
+          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold/80" />
           <div className="min-w-0 flex-1">{children}</div>
         </div>
       </div>
       {error ? <p className="mt-2 text-sm text-red-300">{error}</p> : null}
-    </label>
+    </div>
+  );
+}
+
+function DropdownTrigger({
+  open,
+  title,
+  subtitle,
+  leading,
+  onClick,
+}: {
+  open: boolean;
+  title: string;
+  subtitle: string;
+  leading?: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center justify-between gap-3 rounded-[1.2rem] border border-white/8 bg-[#0f1727] px-4 py-3 text-left transition hover:border-cyan/35 hover:bg-[#121d31]"
+      aria-expanded={open}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        {leading ? <span className="text-lg leading-none">{leading}</span> : null}
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-ink">{title}</p>
+          <p className="truncate text-xs text-body/55">{subtitle}</p>
+        </div>
+      </div>
+      <ChevronDown className={`h-4 w-4 shrink-0 text-body/55 transition ${open ? "rotate-180" : ""}`} />
+    </button>
   );
 }
 
@@ -278,64 +316,155 @@ export default function CountryCurrencySelect({
   currencyError,
   onSelect,
 }: CountryCurrencySelectProps) {
-  const currentCountry = getCountryByName(country) ?? getCountryByName(DEFAULT_SIGNUP_COUNTRY) ?? COUNTRIES[0];
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [openMenu, setOpenMenu] = useState<"country" | "currency" | null>(null);
+  const [countryQuery, setCountryQuery] = useState("");
+
+  const currentCountry = useMemo(
+    () => getCountryByName(country) ?? getCountryByName(DEFAULT_SIGNUP_COUNTRY) ?? COUNTRIES[0],
+    [country],
+  );
+
+  const currentCurrency = useMemo(
+    () => CURRENCIES.find((option) => option.code === currency) ?? { code: currency, label: getCurrencyLabel(currency) },
+    [currency],
+  );
+
+  const filteredCountries = useMemo(() => {
+    const query = countryQuery.trim().toLowerCase();
+    if (!query) {
+      return COUNTRIES;
+    }
+
+    return COUNTRIES.filter((option) => {
+      return (
+        option.name.toLowerCase().includes(query) ||
+        option.code.toLowerCase().includes(query) ||
+        option.currency.toLowerCase().includes(query)
+      );
+    });
+  }, [countryQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectCountry = (nextCountry: CountryCurrencyOption) => {
+    onSelect({
+      country: nextCountry.name,
+      countryCode: nextCountry.code,
+      currency: nextCountry.currency,
+      currencyLabel: getCurrencyLabel(nextCountry.currency),
+      flag: nextCountry.flag,
+    });
+    setCountryQuery("");
+    setOpenMenu(null);
+  };
+
+  const selectCurrency = (nextCurrency: CurrencyOption) => {
+    onSelect({
+      country: currentCountry.name,
+      countryCode: currentCountry.code,
+      currency: nextCurrency.code,
+      currencyLabel: nextCurrency.label,
+      flag: currentCountry.flag,
+    });
+    setOpenMenu(null);
+  };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div ref={rootRef} className="grid gap-4 md:grid-cols-2">
       <FieldShell label={countryLabel} icon={Globe2} error={countryError}>
         <div className="relative">
-          <select
-            name="country"
-            value={currentCountry.name}
-            onChange={(event) => {
-              const nextCountry = getCountryByName(event.target.value);
-              if (!nextCountry) {
-                return;
-              }
+          <DropdownTrigger
+            open={openMenu === "country"}
+            title={currentCountry.name}
+            subtitle={`${currentCountry.code} · ${currentCountry.currency}`}
+            leading={currentCountry.flag}
+            onClick={() => setOpenMenu((current) => (current === "country" ? null : "country"))}
+          />
 
-              onSelect({
-                country: nextCountry.name,
-                countryCode: nextCountry.code,
-                currency: nextCountry.currency,
-                currencyLabel: getCurrencyLabel(nextCountry.currency),
-                flag: nextCountry.flag,
-              });
-            }}
-            className="h-7 w-full appearance-none bg-transparent pr-6 text-left text-sm text-ink outline-none"
-          >
-            {COUNTRIES.map((option) => (
-              <option key={option.code} value={option.name}>
-                {option.flag} {option.name}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-0 top-1 h-4 w-4 text-body/55" />
+          {openMenu === "country" ? (
+            <div className="absolute left-0 right-0 top-[calc(100%+0.75rem)] z-[95] overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#08111e]/98 shadow-2xl backdrop-blur-xl">
+              <div className="border-b border-white/8 p-3">
+                <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
+                  <Search className="h-4 w-4 text-body/45" />
+                  <input
+                    value={countryQuery}
+                    onChange={(event) => setCountryQuery(event.target.value)}
+                    placeholder="Search country or currency"
+                    className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-body/35"
+                  />
+                </div>
+              </div>
+              <div className="max-h-72 overflow-y-auto p-2">
+                {filteredCountries.map((option) => {
+                  const isSelected = option.code === currentCountry.code;
+                  return (
+                    <button
+                      key={option.code}
+                      type="button"
+                      onClick={() => selectCountry(option)}
+                      className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="text-lg leading-none">{option.flag}</span>
+                        <div className="min-w-0">
+                          <p className={`truncate text-sm ${isSelected ? "text-gold" : "text-ink"}`}>{option.name}</p>
+                          <p className="truncate text-xs text-body/55">
+                            {option.code} · {option.currency}
+                          </p>
+                        </div>
+                      </div>
+                      {isSelected ? <Check className="h-4 w-4 shrink-0 text-gold" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
       </FieldShell>
 
       <FieldShell label={currencyLabel} icon={BadgeCheck} error={currencyError}>
         <div className="relative">
-          <select
-            name="currency"
-            value={currency}
-            onChange={(event) => {
-              onSelect({
-                country: currentCountry.name,
-                countryCode: currentCountry.code,
-                currency: event.target.value,
-                currencyLabel: getCurrencyLabel(event.target.value),
-                flag: currentCountry.flag,
-              });
-            }}
-            className="h-7 w-full appearance-none bg-transparent pr-6 text-left text-sm text-ink outline-none"
-          >
-            {CURRENCIES.map((option) => (
-              <option key={option.code} value={option.code}>
-                {option.code} - {option.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-0 top-1 h-4 w-4 text-body/55" />
+          <DropdownTrigger
+            open={openMenu === "currency"}
+            title={currentCurrency.code}
+            subtitle={currentCurrency.label}
+            onClick={() => setOpenMenu((current) => (current === "currency" ? null : "currency"))}
+          />
+
+          {openMenu === "currency" ? (
+            <div className="absolute left-0 right-0 top-[calc(100%+0.75rem)] z-[95] overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#08111e]/98 shadow-2xl backdrop-blur-xl">
+              <div className="max-h-72 overflow-y-auto p-2">
+                {CURRENCIES.map((option) => {
+                  const isSelected = option.code === currentCurrency.code;
+                  return (
+                    <button
+                      key={option.code}
+                      type="button"
+                      onClick={() => selectCurrency(option)}
+                      className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
+                    >
+                      <div className="min-w-0">
+                        <p className={`truncate text-sm ${isSelected ? "text-gold" : "text-ink"}`}>{option.code}</p>
+                        <p className="truncate text-xs text-body/55">{option.label}</p>
+                      </div>
+                      {isSelected ? <Check className="h-4 w-4 shrink-0 text-gold" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
       </FieldShell>
     </div>

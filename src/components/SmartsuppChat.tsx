@@ -63,6 +63,12 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
     script.type = "text/javascript";
     script.async = true;
     script.src = "https://www.smartsuppchat.com/loader.js?";
+    script.onload = () => {
+      console.log("Smartsupp loaded");
+    };
+    script.onerror = () => {
+      console.error("Smartsupp failed to load");
+    };
     document.body.appendChild(script);
   }, [locale, smartsuppKey]);
 
@@ -95,20 +101,31 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
     const style = document.createElement("style");
     style.id = SMARTSUPP_STYLE_ID;
     style.textContent = `
+      #smartsupp-widget-container {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+        z-index: 999999 !important;
+      }
+
       #smartsupp-widget-container .smartsupp-widget-launcher {
         background: linear-gradient(135deg, #f5a623 0%, #d48a1a 100%) !important;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24) !important;
-        width: 48px !important;
-        height: 48px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+        width: 56px !important;
+        height: 56px !important;
         border-radius: 999px !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
 
       #smartsupp-widget-container .smartsupp-widget-launcher:hover {
-        transform: scale(1.04) !important;
-        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3) !important;
+        transform: scale(1.08) !important;
+        box-shadow: 0 6px 24px rgba(245, 166, 35, 0.4) !important;
       }
 
       #smartsupp-widget-container .smartsupp-widget-launcher .smartsupp-widget-launcher-text,
@@ -116,19 +133,26 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
         display: none !important;
       }
 
-      #smartsupp-widget-container iframe,
       #smartsupp-widget-container .smartsupp-widget-frame {
-        border-radius: 24px !important;
-        box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28) !important;
-        overflow: hidden !important;
+        border-radius: 20px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+        bottom: 90px !important;
+        right: 24px !important;
       }
 
       @media (max-width: 768px) {
         #smartsupp-widget-container .smartsupp-widget-launcher {
-          width: 46px !important;
-          height: 46px !important;
+          width: 48px !important;
+          height: 48px !important;
           bottom: 16px !important;
           right: 16px !important;
+        }
+
+        #smartsupp-widget-container .smartsupp-widget-frame {
+          bottom: 76px !important;
+          right: 16px !important;
+          width: calc(100vw - 32px) !important;
+          max-width: 380px !important;
         }
       }
     `;

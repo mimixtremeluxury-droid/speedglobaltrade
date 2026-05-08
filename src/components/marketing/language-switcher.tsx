@@ -16,7 +16,6 @@ import {
   getLanguageOptionForLocale,
   isGoogleTranslateOnlyLanguage,
   readStoredDisplayLanguage,
-  storeDisplayLanguage,
   SwitcherLanguageOption,
 } from "@/lib/display-language";
 import { AppLocale } from "@/lib/types";
@@ -109,7 +108,6 @@ function useLanguageSwitcherController() {
   };
 
   function handleGoogleLanguageChange(option: SwitcherLanguageOption) {
-    storeDisplayLanguage(option.code);
     setSelectedLanguage(option);
     dispatchLanguageChangeEvent();
     setLanguage(option.code);
