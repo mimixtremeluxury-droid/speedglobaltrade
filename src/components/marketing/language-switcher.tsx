@@ -5,36 +5,30 @@ import { ChevronDown, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import useGoogleTranslate from "@/components/GoogleTranslate";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { LOCALES } from "@/lib/constants";
 import {
-  applyGoogleTranslateSelection,
   clearGoogleTranslateCookies,
   clearStoredDisplayLanguage,
   getLanguageOptionByCode,
   getLanguageOptionForLocale,
   isGoogleTranslateOnlyLanguage,
   readStoredDisplayLanguage,
-  setGoogleTranslateCookies,
   storeDisplayLanguage,
-  SWITCHER_LANGUAGE_OPTIONS,
   SwitcherLanguageOption,
 } from "@/lib/display-language";
 import { AppLocale } from "@/lib/types";
 
 const localePattern = new RegExp(`^/(${LOCALES.join("|")})(?=/|$)`);
 
-const toFlagEmoji = (countryCode: string) =>
-  countryCode
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
-
 const dispatchLanguageChangeEvent = () => {
   window.dispatchEvent(new Event("sgt-language-change"));
 };
 
 function useLanguageSwitcherController() {
+  const { setLanguage, languages } = useGoogleTranslate();
   const locale = useLocale() as AppLocale;
   const pathname = usePathname();
   const router = useRouter();
@@ -99,17 +93,6 @@ function useLanguageSwitcherController() {
     router.refresh();
   };
 
-  const handleGoogleLanguageChange = (option: SwitcherLanguageOption) => {
-    storeDisplayLanguage(option.code);
-    setGoogleTranslateCookies(option.code);
-    setSelectedLanguage(option);
-    dispatchLanguageChangeEvent();
-    applyGoogleTranslateSelection(option.code);
-    window.setTimeout(() => {
-      window.location.reload();
-    }, 120);
-  };
-
   const selectOption = (option: SwitcherLanguageOption) => {
     if (option.locale) {
       handleRouteLanguageChange(option);
@@ -120,9 +103,17 @@ function useLanguageSwitcherController() {
   };
 
   return {
+    languages,
     selectedLanguage,
     selectOption,
   };
+
+  function handleGoogleLanguageChange(option: SwitcherLanguageOption) {
+    storeDisplayLanguage(option.code);
+    setSelectedLanguage(option);
+    dispatchLanguageChangeEvent();
+    setLanguage(option.code);
+  }
 }
 
 export function LanguageSwitcher({
@@ -134,7 +125,7 @@ export function LanguageSwitcher({
   contentClassName?: string;
   align?: "start" | "center" | "end";
 } = {}) {
-  const { selectedLanguage, selectOption } = useLanguageSwitcherController();
+  const { languages, selectedLanguage, selectOption } = useLanguageSwitcherController();
 
   return (
     <DropdownMenu.Root>
@@ -145,7 +136,7 @@ export function LanguageSwitcher({
         )}
       >
         <Globe className="h-4 w-4" />
-        <span>{toFlagEmoji(selectedLanguage.flag)}</span>
+        <span>{selectedLanguage.flag}</span>
         <span className="truncate">{selectedLanguage.nativeLabel}</span>
         <ChevronDown className="h-4 w-4 shrink-0" />
       </DropdownMenu.Trigger>
@@ -159,7 +150,7 @@ export function LanguageSwitcher({
             contentClassName,
           )}
         >
-          {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
+          {languages.map((option) => (
             <DropdownMenu.Item
               key={option.code}
               onSelect={(event) => {
@@ -168,7 +159,7 @@ export function LanguageSwitcher({
               }}
               className="flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-sm text-body/80 outline-none transition hover:bg-white/5 hover:text-ink"
             >
-              <span>{toFlagEmoji(option.flag)}</span>
+              <span>{option.flag}</span>
               <div>
                 <p className={selectedLanguage.code === option.code ? "text-gold" : ""}>{option.nativeLabel}</p>
                 <p className="text-xs text-body/55">{option.label}</p>
@@ -182,7 +173,7 @@ export function LanguageSwitcher({
 }
 
 export function MobileLanguageSwitcher({ className }: { className?: string } = {}) {
-  const { selectedLanguage, selectOption } = useLanguageSwitcherController();
+  const { languages, selectedLanguage, selectOption } = useLanguageSwitcherController();
 
   return (
     <div
@@ -198,7 +189,7 @@ export function MobileLanguageSwitcher({ className }: { className?: string } = {
         <div className="min-w-0 flex-1">
           <p className="text-[11px] uppercase tracking-[0.22em] text-body/42">{selectedLanguage.label}</p>
           <div className="relative mt-1">
-            <span className="pointer-events-none absolute left-0 top-1 text-sm">{toFlagEmoji(selectedLanguage.flag)}</span>
+            <span className="pointer-events-none absolute left-0 top-1 text-sm">{selectedLanguage.flag}</span>
             <select
               name="display-language"
               value={selectedLanguage.code}
@@ -210,9 +201,9 @@ export function MobileLanguageSwitcher({ className }: { className?: string } = {
               }}
               className="h-7 w-full appearance-none bg-transparent pl-7 pr-6 text-left text-sm text-ink outline-none"
             >
-              {SWITCHER_LANGUAGE_OPTIONS.map((option) => (
+              {languages.map((option) => (
                 <option key={option.code} value={option.code}>
-                  {option.nativeLabel} - {option.label}
+                  {option.flag} {option.nativeLabel} - {option.label}
                 </option>
               ))}
             </select>

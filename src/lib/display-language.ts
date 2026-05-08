@@ -20,18 +20,71 @@ export const ROUTE_LOCALE_LANGUAGE_CODES: Record<AppLocale, string> = {
 };
 
 export const SWITCHER_LANGUAGE_OPTIONS: SwitcherLanguageOption[] = [
-  { code: "en", locale: "en", label: "English", nativeLabel: "English", flag: "GB" },
-  { code: "es", locale: "es", label: "Spanish", nativeLabel: "Espa\u00f1ol", flag: "ES" },
-  { code: "fr", label: "French", nativeLabel: "Fran\u00e7ais", flag: "FR" },
-  { code: "de", label: "German", nativeLabel: "Deutsch", flag: "DE" },
-  { code: "it", label: "Italian", nativeLabel: "Italiano", flag: "IT" },
-  { code: "pt", label: "Portuguese", nativeLabel: "Portugu\u00eas", flag: "PT" },
-  { code: "ru", label: "Russian", nativeLabel: "\u0420\u0443\u0441\u0441\u043a\u0438\u0439", flag: "RU" },
-  { code: "ja", label: "Japanese", nativeLabel: "\u65e5\u672c\u8a9e", flag: "JP" },
-  { code: "ko", label: "Korean", nativeLabel: "\ud55c\uad6d\uc5b4", flag: "KR" },
-  { code: "zh-CN", locale: "zh", label: "Chinese", nativeLabel: "\u7b80\u4f53\u4e2d\u6587", flag: "CN" },
-  { code: "ar", locale: "ar", label: "Arabic", nativeLabel: "\u0627\u0644\u0639\u0631\u0628\u064a\u0629", flag: "SA" },
-  { code: "hi", locale: "hi", label: "Hindi", nativeLabel: "\u0939\u093f\u0928\u094d\u0926\u0940", flag: "IN" },
+  { code: "en", locale: "en", label: "English", nativeLabel: "English", flag: "🇬🇧" },
+  { code: "es", locale: "es", label: "Spanish", nativeLabel: "Español", flag: "🇪🇸" },
+  { code: "fr", label: "French", nativeLabel: "Français", flag: "🇫🇷" },
+  { code: "de", label: "German", nativeLabel: "Deutsch", flag: "🇩🇪" },
+  { code: "it", label: "Italian", nativeLabel: "Italiano", flag: "🇮🇹" },
+  { code: "pt", label: "Portuguese", nativeLabel: "Português", flag: "🇵🇹" },
+  { code: "ru", label: "Russian", nativeLabel: "Русский", flag: "🇷🇺" },
+  { code: "ja", label: "Japanese", nativeLabel: "日本語", flag: "🇯🇵" },
+  { code: "ko", label: "Korean", nativeLabel: "한국어", flag: "🇰🇷" },
+  { code: "zh-CN", locale: "zh", label: "Chinese", nativeLabel: "中文 (简体)", flag: "🇨🇳" },
+  { code: "zh-TW", label: "Traditional Chinese", nativeLabel: "中文 (繁體)", flag: "🇹🇼" },
+  { code: "ar", locale: "ar", label: "Arabic", nativeLabel: "العربية", flag: "🇸🇦" },
+  { code: "hi", locale: "hi", label: "Hindi", nativeLabel: "हिन्दी", flag: "🇮🇳" },
+  { code: "bn", label: "Bengali", nativeLabel: "বাংলা", flag: "🇧🇩" },
+  { code: "pa", label: "Punjabi", nativeLabel: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
+  { code: "ur", label: "Urdu", nativeLabel: "اردو", flag: "🇵🇰" },
+  { code: "ta", label: "Tamil", nativeLabel: "தமிழ்", flag: "🇮🇳" },
+  { code: "te", label: "Telugu", nativeLabel: "తెలుగు", flag: "🇮🇳" },
+  { code: "mr", label: "Marathi", nativeLabel: "मराठी", flag: "🇮🇳" },
+  { code: "gu", label: "Gujarati", nativeLabel: "ગુજરાતી", flag: "🇮🇳" },
+  { code: "kn", label: "Kannada", nativeLabel: "ಕನ್ನಡ", flag: "🇮🇳" },
+  { code: "ml", label: "Malayalam", nativeLabel: "മലയാളം", flag: "🇮🇳" },
+  { code: "or", label: "Odia", nativeLabel: "ଓଡ଼ିଆ", flag: "🇮🇳" },
+  { code: "ne", label: "Nepali", nativeLabel: "नेपाली", flag: "🇳🇵" },
+  { code: "si", label: "Sinhala", nativeLabel: "සිංහල", flag: "🇱🇰" },
+  { code: "th", label: "Thai", nativeLabel: "ไทย", flag: "🇹🇭" },
+  { code: "lo", label: "Lao", nativeLabel: "ລາວ", flag: "🇱🇦" },
+  { code: "my", label: "Burmese", nativeLabel: "မြန်မာ", flag: "🇲🇲" },
+  { code: "km", label: "Khmer", nativeLabel: "ខ្មែរ", flag: "🇰🇭" },
+  { code: "vi", label: "Vietnamese", nativeLabel: "Tiếng Việt", flag: "🇻🇳" },
+  { code: "id", label: "Indonesian", nativeLabel: "Bahasa Indonesia", flag: "🇮🇩" },
+  { code: "ms", label: "Malay", nativeLabel: "Bahasa Melayu", flag: "🇲🇾" },
+  { code: "fil", label: "Filipino", nativeLabel: "Filipino", flag: "🇵🇭" },
+  { code: "tl", label: "Tagalog", nativeLabel: "Tagalog", flag: "🇵🇭" },
+  { code: "pl", label: "Polish", nativeLabel: "Polski", flag: "🇵🇱" },
+  { code: "cs", label: "Czech", nativeLabel: "Čeština", flag: "🇨🇿" },
+  { code: "sk", label: "Slovak", nativeLabel: "Slovenčina", flag: "🇸🇰" },
+  { code: "hu", label: "Hungarian", nativeLabel: "Magyar", flag: "🇭🇺" },
+  { code: "ro", label: "Romanian", nativeLabel: "Română", flag: "🇷🇴" },
+  { code: "bg", label: "Bulgarian", nativeLabel: "Български", flag: "🇧🇬" },
+  { code: "sr", label: "Serbian", nativeLabel: "Српски", flag: "🇷🇸" },
+  { code: "hr", label: "Croatian", nativeLabel: "Hrvatski", flag: "🇭🇷" },
+  { code: "sl", label: "Slovenian", nativeLabel: "Slovenščina", flag: "🇸🇮" },
+  { code: "lt", label: "Lithuanian", nativeLabel: "Lietuvių", flag: "🇱🇹" },
+  { code: "lv", label: "Latvian", nativeLabel: "Latviešu", flag: "🇱🇻" },
+  { code: "et", label: "Estonian", nativeLabel: "Eesti", flag: "🇪🇪" },
+  { code: "fi", label: "Finnish", nativeLabel: "Suomi", flag: "🇫🇮" },
+  { code: "sv", label: "Swedish", nativeLabel: "Svenska", flag: "🇸🇪" },
+  { code: "da", label: "Danish", nativeLabel: "Dansk", flag: "🇩🇰" },
+  { code: "no", label: "Norwegian", nativeLabel: "Norsk", flag: "🇳🇴" },
+  { code: "is", label: "Icelandic", nativeLabel: "Íslenska", flag: "🇮🇸" },
+  { code: "el", label: "Greek", nativeLabel: "Ελληνικά", flag: "🇬🇷" },
+  { code: "tr", label: "Turkish", nativeLabel: "Türkçe", flag: "🇹🇷" },
+  { code: "he", label: "Hebrew", nativeLabel: "עברית", flag: "🇮🇱" },
+  { code: "fa", label: "Persian", nativeLabel: "فارسی", flag: "🇮🇷" },
+  { code: "sw", label: "Swahili", nativeLabel: "Kiswahili", flag: "🇹🇿" },
+  { code: "am", label: "Amharic", nativeLabel: "አማርኛ", flag: "🇪🇹" },
+  { code: "ha", label: "Hausa", nativeLabel: "Hausa", flag: "🇳🇬" },
+  { code: "ig", label: "Igbo", nativeLabel: "Igbo", flag: "🇳🇬" },
+  { code: "yo", label: "Yoruba", nativeLabel: "Yorùbá", flag: "🇳🇬" },
+  { code: "zu", label: "Zulu", nativeLabel: "IsiZulu", flag: "🇿🇦" },
+  { code: "xh", label: "Xhosa", nativeLabel: "IsiXhosa", flag: "🇿🇦" },
+  { code: "st", label: "Sesotho", nativeLabel: "Sesotho", flag: "🇿🇦" },
+  { code: "tn", label: "Setswana", nativeLabel: "Setswana", flag: "🇿🇦" },
+  { code: "af", label: "Afrikaans", nativeLabel: "Afrikaans", flag: "🇿🇦" },
 ];
 
 export function getLanguageOptionByCode(code: string | null | undefined) {
@@ -54,7 +107,7 @@ export function getLanguageCodeForLocale(locale: AppLocale) {
 }
 
 export function getLanguageDir(code: string) {
-  return code === "ar" ? "rtl" : "ltr";
+  return ["ar", "fa", "he", "ur"].includes(code) ? "rtl" : "ltr";
 }
 
 export function readStoredDisplayLanguage() {
@@ -120,6 +173,6 @@ export function applyGoogleTranslateSelection(code: string, attempt = 0) {
     select.value = code;
   }
 
-  select.dispatchEvent(new Event("change"));
+  select.dispatchEvent(new Event("change", { bubbles: true }));
   return true;
 }

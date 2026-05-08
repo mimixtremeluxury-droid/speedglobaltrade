@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleTranslateBridge } from "@/components/google-translate-bridge";
+import { GoogleTranslateRoot } from "@/components/GoogleTranslate";
 import { LocaleDocumentSync } from "@/components/locale-document-sync";
 import { getLanguageCodeForLocale } from "@/lib/display-language";
 import { AppLocale } from "@/lib/types";
@@ -9,7 +9,7 @@ export function LocaleEnhancers({ locale, dir }: { locale: string; dir: "ltr" | 
   return (
     <>
       <LocaleDocumentSync locale={locale} dir={dir} />
-      <GoogleTranslateBridge pageLanguage={getLanguageCodeForLocale(locale as AppLocale)} />
+      <GoogleTranslateRoot pageLanguage={getLanguageCodeForLocale(locale as AppLocale)} />
     </>
   );
 }

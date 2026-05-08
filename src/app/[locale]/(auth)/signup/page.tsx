@@ -2,12 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  BadgeCheck,
-  ChevronDown,
   ChevronRight,
   Eye,
   EyeOff,
-  Globe2,
   Mail,
   Phone,
   ShieldCheck,
@@ -18,10 +15,14 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import CountryCurrencySelect, {
+  DEFAULT_SIGNUP_COUNTRY,
+  getCountryByName,
+  getCurrencyLabel,
+} from "@/components/CountryCurrencySelect";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { useAppStore } from "@/lib/store";
-import { SIGNUP_CURRENCIES, SIGNUP_JURISDICTIONS, getJurisdictionByNationality } from "@/lib/signup-options";
 import { AppLocale } from "@/lib/types";
 
 const schema = z.object({
@@ -47,7 +48,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: string;
     termsLink: string;
     startingBalanceLabel: string;
-    phoneHint: string;
+    phonePlaceholder: string;
     fundingSummary: string;
     balanceSummary: string;
   }
@@ -59,7 +60,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: "I accept the onboarding terms, product disclosures, and service conditions for this account.",
     termsLink: "Review terms",
     startingBalanceLabel: "Starting balance",
-    phoneHint: "onboarding line",
+    phonePlaceholder: "Enter your mobile or WhatsApp number",
     fundingSummary: "Your account opens in {currency}, your nationality is set to {nationality}, and the dashboard stays at 0.00 until a deposit is confirmed.",
     balanceSummary: "Your live portfolio stays at 0.00 until your first completed deposit settles inside the dashboard.",
   },
@@ -70,7 +71,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: "Acepto los terminos de onboarding, las divulgaciones del producto y las condiciones del servicio para esta cuenta.",
     termsLink: "Revisar terminos",
     startingBalanceLabel: "Saldo inicial",
-    phoneHint: "linea de onboarding",
+    phonePlaceholder: "Ingresa tu numero movil o de WhatsApp",
     fundingSummary: "Tu cuenta se abre en {currency}, tu nacionalidad actual es {nationality} y el panel se mantiene en 0.00 hasta que se confirme un deposito.",
     balanceSummary: "Tu portafolio en vivo se mantiene en 0.00 hasta que se liquide tu primer deposito completado dentro del panel.",
   },
@@ -81,7 +82,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: "\u6211\u63a5\u53d7\u6b64\u8d26\u6237\u7684\u5f00\u6237\u6761\u6b3e\u3001\u4ea7\u54c1\u62ab\u9732\u4e0e\u670d\u52a1\u6761\u4ef6\u3002",
     termsLink: "\u67e5\u770b\u6761\u6b3e",
     startingBalanceLabel: "\u521d\u59cb\u4f59\u989d",
-    phoneHint: "\u5f00\u6237\u4e13\u7ebf",
+    phonePlaceholder: "\u8bf7\u8f93\u5165\u60a8\u7684\u624b\u673a\u53f7\u6216 WhatsApp \u53f7\u7801",
     fundingSummary: "\u60a8\u7684\u8d26\u6237\u5c06\u4ee5 {currency} \u5f00\u901a\uff0c\u56fd\u7c4d\u8bbe\u4e3a {nationality}\uff0c\u5728\u9996\u7b14\u5165\u91d1\u786e\u8ba4\u524d\u4eea\u8868\u76d8\u5c06\u4fdd\u6301 0.00\u3002",
     balanceSummary: "\u5728\u63a7\u5236\u53f0\u4e2d\u7b2c\u4e00\u7b14\u5df2\u5b8c\u6210\u5165\u91d1\u5230\u8d26\u4e4b\u524d\uff0c\u60a8\u7684\u5b9e\u65f6\u7ec4\u5408\u4f59\u989d\u5c06\u4fdd\u6301 0.00\u3002",
   },
@@ -92,7 +93,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: "\u0623\u0648\u0627\u0641\u0642 \u0639\u0644\u0649 \u0634\u0631\u0648\u0637 \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645 \u0648\u0625\u0641\u0635\u0627\u062d\u0627\u062a \u0627\u0644\u0645\u0646\u062a\u062c \u0648\u0634\u0631\u0648\u0637 \u0627\u0644\u062e\u062f\u0645\u0629 \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0647\u0630\u0627 \u0627\u0644\u062d\u0633\u0627\u0628.",
     termsLink: "\u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0634\u0631\u0648\u0637",
     startingBalanceLabel: "\u0627\u0644\u0631\u0635\u064a\u062f \u0627\u0644\u0627\u0641\u062a\u062a\u0627\u062d\u064a",
-    phoneHint: "\u062e\u0637 \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645",
+    phonePlaceholder: "\u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0623\u0648 WhatsApp",
     fundingSummary: "\u064a\u062a\u0645 \u0641\u062a\u062d \u0627\u0644\u062d\u0633\u0627\u0628 \u0628\u0639\u0645\u0644\u0629 {currency}\u060c \u0648\u0627\u0644\u062c\u0646\u0633\u064a\u0629 \u0627\u0644\u0645\u062d\u062f\u062f\u0629 \u0647\u064a {nationality}\u060c \u0648\u064a\u0628\u0642\u0649 \u0627\u0644\u0631\u0635\u064a\u062f 0.00 \u062d\u062a\u0649 \u062a\u0623\u0643\u064a\u062f \u0623\u0648\u0644 \u0625\u064a\u062f\u0627\u0639.",
     balanceSummary: "\u064a\u0628\u0642\u0649 \u0631\u0635\u064a\u062f \u0645\u062d\u0641\u0638\u062a\u0643 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 0.00 \u062d\u062a\u0649 \u062a\u0633\u0648\u064a\u0629 \u0623\u0648\u0644 \u0625\u064a\u062f\u0627\u0639 \u0645\u0643\u062a\u0645\u0644 \u062f\u0627\u062e\u0644 \u0644\u0648\u062d\u0629 \u0627\u0644\u062a\u062d\u0643\u0645.",
   },
@@ -103,7 +104,7 @@ const ADDITIONAL_SIGNUP_COPY: Record<
     termsAgreement: "\u092e\u0948\u0902 \u0907\u0938 \u0916\u093e\u0924\u0947 \u0915\u0947 \u0932\u093f\u090f \u0911\u0928\u092c\u094b\u0930\u094d\u0921\u093f\u0902\u0917 \u0936\u0930\u094d\u0924\u094b\u0902, \u092a\u094d\u0930\u094b\u0921\u0915\u094d\u091f \u0921\u093f\u0938\u094d\u0915\u094d\u0932\u094b\u091c\u0930 \u0914\u0930 \u0938\u0947\u0935\u093e \u0928\u093f\u092f\u092e\u094b\u0902 \u0915\u094b \u0938\u094d\u0935\u0940\u0915\u093e\u0930 \u0915\u0930\u0924\u093e \u0939\u0942\u0901.",
     termsLink: "\u0928\u093f\u092f\u092e \u0926\u0947\u0916\u0947\u0902",
     startingBalanceLabel: "\u0936\u0941\u0930\u0941\u0906\u0924\u0940 \u0936\u0947\u0937\u0930\u093e\u0936\u093f",
-    phoneHint: "\u0911\u0928\u092c\u094b\u0930\u094d\u0921\u093f\u0902\u0917 \u0932\u093e\u0907\u0928",
+    phonePlaceholder: "\u0905\u092a\u0928\u093e \u092e\u094b\u092c\u093e\u0907\u0932 \u092f\u093e WhatsApp \u0928\u0902\u092c\u0930 \u0926\u0930\u094d\u091c \u0915\u0930\u0947\u0902",
     fundingSummary: "\u0906\u092a\u0915\u093e \u0916\u093e\u0924\u093e {currency} \u092e\u0947\u0902 \u0916\u0941\u0932\u0947\u0917\u093e, \u091a\u0941\u0928\u0940 \u0917\u0908 \u0930\u093e\u0937\u094d\u091f\u094d\u0930\u0940\u092f\u0924\u093e {nationality} \u0939\u0948, \u0914\u0930 \u092a\u0939\u0932\u093e \u0921\u093f\u092a\u0949\u091c\u093f\u091f \u0915\u0928\u094d\u092b\u0930\u094d\u092e \u0939\u094b\u0928\u0947 \u0924\u0915 \u0921\u0948\u0936\u092c\u094b\u0930\u094d\u0921 0.00 \u092a\u0930 \u0930\u0939\u0947\u0917\u093e.",
     balanceSummary: "\u0921\u0948\u0936\u092c\u094b\u0930\u094d\u0921 \u0915\u0947 \u0905\u0902\u0926\u0930 \u092a\u0939\u0932\u093e \u0938\u092b\u0932 \u0921\u093f\u092a\u0949\u091c\u093f\u091f \u0938\u0947\u091f\u0932 \u0939\u094b\u0928\u0947 \u0924\u0915 \u0906\u092a\u0915\u0940 \u0932\u093e\u0907\u0935 \u092a\u094b\u0930\u094d\u091f\u092b\u094b\u0932\u093f\u092f\u094b \u0935\u0948\u0932\u094d\u092f\u0942 0.00 \u0930\u0939\u0947\u0917\u0940.",
   },
@@ -146,9 +147,9 @@ export default function SignupPage() {
   const signUp = useAppStore((state) => state.signUp);
   const pushToast = useAppStore((state) => state.pushToast);
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedNationality, setSelectedNationality] = useState("United Kingdom");
+  const [selectedNationality, setSelectedNationality] = useState(DEFAULT_SIGNUP_COUNTRY);
   const [selectedCurrency, setSelectedCurrency] = useState("GBP");
-  const [phoneValue, setPhoneValue] = useState("+44 ");
+  const [phoneValue, setPhoneValue] = useState("");
   const copy = ADDITIONAL_SIGNUP_COPY[locale as AppLocale] ?? ADDITIONAL_SIGNUP_COPY.en;
   const {
     register,
@@ -159,17 +160,15 @@ export default function SignupPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       email: searchParams.get("email") ?? "",
-      nationality: "United Kingdom",
+      nationality: DEFAULT_SIGNUP_COUNTRY,
       currency: "GBP",
-      phoneNumber: "+44 ",
+      phoneNumber: "",
       termsAccepted: false,
     },
   });
 
   const selectedJurisdiction = useMemo(
-    () =>
-      getJurisdictionByNationality(selectedNationality) ??
-      SIGNUP_JURISDICTIONS.find((item) => item.nationality === "United Kingdom")!,
+    () => getCountryByName(selectedNationality) ?? getCountryByName(DEFAULT_SIGNUP_COUNTRY)!,
     [selectedNationality],
   );
 
@@ -187,15 +186,15 @@ export default function SignupPage() {
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 <div className="surface-soft p-4">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-gold/88">{copy.nationality}</p>
-                  <p className="mt-3 font-heading text-xl text-ink">{selectedJurisdiction.nationality}</p>
-                  <p className="mt-1 text-sm text-body/62">
-                    {selectedJurisdiction.dialCode} {copy.phoneHint}
+                  <p className="mt-3 font-heading text-xl text-ink">
+                    {selectedJurisdiction.flag} {selectedJurisdiction.name}
                   </p>
+                  <p className="mt-1 text-sm text-body/62">{selectedJurisdiction.code}</p>
                 </div>
                 <div className="surface-soft p-4">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-gold/88">{copy.currency}</p>
                   <p className="mt-3 font-heading text-xl text-ink">{selectedCurrency}</p>
-                  <p className="mt-1 text-sm text-body/62">{selectedJurisdiction.currencyLabel}</p>
+                  <p className="mt-1 text-sm text-body/62">{getCurrencyLabel(selectedCurrency)}</p>
                 </div>
               </div>
 
@@ -294,67 +293,27 @@ export default function SignupPage() {
                       }}
                       name="phoneNumber"
                       className={inputClassName()}
-                      placeholder={`${selectedJurisdiction.dialCode} 555 000 0000`}
+                      placeholder={copy.phonePlaceholder}
                       autoComplete="tel"
                     />
                   </SignupFieldShell>
                 </div>
 
-                <div>
-                  <SignupFieldShell label={copy.nationality} icon={Globe2} error={errors.nationality?.message}>
-                    <div className="relative">
-                      <select
-                        name="nationality"
-                        value={selectedNationality}
-                        onChange={(event) => {
-                          const nextNationality = event.target.value;
-                          setSelectedNationality(nextNationality);
-                          setValue("nationality", nextNationality, { shouldDirty: true, shouldValidate: true });
-                          const next = getJurisdictionByNationality(nextNationality);
-                          if (!next) return;
-
-                          setSelectedCurrency(next.currency);
-                          setValue("currency", next.currency, { shouldDirty: true, shouldValidate: true });
-                          if (!phoneValue || phoneValue.trim() === "" || (phoneValue.startsWith("+") && phoneValue.length <= 8)) {
-                            const nextPhone = `${next.dialCode} `;
-                            setPhoneValue(nextPhone);
-                            setValue("phoneNumber", `${next.dialCode} `, { shouldDirty: true, shouldValidate: true });
-                          }
-                        }}
-                        className={`${inputClassName(true)} appearance-none`}
-                      >
-                        {SIGNUP_JURISDICTIONS.map((item) => (
-                          <option key={item.nationality} value={item.nationality}>
-                            {item.nationality}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-0 top-1.5 h-4 w-4 text-body/55" />
-                    </div>
-                  </SignupFieldShell>
-                </div>
-
-                <div>
-                  <SignupFieldShell label={copy.currency} icon={BadgeCheck} error={errors.currency?.message}>
-                    <div className="relative">
-                      <select
-                        name="currency"
-                        value={selectedCurrency}
-                        onChange={(event) => {
-                          setSelectedCurrency(event.target.value);
-                          setValue("currency", event.target.value, { shouldDirty: true, shouldValidate: true });
-                        }}
-                        className={`${inputClassName(true)} appearance-none`}
-                      >
-                        {SIGNUP_CURRENCIES.map((item) => (
-                          <option key={item.code} value={item.code}>
-                            {item.code} - {item.label}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-0 top-1.5 h-4 w-4 text-body/55" />
-                    </div>
-                  </SignupFieldShell>
+                <div className="md:col-span-2">
+                  <CountryCurrencySelect
+                    country={selectedNationality}
+                    currency={selectedCurrency}
+                    countryLabel={copy.nationality}
+                    currencyLabel={copy.currency}
+                    countryError={errors.nationality?.message}
+                    currencyError={errors.currency?.message}
+                    onSelect={({ country, currency }) => {
+                      setSelectedNationality(country);
+                      setSelectedCurrency(currency);
+                      setValue("nationality", country, { shouldDirty: true, shouldValidate: true });
+                      setValue("currency", currency, { shouldDirty: true, shouldValidate: true });
+                    }}
+                  />
                 </div>
 
                 <div className="md:col-span-2">
@@ -403,7 +362,7 @@ export default function SignupPage() {
                 <p className="mt-1 text-body/72">
                   {copy.fundingSummary
                     .replace("{currency}", selectedCurrency)
-                    .replace("{nationality}", selectedJurisdiction.nationality)}
+                    .replace("{nationality}", selectedJurisdiction.name)}
                 </p>
               </div>
 
