@@ -1,5 +1,6 @@
 "use client";
 
+import Script from "next/script";
 import { useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { AppLocale } from "@/lib/types";
@@ -14,63 +15,59 @@ declare global {
     _smartsupp?: {
       key?: string;
     };
+    SGT_SMARTSUPP_FALLBACK?: boolean;
   }
 }
 
 const DEFAULT_SMARTSUPP_KEY = "bf325982577c378cebb163441ac5dea0dbe70a88";
-const SMARTSUPP_SCRIPT_ID = "sgt-smartsupp-loader";
+const SMARTSUPP_SCRIPT_ID = "sgt-smartsupp-bootstrap";
 const SMARTSUPP_STYLE_ID = "sgt-smartsupp-theme";
+const SMARTSUPP_LOADER_SRC = "https://www.smartsuppchat.com/loader.js?";
 
-function ensureSmartsuppQueue() {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  if (!window.smartsupp) {
-    const queue = ((...args: unknown[]) => {
-      queue._.push(args);
-    }) as SmartsuppQueue;
-    queue._ = [];
-    window.smartsupp = queue;
-  }
+function getSmartsuppBootstrapScript(smartsuppKey: string) {
+  const escapedKey = smartsuppKey.replace(/'/g, "\\'");
+  return `
+    window._smartsupp = window._smartsupp || {};
+    window._smartsupp.key = '${escapedKey}';
+    window.smartsupp || (function(d) {
+      var s, c, o = smartsupp = function() { o._.push(arguments); };
+      o._ = [];
+      window.smartsupp = o;
+      s = d.getElementsByTagName('script')[0];
+      c = d.createElement('script');
+      c.type = 'text/javascript';
+      c.charset = 'utf-8';
+      c.async = true;
+      c.src = '${SMARTSUPP_LOADER_SRC}';
+      s.parentNode.insertBefore(c, s);
+    })(document);
+  `;
 }
 
-export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
+export default function SmartsuppChat({ locale }: { locale?: AppLocale }) {
   const session = useAppStore((state) => state.session);
   const user = useAppStore((state) => state.user);
   const smartsuppKey = process.env.NEXT_PUBLIC_SMARTSUPP_KEY || DEFAULT_SMARTSUPP_KEY;
 
   useEffect(() => {
-    if (typeof window === "undefined" || !smartsuppKey) {
+    if (typeof document === "undefined") {
       return;
     }
 
-    window._smartsupp = window._smartsupp || {};
-    window._smartsupp.key = smartsuppKey;
-    ensureSmartsuppQueue();
+    const timeout = window.setTimeout(() => {
+      const hasLauncher = Boolean(document.querySelector("#smartsupp-widget-container .smartsupp-widget-launcher"));
+      const hasFrame = Boolean(document.querySelector("#smartsupp-widget-container iframe"));
 
-    if (locale) {
-      const chatLocale = locale === "zh" ? "zh-CN" : locale;
-      window.smartsupp?.("language", chatLocale);
-    }
+      if (!hasLauncher && !hasFrame) {
+        window.SGT_SMARTSUPP_FALLBACK = true;
+        console.warn("Smartsupp failed to mount the live widget. Check the Smartsupp domain whitelist if this persists.");
+      }
+    }, 5000);
 
-    if (document.getElementById(SMARTSUPP_SCRIPT_ID)) {
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = SMARTSUPP_SCRIPT_ID;
-    script.type = "text/javascript";
-    script.async = true;
-    script.src = "https://www.smartsuppchat.com/loader.js?";
-    script.onload = () => {
-      console.log("Smartsupp loaded");
+    return () => {
+      window.clearTimeout(timeout);
     };
-    script.onerror = () => {
-      console.error("Smartsupp failed to load");
-    };
-    document.body.appendChild(script);
-  }, [locale, smartsuppKey]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -79,15 +76,46 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
 
     const email = session?.email ?? user?.profile.email;
     const fullName = session?.fullName ?? user?.profile.fullName;
+    const chatLocale = locale === "zh" ? "zh-CN" : locale;
 
-    if (email) {
-      window.smartsupp?.("email", email);
+    let attempts = 0;
+    const maxAttempts = 24;
+
+    const syncSmartsuppContext = () => {
+      if (!window.smartsupp) {
+        return false;
+      }
+
+      if (chatLocale) {
+        window.smartsupp("language", chatLocale);
+      }
+
+      if (email) {
+        window.smartsupp("email", email);
+      }
+
+      if (fullName) {
+        window.smartsupp("name", fullName);
+      }
+
+      return true;
+    };
+
+    if (syncSmartsuppContext()) {
+      return;
     }
 
-    if (fullName) {
-      window.smartsupp?.("name", fullName);
-    }
-  }, [session, user]);
+    const interval = window.setInterval(() => {
+      attempts += 1;
+      if (syncSmartsuppContext() || attempts >= maxAttempts) {
+        window.clearInterval(interval);
+      }
+    }, 250);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [locale, session, user]);
 
   useEffect(() => {
     if (typeof document === "undefined") {
@@ -106,6 +134,7 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
         opacity: 1 !important;
         display: block !important;
         z-index: 999999 !important;
+        pointer-events: none !important;
       }
 
       #smartsupp-widget-container .smartsupp-widget-launcher {
@@ -121,6 +150,9 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
       }
 
       #smartsupp-widget-container .smartsupp-widget-launcher:hover {
@@ -138,6 +170,7 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
         bottom: 90px !important;
         right: 24px !important;
+        pointer-events: auto !important;
       }
 
       @media (max-width: 768px) {
@@ -163,5 +196,13 @@ export function SmartsuppChat({ locale }: { locale?: AppLocale }) {
     };
   }, []);
 
-  return null;
+  return (
+    <Script
+      id={SMARTSUPP_SCRIPT_ID}
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: getSmartsuppBootstrapScript(smartsuppKey),
+      }}
+    />
+  );
 }
