@@ -23,7 +23,7 @@ function getRequiredEnv(name: "RESEND_API_KEY") {
 }
 
 function resolveAppBaseUrl(appBaseUrl?: string | null) {
-  return (appBaseUrl || readCloudflareEnv("APP_BASE_URL") || process.env.APP_BASE_URL || DEFAULT_APP_BASE_URL).replace(
+  return (readCloudflareEnv("APP_BASE_URL") || process.env.APP_BASE_URL || appBaseUrl || DEFAULT_APP_BASE_URL).replace(
     /\/+$/,
     "",
   );

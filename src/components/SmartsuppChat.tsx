@@ -120,7 +120,7 @@ function setImportantStyle(element: HTMLElement, property: string, value: string
 function forceSmartsuppVisible() {
   const elements = Array.from(
     document.querySelectorAll<HTMLElement>(
-      `#${SMARTSUPP_CONTAINER_ID}, #${SMARTSUPP_CONTAINER_ID} iframe, #${SMARTSUPP_CONTAINER_ID} .smartsupp-widget-launcher, iframe[src*="smartsupp" i], iframe[title*="smartsupp" i]`,
+      `#${SMARTSUPP_CONTAINER_ID}, #${SMARTSUPP_CONTAINER_ID} .smartsupp-widget-launcher, #${SMARTSUPP_CONTAINER_ID} [class*="launcher"], #${SMARTSUPP_CONTAINER_ID} .smartsupp-widget-frame, iframe[src*="smartsupp" i], iframe[title*="smartsupp" i]`,
     ),
   );
 
@@ -249,7 +249,9 @@ function injectSmartsuppStyles() {
   style.id = SMARTSUPP_STYLE_ID;
   style.textContent = `
     #smartsupp-widget-container,
-    #smartsupp-widget-container iframe,
+    #smartsupp-widget-container .smartsupp-widget-launcher,
+    #smartsupp-widget-container [class*="launcher"],
+    #smartsupp-widget-container .smartsupp-widget-frame,
     iframe[src*="smartsupp" i],
     iframe[title*="smartsupp" i] {
       visibility: visible !important;
@@ -296,11 +298,10 @@ function injectSmartsuppStyles() {
     }
 
     #smartsupp-widget-container .smartsupp-widget-frame,
-    #smartsupp-widget-container iframe {
+    iframe[src*="smartsupp" i],
+    iframe[title*="smartsupp" i] {
       border-radius: 20px !important;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
-      bottom: 90px !important;
-      right: 24px !important;
       pointer-events: auto !important;
       z-index: 2147483647 !important;
     }
@@ -314,12 +315,9 @@ function injectSmartsuppStyles() {
         right: 16px !important;
       }
 
-      #smartsupp-widget-container .smartsupp-widget-frame,
-      #smartsupp-widget-container iframe {
-        bottom: 76px !important;
-        right: 16px !important;
-        width: calc(100vw - 32px) !important;
-        max-width: 380px !important;
+      #smartsupp-widget-container .smartsupp-widget-frame {
+        max-width: calc(100vw - 16px) !important;
+        max-height: calc(100dvh - 96px) !important;
       }
     }
   `;
@@ -338,8 +336,16 @@ function getSmartsuppDiagnostics() {
     hasContainer: Boolean(container),
     hasSmartsuppFunction: typeof window.smartsupp === "function",
     hasWidget: hasMountedSmartsuppWidget(),
+    iframeCount: document.querySelectorAll(`iframe[src*="smartsupp" i], iframe[title*="smartsupp" i]`).length,
     lastError: window.SGT_SMARTSUPP_LAST_ERROR ?? null,
+    launcherCount: document.querySelectorAll(
+      `#${SMARTSUPP_CONTAINER_ID} .smartsupp-widget-launcher, #${SMARTSUPP_CONTAINER_ID} [class*="launcher"]`,
+    ).length,
     loaderScriptSrc: loaderScript?.src ?? null,
+    viewport: {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    },
   };
 }
 

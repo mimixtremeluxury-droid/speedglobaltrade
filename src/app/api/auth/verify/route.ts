@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   response.cookies.set(SESSION_COOKIE, result.sessionToken, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: url.protocol === "https:",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
