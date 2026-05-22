@@ -3,8 +3,8 @@ import { getVerificationEmailCopy, renderAuthVerificationEmail } from "@/compone
 import { AppLocale, VerificationIntent } from "@/lib/types";
 import { readCloudflareEnv } from "@/lib/server/cloudflare";
 
-const DEFAULT_APP_BASE_URL = "https://speedglobaltrade.mimixtremeluxury.workers.dev";
-const DEFAULT_RESEND_FROM_EMAIL = "Speed Global Trade <onboarding@resend.dev>";
+const DEFAULT_APP_BASE_URL = "https://speedglobal.trade";
+const DEFAULT_RESEND_FROM_EMAIL = "Speed Global Trade <no-reply@speedglobal.trade>";
 
 function toEmailTagValue(value: string) {
   return value
@@ -23,7 +23,7 @@ function getRequiredEnv(name: "RESEND_API_KEY") {
 }
 
 function resolveAppBaseUrl(appBaseUrl?: string | null) {
-  return (readCloudflareEnv("APP_BASE_URL") || process.env.APP_BASE_URL || appBaseUrl || DEFAULT_APP_BASE_URL).replace(
+  return (appBaseUrl || readCloudflareEnv("APP_BASE_URL") || process.env.APP_BASE_URL || DEFAULT_APP_BASE_URL).replace(
     /\/+$/,
     "",
   );

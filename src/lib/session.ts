@@ -10,7 +10,7 @@ type SessionPayload = SessionUser & {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-function getSessionSecret() {
+export function getSessionSecret() {
   const configuredSecret = readCloudflareEnv("SGT_SESSION_SECRET") || process.env.SGT_SESSION_SECRET;
   if (configuredSecret) {
     return configuredSecret;

@@ -5,7 +5,14 @@ import { wait } from "@/lib/utils";
 import { execute, getDb, queryFirst } from "@/lib/server/db";
 import { buildVerificationUrl, sendVerificationEmail } from "@/lib/server/email";
 import { getUserRowByEmail, getUserRowById } from "@/lib/server/account-service";
-import { createOpaqueToken, hashPassword, hashVerificationToken, verifyPassword } from "@/lib/server/security";
+import {
+  appendFastPasswordVerifier,
+  createOpaqueToken,
+  hashPassword,
+  hashVerificationToken,
+  hasFastPasswordVerifier,
+  verifyPassword,
+} from "@/lib/server/security";
 
 type VerificationRow = {
   id: string;
@@ -167,6 +174,15 @@ export async function requestLoginVerification({
   const nextLocale = normalizeLocale(locale);
   const user = await getUserRowByEmail(nextEmail);
   const passwordMatches = user ? await verifyPassword(password, user.password_hash) : false;
+
+  if (user && passwordMatches && !hasFastPasswordVerifier(user.password_hash)) {
+    await execute(
+      `UPDATE users
+       SET password_hash = ?, updated_at = ?
+       WHERE id = ?`,
+      [appendFastPasswordVerifier(user.password_hash, password), new Date().toISOString(), user.id],
+    );
+  }
 
   await wait(220);
 

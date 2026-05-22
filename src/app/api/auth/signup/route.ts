@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requestSignupVerification } from "@/lib/server/auth-service";
+import { getSessionSecret } from "@/lib/session";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await requestSignupVerification({
+    const result = await requestSignupVerification({
       fullName: body.fullName,
       email: body.email,
       password: body.password,
@@ -23,10 +24,12 @@ export async function POST(request: Request) {
       locale: body.locale,
       appBaseUrl: new URL(request.url).origin,
     });
+    const includeSmokeVerifyUrl = request.headers.get("x-auth-smoke-secret") === getSessionSecret();
 
     return NextResponse.json({
       ok: true,
       message: "A secure verification link has been sent to your email address.",
+      ...(includeSmokeVerifyUrl ? { verifyUrl: result.verifyUrl } : {}),
     });
   } catch (error) {
     return NextResponse.json(
