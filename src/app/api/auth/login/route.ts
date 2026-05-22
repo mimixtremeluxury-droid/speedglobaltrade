@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requestLoginVerification } from "@/lib/server/auth-service";
-import { getSessionSecret } from "@/lib/session";
+import { matchesSmokeSecret } from "@/lib/session";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { email?: string; password?: string; locale?: string };
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       locale: body.locale,
       appBaseUrl: new URL(request.url).origin,
     });
-    const includeSmokeVerifyUrl = request.headers.get("x-auth-smoke-secret") === getSessionSecret();
+    const includeSmokeVerifyUrl = matchesSmokeSecret(request.headers.get("x-auth-smoke-secret"));
 
     return NextResponse.json({
       ok: true,

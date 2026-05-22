@@ -5,7 +5,7 @@ import { getSessionUser } from "@/lib/session";
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSessionUser();
   if (!session) {
-    redirect("/login");
+    redirect("/en/login");
   }
 
   return <DashboardFrame>{children}</DashboardFrame>;

@@ -1,13 +1,9 @@
-import { createHmac, randomBytes } from "node:crypto";
-import { pbkdf2Async } from "@noble/hashes/pbkdf2.js";
-import { sha256 as nobleSha256 } from "@noble/hashes/sha2.js";
+import { createHash, createHmac, pbkdf2Sync, randomBytes } from "node:crypto";
 import { getSessionSecret } from "@/lib/session";
 
-const encoder = new TextEncoder();
-const PASSWORD_ITERATIONS = 310000;
+const PASSWORD_ITERATIONS = 100000;
 const DERIVED_KEY_BYTES = 32;
 const FAST_VERIFIER_ALGORITHM = "hmac-sha256";
-const PBKDF2_ASYNC_TICK = 10;
 
 function bytesToHex(bytes: Uint8Array) {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -30,16 +26,11 @@ function randomHex(size = 32) {
 }
 
 async function sha256(value: string) {
-  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value));
-  return bytesToHex(new Uint8Array(digest));
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function derivePasswordHash(password: string, salt: string, iterations: number) {
-  return pbkdf2Async(nobleSha256, password, encoder.encode(salt), {
-    c: iterations,
-    dkLen: DERIVED_KEY_BYTES,
-    asyncTick: PBKDF2_ASYNC_TICK,
-  });
+  return new Uint8Array(pbkdf2Sync(password, salt, iterations, DERIVED_KEY_BYTES, "sha256"));
 }
 
 function getFastVerifierSecret() {

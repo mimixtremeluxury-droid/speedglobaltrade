@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { SESSION_COOKIE } from "@/lib/constants";
 import { SessionUser } from "@/lib/types";
 import { readCloudflareEnv } from "@/lib/server/cloudflare";
@@ -7,11 +8,25 @@ type SessionPayload = SessionUser & {
   exp: number;
 };
 
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+function readConfiguredSessionSecret() {
+  return readCloudflareEnv("SGT_SESSION_SECRET") || process.env.SGT_SESSION_SECRET || null;
+}
+
+export function hasSessionSecret() {
+  return Boolean(readConfiguredSessionSecret());
+}
+
+export function matchesSmokeSecret(candidate?: string | null) {
+  const configuredSecret = readConfiguredSessionSecret();
+  if (!candidate || !configuredSecret) {
+    return false;
+  }
+
+  return candidate === configuredSecret;
+}
 
 export function getSessionSecret() {
-  const configuredSecret = readCloudflareEnv("SGT_SESSION_SECRET") || process.env.SGT_SESSION_SECRET;
+  const configuredSecret = readConfiguredSessionSecret();
   if (configuredSecret) {
     return configuredSecret;
   }
@@ -23,45 +38,16 @@ export function getSessionSecret() {
   return "speed-global-trade-session-secret";
 }
 
-function toBase64Url(value: string) {
-  const bytes = encoder.encode(value);
-  let binary = "";
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
-function bytesToBase64Url(bytes: Uint8Array) {
-  let binary = "";
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
 function fromBase64Url(value: string) {
-  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = `${base64}${"=".repeat((4 - (base64.length % 4 || 4)) % 4)}`;
-  const binary = atob(padded);
-  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-  return decoder.decode(bytes);
+  return Buffer.from(value, "base64url").toString("utf8");
 }
 
-async function getSigningKey() {
-  return crypto.subtle.importKey(
-    "raw",
-    encoder.encode(getSessionSecret()),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign", "verify"],
-  );
+function toBase64Url(value: string) {
+  return Buffer.from(value, "utf8").toString("base64url");
 }
 
-async function sign(value: string) {
-  const key = await getSigningKey();
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(value));
-  return bytesToBase64Url(new Uint8Array(signature));
+function sign(value: string) {
+  return createHmac("sha256", getSessionSecret()).update(value).digest("base64url");
 }
 
 export async function createSessionToken(user: SessionUser) {
@@ -76,13 +62,20 @@ export async function createSessionToken(user: SessionUser) {
 
 export async function verifySessionToken(token?: string | null) {
   if (!token) return null;
-  const [encoded, signature] = token.split(".");
-  if (!encoded || !signature) return null;
-  const expected = await sign(encoded);
-  if (expected !== signature) return null;
-  const payload = JSON.parse(fromBase64Url(encoded)) as SessionPayload;
-  if (payload.exp < Date.now()) return null;
-  return { userId: payload.userId, email: payload.email, fullName: payload.fullName } satisfies SessionUser;
+  try {
+    const [encoded, signature] = token.split(".");
+    if (!encoded || !signature) return null;
+    const expected = sign(encoded);
+    if (!timingSafeEqual(Buffer.from(expected, "base64url"), Buffer.from(signature, "base64url"))) {
+      return null;
+    }
+    const payload = JSON.parse(fromBase64Url(encoded)) as SessionPayload;
+    if (payload.exp < Date.now()) return null;
+    return { userId: payload.userId, email: payload.email, fullName: payload.fullName } satisfies SessionUser;
+  } catch (error) {
+    console.warn("Unable to verify the current session token.", error);
+    return null;
+  }
 }
 
 export async function getSessionUser() {
