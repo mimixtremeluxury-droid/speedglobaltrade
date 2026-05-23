@@ -1,4 +1,6 @@
 import { createHash, createHmac, pbkdf2Sync, randomBytes } from "node:crypto";
+import { pbkdf2 as noblePbkdf2 } from "@noble/hashes/pbkdf2.js";
+import { sha256 as nobleSha256 } from "@noble/hashes/sha2.js";
 import { getPasswordPepper, readSessionSecret } from "@/lib/server/auth-config";
 
 const PASSWORD_ITERATIONS = 100000;
@@ -26,12 +28,25 @@ function randomHex(size = 32) {
   return randomBytes(size).toString("hex");
 }
 
-async function sha256(value: string) {
+async function hashSha256Hex(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
 
 function derivePasswordHash(password: string, salt: string, iterations: number) {
-  return new Uint8Array(pbkdf2Sync(password, salt, iterations, DERIVED_KEY_BYTES, "sha256"));
+  if (iterations > PASSWORD_ITERATIONS) {
+    return noblePbkdf2(nobleSha256, password, salt, { c: iterations, dkLen: DERIVED_KEY_BYTES });
+  }
+
+  try {
+    return new Uint8Array(pbkdf2Sync(password, salt, iterations, DERIVED_KEY_BYTES, "sha256"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/iteration counts above \d+ are not supported/i.test(message)) {
+      return noblePbkdf2(nobleSha256, password, salt, { c: iterations, dkLen: DERIVED_KEY_BYTES });
+    }
+
+    throw error;
+  }
 }
 
 function getVerifierKey(secret: string) {
@@ -154,5 +169,5 @@ export function createOpaqueToken() {
 }
 
 export function hashVerificationToken(token: string) {
-  return sha256(token);
+  return hashSha256Hex(token);
 }
