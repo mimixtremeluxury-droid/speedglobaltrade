@@ -10,6 +10,7 @@
 NEXT_PUBLIC_TAWK_PROPERTY_ID=property_id_from_tawk
 NEXT_PUBLIC_TAWK_WIDGET_ID=widget_id_from_tawk
 SGT_SESSION_SECRET=replace-this-with-a-long-random-secret
+SGT_PASSWORD_PEPPER=replace-this-with-a-second-long-random-secret
 APP_BASE_URL=https://speedglobal.trade
 NEXT_PUBLIC_APP_BASE_URL=https://speedglobal.trade
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxx
@@ -18,9 +19,10 @@ NEXT_PUBLIC_STRIPE_SUCCESS_URL=https://speedglobal.trade/success
 NEXT_PUBLIC_STRIPE_CANCEL_URL=https://speedglobal.trade/cancel
 ```
 
-4. `RESEND_API_KEY` must come from your Resend dashboard, and `RESEND_FROM_EMAIL` should use a sender identity you have verified in Resend for production delivery.
-5. `APP_BASE_URL` must match the deployed site origin so verification links return users to the correct environment.
-6. After deployment, log into the Tawk.to dashboard or app with the same account to start receiving and replying to website chats.
+4. `SGT_SESSION_SECRET` signs session cookies and secure login completions. `SGT_PASSWORD_PEPPER` is a separate secret used only for password verification and upgrade flows.
+5. `RESEND_API_KEY` must come from your Resend dashboard, and `RESEND_FROM_EMAIL` should use a sender identity you have verified in Resend for production delivery.
+6. `APP_BASE_URL` must match the deployed site origin so verification links return users to the correct environment.
+7. After deployment, log into the Tawk.to dashboard or app with the same account to start receiving and replying to website chats.
 
 Premium investment platform built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Framer Motion, React Hook Form + Zod, Recharts, Lucide icons, `next-intl`, Zustand, and OpenNext for Cloudflare Workers.
 
@@ -61,7 +63,16 @@ Authentication now requires a secure email verification link on both signup and 
 - `APP_BASE_URL` should point to the deployed app origin used inside email links.
 - `RESEND_API_KEY` must be a valid Resend API key.
 - `RESEND_FROM_EMAIL` should use a sender/domain verified in Resend for production inbox delivery.
+- `SGT_SESSION_SECRET` must be provisioned in every production runtime that issues or verifies signed sessions.
+- `SGT_PASSWORD_PEPPER` must be provisioned separately from `SGT_SESSION_SECRET` so signup and login remain stable even if the session secret changes.
 - If `RESEND_FROM_EMAIL` is omitted during local development, the app falls back to `Speed Global Trade <no-reply@speedglobal.trade>`.
+
+Provision the production auth secrets in Cloudflare before deploying:
+
+```bash
+npx wrangler secret put SGT_SESSION_SECRET
+npx wrangler secret put SGT_PASSWORD_PEPPER
+```
 
 ## Build
 

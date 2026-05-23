@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requestSignupVerification } from "@/lib/server/auth-service";
 import { matchesSmokeSecret } from "@/lib/session";
+import { isAuthConfigurationError, toPublicAuthErrorMessage } from "@/lib/server/auth-config";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
@@ -33,8 +34,8 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to create this account." },
-      { status: 400 },
+      { error: toPublicAuthErrorMessage(error, "Unable to create this account.") },
+      { status: isAuthConfigurationError(error) ? 503 : 400 },
     );
   }
 }

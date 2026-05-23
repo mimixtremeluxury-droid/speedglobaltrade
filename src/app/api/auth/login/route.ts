@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requestLoginVerification } from "@/lib/server/auth-service";
 import { matchesSmokeSecret } from "@/lib/session";
+import { isAuthConfigurationError, toPublicAuthErrorMessage } from "@/lib/server/auth-config";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { email?: string; password?: string; locale?: string };
@@ -24,8 +25,8 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to start the secure login flow." },
-      { status: 400 },
+      { error: toPublicAuthErrorMessage(error, "Unable to start the secure login flow.") },
+      { status: isAuthConfigurationError(error) ? 503 : 400 },
     );
   }
 }

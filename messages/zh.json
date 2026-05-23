@@ -235,6 +235,7 @@
       "verificationTitle": "验证链接已发送",
       "verifySignupNotice": "请先检查邮箱并验证账户，然后使用安全链接完成首次登录。",
       "verifyLoginNotice": "我们已向你的邮箱发送新的安全链接。打开它即可完成本次登录请求。",
+      "authUnavailableNotice": "身份验证暂时不可用。请稍后再试。",
       "verificationExpiredNotice": "该验证链接已过期。请重新提交表单，我们会发送新的链接。",
       "verificationInvalidNotice": "该验证链接无效或已被使用。请重新请求新的安全链接。"
     },
@@ -253,8 +254,11 @@
       "errorTitle": "无法创建账户",
       "loginPrompt": "已经完成注册？",
       "loginLink": "在这里登录",
-      "verificationTitle": "请验证你的邮箱"
-    }
+      "verificationTitle": "请验证你的邮箱",
+      "authUnavailableNotice": "身份验证暂时不可用。请稍后再试。",
+      "verificationExpiredNotice": "该验证链接已过期。请重新提交表单，我们会发送新的链接。",
+      "verificationInvalidNotice": "该验证链接无效或已被使用。请重新请求新的安全链接。"
+      }
   },
   "dashboard": {
     "frame": {

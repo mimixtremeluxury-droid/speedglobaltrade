@@ -3,14 +3,13 @@ import { AppLocale, SessionUser, VerificationIntent } from "@/lib/types";
 import { createSessionToken } from "@/lib/session";
 import { wait } from "@/lib/utils";
 import { execute, getDb, queryFirst } from "@/lib/server/db";
+import { isAuthConfigurationError } from "@/lib/server/auth-config";
 import { buildVerificationUrl, sendVerificationEmail } from "@/lib/server/email";
 import { getUserRowByEmail, getUserRowById } from "@/lib/server/account-service";
 import {
-  appendFastPasswordVerifier,
   createOpaqueToken,
   hashPassword,
   hashVerificationToken,
-  hasFastPasswordVerifier,
   verifyPassword,
 } from "@/lib/server/security";
 
@@ -173,20 +172,20 @@ export async function requestLoginVerification({
   const nextEmail = normalizeEmail(email);
   const nextLocale = normalizeLocale(locale);
   const user = await getUserRowByEmail(nextEmail);
-  const passwordMatches = user ? await verifyPassword(password, user.password_hash) : false;
+  const passwordVerification = user ? await verifyPassword(password, user.password_hash) : { matches: false };
 
-  if (user && passwordMatches && !hasFastPasswordVerifier(user.password_hash)) {
+  if (user && passwordVerification.matches && passwordVerification.nextPasswordHash) {
     await execute(
       `UPDATE users
        SET password_hash = ?, updated_at = ?
        WHERE id = ?`,
-      [appendFastPasswordVerifier(user.password_hash, password), new Date().toISOString(), user.id],
+      [passwordVerification.nextPasswordHash, new Date().toISOString(), user.id],
     );
   }
 
   await wait(220);
 
-  if (!user || !passwordMatches) {
+  if (!user || !passwordVerification.matches) {
     return { email: nextEmail };
   }
 
@@ -277,10 +276,21 @@ export async function verifyAuthToken(token: string, fallbackLocale?: string | n
     fullName: freshUser.full_name,
   };
 
-  return {
-    ok: true as const,
-    redirectPath: record.redirect_path || `/${locale}/dashboard`,
-    sessionToken: await createSessionToken(sessionUser),
-    locale,
-  };
+  try {
+    return {
+      ok: true as const,
+      redirectPath: record.redirect_path || `/${locale}/dashboard`,
+      sessionToken: await createSessionToken(sessionUser),
+      locale,
+    };
+  } catch (error) {
+    if (isAuthConfigurationError(error)) {
+      return {
+        ok: false as const,
+        redirectPath: `/${locale}/login?notice=auth-unavailable`,
+      };
+    }
+
+    throw error;
+  }
 }

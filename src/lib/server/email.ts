@@ -1,10 +1,7 @@
 import { APP_NAME } from "@/lib/constants";
 import { getVerificationEmailCopy, renderAuthVerificationEmail } from "@/components/emails/auth-verification-email";
 import { AppLocale, VerificationIntent } from "@/lib/types";
-import { readCloudflareEnv } from "@/lib/server/cloudflare";
-
-const DEFAULT_APP_BASE_URL = "https://speedglobal.trade";
-const DEFAULT_RESEND_FROM_EMAIL = "Speed Global Trade <no-reply@speedglobal.trade>";
+import { getResendApiKey, getResendFromEmail, resolveAuthAppBaseUrl } from "@/lib/server/auth-config";
 
 function toEmailTagValue(value: string) {
   return value
@@ -14,27 +11,8 @@ function toEmailTagValue(value: string) {
     .replace(/^-+|-+$/g, "") || "speed-global-trade";
 }
 
-function getRequiredEnv(name: "RESEND_API_KEY") {
-  const value = readCloudflareEnv(name) || process.env[name];
-  if (!value) {
-    throw new Error(`${name} is required for the verification email flow.`);
-  }
-  return value;
-}
-
-function resolveAppBaseUrl(appBaseUrl?: string | null) {
-  return (appBaseUrl || readCloudflareEnv("APP_BASE_URL") || process.env.APP_BASE_URL || DEFAULT_APP_BASE_URL).replace(
-    /\/+$/,
-    "",
-  );
-}
-
-function resolveFromEmail() {
-  return readCloudflareEnv("RESEND_FROM_EMAIL") || process.env.RESEND_FROM_EMAIL || DEFAULT_RESEND_FROM_EMAIL;
-}
-
 export function buildVerificationUrl(token: string, locale: AppLocale, appBaseUrl?: string | null) {
-  const baseUrl = resolveAppBaseUrl(appBaseUrl);
+  const baseUrl = resolveAuthAppBaseUrl(appBaseUrl);
   const url = new URL("/api/auth/verify", baseUrl);
   url.searchParams.set("token", token);
   url.searchParams.set("locale", locale);
@@ -56,8 +34,8 @@ export async function sendVerificationEmail({
   intent: VerificationIntent;
   appBaseUrl?: string | null;
 }) {
-  const resendApiKey = getRequiredEnv("RESEND_API_KEY");
-  const resendFromEmail = resolveFromEmail();
+  const resendApiKey = getResendApiKey();
+  const resendFromEmail = getResendFromEmail();
   const verifyUrl = buildVerificationUrl(token, locale, appBaseUrl);
   const copy = getVerificationEmailCopy(locale, intent);
   const html = renderAuthVerificationEmail({

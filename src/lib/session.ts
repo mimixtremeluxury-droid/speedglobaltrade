@@ -2,40 +2,23 @@ import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { SESSION_COOKIE } from "@/lib/constants";
 import { SessionUser } from "@/lib/types";
-import { readCloudflareEnv } from "@/lib/server/cloudflare";
+import { getSessionSecret, readSessionSecret } from "@/lib/server/auth-config";
 
 type SessionPayload = SessionUser & {
   exp: number;
 };
 
-function readConfiguredSessionSecret() {
-  return readCloudflareEnv("SGT_SESSION_SECRET") || process.env.SGT_SESSION_SECRET || null;
-}
-
 export function hasSessionSecret() {
-  return Boolean(readConfiguredSessionSecret());
+  return Boolean(readSessionSecret());
 }
 
 export function matchesSmokeSecret(candidate?: string | null) {
-  const configuredSecret = readConfiguredSessionSecret();
+  const configuredSecret = readSessionSecret();
   if (!candidate || !configuredSecret) {
     return false;
   }
 
   return candidate === configuredSecret;
-}
-
-export function getSessionSecret() {
-  const configuredSecret = readConfiguredSessionSecret();
-  if (configuredSecret) {
-    return configuredSecret;
-  }
-
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("SGT_SESSION_SECRET is required in production.");
-  }
-
-  return "speed-global-trade-session-secret";
 }
 
 function fromBase64Url(value: string) {

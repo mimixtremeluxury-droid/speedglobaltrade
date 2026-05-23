@@ -1,9 +1,10 @@
 import { createHash, createHmac, pbkdf2Sync, randomBytes } from "node:crypto";
-import { getSessionSecret } from "@/lib/session";
+import { getPasswordPepper, readSessionSecret } from "@/lib/server/auth-config";
 
 const PASSWORD_ITERATIONS = 100000;
 const DERIVED_KEY_BYTES = 32;
 const FAST_VERIFIER_ALGORITHM = "hmac-sha256";
+const PASSWORD_VERIFIER_SUFFIX = ":password-verifier";
 
 function bytesToHex(bytes: Uint8Array) {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -33,12 +34,24 @@ function derivePasswordHash(password: string, salt: string, iterations: number) 
   return new Uint8Array(pbkdf2Sync(password, salt, iterations, DERIVED_KEY_BYTES, "sha256"));
 }
 
-function getFastVerifierSecret() {
-  return `${getSessionSecret()}:password-verifier`;
+function getVerifierKey(secret: string) {
+  return `${secret}${PASSWORD_VERIFIER_SUFFIX}`;
 }
 
-function createFastPasswordVerifier(password: string) {
-  return createHmac("sha256", getFastVerifierSecret()).update(password).digest("hex");
+function createFastPasswordVerifier(password: string, secret: string) {
+  return createHmac("sha256", getVerifierKey(secret)).update(password).digest("hex");
+}
+
+function createPepperFastPasswordVerifier(password: string) {
+  return createFastPasswordVerifier(password, getPasswordPepper());
+}
+
+function createLegacySessionFastPasswordVerifier(password: string) {
+  const legacySessionSecret = readSessionSecret();
+  if (!legacySessionSecret) {
+    return null;
+  }
+  return createFastPasswordVerifier(password, legacySessionSecret);
 }
 
 function splitPasswordHash(passwordHash: string) {
@@ -61,12 +74,8 @@ export function hasFastPasswordVerifier(passwordHash: string) {
   return Boolean(fastVerifierRecord?.startsWith(`${FAST_VERIFIER_ALGORITHM}$`));
 }
 
-export function appendFastPasswordVerifier(passwordHash: string, password: string) {
-  if (hasFastPasswordVerifier(passwordHash)) {
-    return passwordHash;
-  }
-
-  return `${passwordHash}|${FAST_VERIFIER_ALGORITHM}$${createFastPasswordVerifier(password)}`;
+function buildPasswordHashWithPepper(pbkdf2Record: string, password: string) {
+  return `${pbkdf2Record}|${FAST_VERIFIER_ALGORITHM}$${createPepperFastPasswordVerifier(password)}`;
 }
 
 function constantTimeEqual(left: Uint8Array, right: Uint8Array) {
@@ -84,37 +93,60 @@ function constantTimeEqual(left: Uint8Array, right: Uint8Array) {
 export async function hashPassword(password: string) {
   const salt = randomHex(16);
   const derived = await derivePasswordHash(password, salt, PASSWORD_ITERATIONS);
-  const fastVerifier = createFastPasswordVerifier(password);
-  return `pbkdf2$${PASSWORD_ITERATIONS}$${salt}$${bytesToHex(derived)}|${FAST_VERIFIER_ALGORITHM}$${fastVerifier}`;
+  return buildPasswordHashWithPepper(`pbkdf2$${PASSWORD_ITERATIONS}$${salt}$${bytesToHex(derived)}`, password);
 }
+
+export type PasswordVerificationResult = {
+  matches: boolean;
+  nextPasswordHash?: string;
+};
 
 export async function verifyPassword(password: string, passwordHash: string) {
   const { pbkdf2Record, fastVerifierRecord } = splitPasswordHash(passwordHash);
+  let shouldRefreshFastVerifier = !fastVerifierRecord;
 
   if (fastVerifierRecord) {
     const [algorithm, expectedFastVerifier] = fastVerifierRecord.split("$");
     if (algorithm === FAST_VERIFIER_ALGORITHM && expectedFastVerifier) {
-      return constantTimeEqual(hexToBytes(createFastPasswordVerifier(password)), hexToBytes(expectedFastVerifier));
+      if (
+        constantTimeEqual(hexToBytes(createPepperFastPasswordVerifier(password)), hexToBytes(expectedFastVerifier))
+      ) {
+        return { matches: true };
+      }
+
+      const legacyFastVerifier = createLegacySessionFastPasswordVerifier(password);
+      if (
+        legacyFastVerifier &&
+        constantTimeEqual(hexToBytes(legacyFastVerifier), hexToBytes(expectedFastVerifier))
+      ) {
+        shouldRefreshFastVerifier = true;
+      }
     }
   }
 
   const [algorithm, rawIterations, salt, expected] = pbkdf2Record.split("$");
   if (algorithm !== "pbkdf2" || !rawIterations || !salt || !expected) {
-    return false;
+    return { matches: false };
   }
 
   const iterations = Number.parseInt(rawIterations, 10);
   if (!Number.isFinite(iterations) || iterations <= 0) {
-    return false;
+    return { matches: false };
   }
 
   const derived = await derivePasswordHash(password, salt, iterations);
   const expectedBytes = hexToBytes(expected);
   if (expectedBytes.length !== derived.length) {
-    return false;
+    return { matches: false };
   }
 
-  return constantTimeEqual(derived, expectedBytes);
+  if (!constantTimeEqual(derived, expectedBytes)) {
+    return { matches: false };
+  }
+
+  return shouldRefreshFastVerifier
+    ? { matches: true, nextPasswordHash: buildPasswordHashWithPepper(pbkdf2Record, password) }
+    : { matches: true };
 }
 
 export function createOpaqueToken() {

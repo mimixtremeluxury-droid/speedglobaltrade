@@ -50,6 +50,8 @@ export default function LoginPage() {
               ? t("verifySignupNotice")
               : notice === "verify-login"
                 ? t("verifyLoginNotice")
+                : notice === "auth-unavailable"
+                  ? t("authUnavailableNotice")
                 : notice === "verification-expired"
                   ? t("verificationExpiredNotice")
                   : t("verificationInvalidNotice")}

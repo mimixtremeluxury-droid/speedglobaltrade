@@ -144,6 +144,7 @@ export default function SignupPage() {
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const notice = searchParams.get("notice");
   const signUp = useAppStore((state) => state.signUp);
   const pushToast = useAppStore((state) => state.pushToast);
   const [showPassword, setShowPassword] = useState(false);
@@ -230,6 +231,15 @@ export default function SignupPage() {
           </aside>
 
           <section className="p-6 sm:p-8">
+            {notice ? (
+              <div className="mb-6 rounded-3xl border border-cyan/20 bg-cyan/10 px-4 py-4 text-sm leading-7 text-body/82">
+                {notice === "auth-unavailable"
+                  ? t("authUnavailableNotice")
+                  : notice === "verification-expired"
+                    ? t("verificationExpiredNotice")
+                    : t("verificationInvalidNotice")}
+              </div>
+            ) : null}
             <form
               onSubmit={handleSubmit(async (values) => {
                 try {

@@ -57,11 +57,19 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
       ...(init?.headers ?? {}),
     },
   });
-  const payload = (await response.json()) as T & { error?: string };
-  if (!response.ok) {
-    throw new Error(payload.error ?? "The request could not be completed.");
+  const text = await response.text();
+  let payload: (T & { error?: string }) | null = null;
+
+  try {
+    payload = JSON.parse(text) as T & { error?: string };
+  } catch {
+    payload = null;
   }
-  return payload;
+
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "The request could not be completed.");
+  }
+  return (payload ?? ({} as T)) as T;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({

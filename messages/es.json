@@ -231,14 +231,15 @@
       "submitting": "Ingresando...",
       "successDescription": "Abre el correo seguro que te acabamos de enviar para terminar de entrar a tu espacio.",
       "errorTitle": "Error de acceso",
-      "signupPrompt": "Necesitas una cuenta nueva?",
-      "signupLink": "Abrela aqui",
-      "verificationTitle": "Enlace de verificacion enviado",
-      "verifySignupNotice": "Revisa tu bandeja de entrada para verificar tu cuenta y luego usa el enlace seguro para completar tu primer acceso.",
-      "verifyLoginNotice": "Enviamos un nuevo enlace seguro a tu correo. Abrelo para completar este acceso.",
-      "verificationExpiredNotice": "Ese enlace de verificacion ha expirado. Envia el formulario otra vez y te mandaremos uno nuevo.",
-      "verificationInvalidNotice": "Ese enlace de verificacion no es valido o ya fue usado. Solicita un nuevo enlace seguro para continuar."
-    },
+        "signupPrompt": "Necesitas una cuenta nueva?",
+        "signupLink": "Abrela aqui",
+        "verificationTitle": "Enlace de verificacion enviado",
+        "verifySignupNotice": "Revisa tu bandeja de entrada para verificar tu cuenta y luego usa el enlace seguro para completar tu primer acceso.",
+        "verifyLoginNotice": "Enviamos un nuevo enlace seguro a tu correo. Abrelo para completar este acceso.",
+        "authUnavailableNotice": "La autenticacion no esta disponible temporalmente. Intentalo de nuevo en breve.",
+        "verificationExpiredNotice": "Ese enlace de verificacion ha expirado. Envia el formulario otra vez y te mandaremos uno nuevo.",
+        "verificationInvalidNotice": "Ese enlace de verificacion no es valido o ya fue usado. Solicita un nuevo enlace seguro para continuar."
+      },
     "signup": {
       "eyebrow": "Abrir cuenta",
       "title": "Crea tu perfil premium de inversionista",
@@ -250,12 +251,15 @@
       "confirmPassword": "Confirmar contraseña",
       "submit": "Crear cuenta",
       "submitting": "Preparando...",
-      "successDescription": "Enviamos un enlace seguro de verificacion a tu correo. Confirmalo para terminar de abrir tu cuenta.",
-      "errorTitle": "No se pudo crear la cuenta",
-      "loginPrompt": "Ya estas registrado?",
-      "loginLink": "Entra aqui",
-      "verificationTitle": "Verifica tu correo"
-    }
+        "successDescription": "Enviamos un enlace seguro de verificacion a tu correo. Confirmalo para terminar de abrir tu cuenta.",
+        "errorTitle": "No se pudo crear la cuenta",
+        "loginPrompt": "Ya estas registrado?",
+        "loginLink": "Entra aqui",
+        "verificationTitle": "Verifica tu correo",
+        "authUnavailableNotice": "La autenticacion no esta disponible temporalmente. Intentalo de nuevo en breve.",
+        "verificationExpiredNotice": "Ese enlace de verificacion ha expirado. Envia el formulario otra vez y te mandaremos uno nuevo.",
+        "verificationInvalidNotice": "Ese enlace de verificacion no es valido o ya fue usado. Solicita un nuevo enlace seguro para continuar."
+      }
   },
   "dashboard": {
     "frame": {
