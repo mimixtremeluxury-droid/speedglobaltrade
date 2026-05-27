@@ -64,8 +64,15 @@ async function createVerificationToken({
 
   if (active) {
     const createdAt = new Date(active.created_at).getTime();
-    if (Date.now() - createdAt < VERIFICATION_RESEND_COOLDOWN_MS) {
-      throw new Error("Please wait a moment before requesting another verification email.");
+    const expiresAt = new Date(active.expires_at).getTime();
+    const isStillValid = Number.isFinite(expiresAt) && expiresAt > Date.now();
+
+    if (isStillValid && Date.now() - createdAt < VERIFICATION_RESEND_COOLDOWN_MS) {
+      return {
+        token: null,
+        expiresAt: active.expires_at,
+        verificationPending: true,
+      };
     }
   }
 
@@ -90,7 +97,11 @@ async function createVerificationToken({
       .bind(crypto.randomUUID(), userId, email, intent, tokenHash, locale, `/${locale}/dashboard`, expiresAt, now),
   ]);
 
-  return { token, expiresAt };
+  return {
+    token,
+    expiresAt,
+    verificationPending: false,
+  };
 }
 
 export async function requestSignupVerification({
@@ -137,24 +148,28 @@ export async function requestSignupVerification({
     );
   }
 
-  const { token } = await createVerificationToken({
+  const verification = await createVerificationToken({
     userId,
     email: nextEmail,
     locale: nextLocale,
     intent: "signup",
   });
-  await sendVerificationEmail({
-    recipientEmail: nextEmail,
-    recipientName: normalizedName,
-    token,
-    locale: nextLocale,
-    intent: "signup",
-    appBaseUrl,
-  });
+
+  if (verification.token) {
+    await sendVerificationEmail({
+      recipientEmail: nextEmail,
+      recipientName: normalizedName,
+      token: verification.token,
+      locale: nextLocale,
+      intent: "signup",
+      appBaseUrl,
+    });
+  }
 
   return {
     email: nextEmail,
-    verifyUrl: buildVerificationUrl(token, nextLocale, appBaseUrl),
+    verifyUrl: verification.token ? buildVerificationUrl(verification.token, nextLocale, appBaseUrl) : undefined,
+    verificationPending: verification.verificationPending,
   };
 }
 
@@ -189,25 +204,28 @@ export async function requestLoginVerification({
     return { email: nextEmail };
   }
 
-  const { token } = await createVerificationToken({
+  const verification = await createVerificationToken({
     userId: user.id,
     email: user.email,
     locale: nextLocale,
     intent: "login",
   });
 
-  await sendVerificationEmail({
-    recipientEmail: user.email,
-    recipientName: user.full_name,
-    token,
-    locale: nextLocale,
-    intent: "login",
-    appBaseUrl,
-  });
+  if (verification.token) {
+    await sendVerificationEmail({
+      recipientEmail: user.email,
+      recipientName: user.full_name,
+      token: verification.token,
+      locale: nextLocale,
+      intent: "login",
+      appBaseUrl,
+    });
+  }
 
   return {
     email: user.email,
-    verifyUrl: buildVerificationUrl(token, nextLocale, appBaseUrl),
+    verifyUrl: verification.token ? buildVerificationUrl(verification.token, nextLocale, appBaseUrl) : undefined,
+    verificationPending: verification.verificationPending,
   };
 }
 

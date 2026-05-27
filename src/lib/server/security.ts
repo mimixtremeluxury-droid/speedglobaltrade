@@ -123,9 +123,8 @@ export async function verifyPassword(password: string, passwordHash: string) {
   if (fastVerifierRecord) {
     const [algorithm, expectedFastVerifier] = fastVerifierRecord.split("$");
     if (algorithm === FAST_VERIFIER_ALGORITHM && expectedFastVerifier) {
-      if (
-        constantTimeEqual(hexToBytes(createPepperFastPasswordVerifier(password)), hexToBytes(expectedFastVerifier))
-      ) {
+      const currentPepperVerifier = createPepperFastPasswordVerifier(password);
+      if (constantTimeEqual(hexToBytes(currentPepperVerifier), hexToBytes(expectedFastVerifier))) {
         return { matches: true };
       }
 
@@ -135,7 +134,12 @@ export async function verifyPassword(password: string, passwordHash: string) {
         constantTimeEqual(hexToBytes(legacyFastVerifier), hexToBytes(expectedFastVerifier))
       ) {
         shouldRefreshFastVerifier = true;
+      } else {
+        // A mismatched fast verifier should be rewritten after PBKDF2 succeeds.
+        shouldRefreshFastVerifier = true;
       }
+    } else {
+      shouldRefreshFastVerifier = true;
     }
   }
 
