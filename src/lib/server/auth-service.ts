@@ -5,7 +5,7 @@ import { wait } from "@/lib/utils";
 import { execute, getDb, queryFirst } from "@/lib/server/db";
 import { isAuthConfigurationError } from "@/lib/server/auth-config";
 import { buildVerificationUrl, sendVerificationEmail } from "@/lib/server/email";
-import { getUserRowByEmail, getUserRowById } from "@/lib/server/account-service";
+import { ensureUsersCurrencyColumn, getUserRowByEmail, getUserRowById } from "@/lib/server/account-service";
 import {
   createOpaqueToken,
   hashPassword,
@@ -136,6 +136,7 @@ export async function requestSignupVerification({
   const userId = existingUser?.id ?? crypto.randomUUID();
 
   const normalizedCurrency = currency.trim().toUpperCase();
+  await ensureUsersCurrencyColumn();
 
   if (existingUser) {
     await execute(

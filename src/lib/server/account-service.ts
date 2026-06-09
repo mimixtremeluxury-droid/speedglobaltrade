@@ -18,7 +18,7 @@ type UserRow = {
   password_hash: string;
   full_name: string;
   country: string;
-  currency: string;
+  currency?: string;
   locale: AppLocale;
   tier: UserProfile["tier"];
   two_factor_enabled: number;
@@ -135,7 +135,7 @@ function mapProfile(row: UserRow): UserProfile {
     fullName: row.full_name,
     email: row.email,
     country: row.country,
-    currency: row.currency,
+    currency: normalizeCurrencyCode(row.currency),
     joinedAt: row.created_at,
     locale: row.locale ?? DEFAULT_LOCALE,
     tier: row.tier,
@@ -178,6 +178,27 @@ function calculateSummary({
 
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+function normalizeCurrencyCode(currency?: string | null) {
+  const nextCurrency = currency?.trim().toUpperCase();
+  return nextCurrency && /^[A-Z]{3}$/.test(nextCurrency) ? nextCurrency : "USD";
+}
+
+function isMissingCurrencyColumnError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /no such column:\s*currency|has no column named currency/i.test(message);
+}
+
+export async function ensureUsersCurrencyColumn() {
+  try {
+    await execute("ALTER TABLE users ADD COLUMN currency TEXT NOT NULL DEFAULT 'USD'");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/duplicate column name:\s*currency/i.test(message)) {
+      throw error;
+    }
+  }
 }
 
 async function requireUserRecord(userId: string) {
@@ -335,21 +356,49 @@ async function syncPortfolioSnapshots(userId: string) {
 }
 
 export async function getUserRowById(userId: string) {
-  return queryFirst<UserRow>(
-    `SELECT id, email, password_hash, full_name, country, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
-     FROM users
-     WHERE id = ?`,
-    [userId],
-  );
+  try {
+    return await queryFirst<UserRow>(
+      `SELECT id, email, password_hash, full_name, country, currency, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
+       FROM users
+       WHERE id = ?`,
+      [userId],
+    );
+  } catch (error) {
+    if (!isMissingCurrencyColumnError(error)) {
+      throw error;
+    }
+
+    const row = await queryFirst<Omit<UserRow, "currency">>(
+      `SELECT id, email, password_hash, full_name, country, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
+       FROM users
+       WHERE id = ?`,
+      [userId],
+    );
+    return row ? { ...row, currency: "USD" } : null;
+  }
 }
 
 export async function getUserRowByEmail(email: string) {
-  return queryFirst<UserRow>(
-    `SELECT id, email, password_hash, full_name, country, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
-     FROM users
-     WHERE email = ?`,
-    [normalizeEmail(email)],
-  );
+  try {
+    return await queryFirst<UserRow>(
+      `SELECT id, email, password_hash, full_name, country, currency, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
+       FROM users
+       WHERE email = ?`,
+      [normalizeEmail(email)],
+    );
+  } catch (error) {
+    if (!isMissingCurrencyColumnError(error)) {
+      throw error;
+    }
+
+    const row = await queryFirst<Omit<UserRow, "currency">>(
+      `SELECT id, email, password_hash, full_name, country, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at
+       FROM users
+       WHERE email = ?`,
+      [normalizeEmail(email)],
+    );
+    return row ? { ...row, currency: "USD" } : null;
+  }
 }
 
 export async function getUserRecordById(userId: string): Promise<UserRecord | null> {
