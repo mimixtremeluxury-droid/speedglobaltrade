@@ -35,7 +35,7 @@ export default function DashboardOverviewPage() {
       {/* Welcome Section */}
       <div className="space-y-2 mb-8">
         <h1 className="text-4xl font-bold text-ink">Welcome, real analysis!</h1>
-        <p className="text-lg text-body/72">Here's your account overview</p>
+        <p className="text-lg text-body/72">Here&apos;s your account overview</p>
       </div>
 
       {/* Info Banner */}
