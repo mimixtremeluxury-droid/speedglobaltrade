@@ -92,6 +92,8 @@ export interface TransactionRecord {
   createdAt: string;
   note: string;
   method?: string;
+  proofSubmittedAt?: string;
+  proofFileName?: string;
 }
 
 export interface FeedActivity {

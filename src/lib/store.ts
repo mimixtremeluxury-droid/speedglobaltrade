@@ -39,6 +39,7 @@ type AppStore = {
   signOut: () => void;
   requestDeposit: (amount: number, method: string) => Promise<void>;
   completeDeposit: (transactionId: string) => Promise<void>;
+  submitDepositProof: (transactionId: string, proof: File) => Promise<void>;
   withdraw: (amount: number, method: string) => Promise<void>;
   invest: (planId: string, amount: number) => Promise<void>;
   copyTrader: (traderId: string) => Promise<void>;
@@ -119,6 +120,30 @@ export const useAppStore = create<AppStore>((set, get) => ({
       method: "POST",
     });
     set({ user: payload.user });
+  },
+  submitDepositProof: async (transactionId, proof) => {
+    const formData = new FormData();
+    formData.append("proof", proof);
+    const response = await fetch(`/api/dashboard/deposits/${transactionId}/proof`, {
+      method: "POST",
+      body: formData,
+    });
+    const text = await response.text();
+    let payload: (MutationResponse & { error?: string }) | null = null;
+
+    try {
+      payload = JSON.parse(text) as MutationResponse & { error?: string };
+    } catch {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      throw new Error(payload?.error ?? "Unable to upload this payment proof.");
+    }
+
+    if (payload?.user) {
+      set({ user: payload.user });
+    }
   },
   withdraw: async (amount, method) => {
     const payload = await requestJson<MutationResponse>("/api/dashboard/withdrawals", {

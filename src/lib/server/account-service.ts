@@ -38,6 +38,15 @@ type TransactionRow = {
   note: string;
   method: string | null;
   created_at: string;
+  proof_submitted_at?: string | null;
+  proof_file_name?: string | null;
+};
+
+type DepositProofInput = {
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  proofData: string;
 };
 
 type InvestmentRow = {
@@ -95,6 +104,8 @@ function mapTransaction(row: TransactionRow): TransactionRecord {
     createdAt: row.created_at,
     note: row.note,
     method: row.method ?? undefined,
+    proofSubmittedAt: row.proof_submitted_at ?? undefined,
+    proofFileName: row.proof_file_name ?? undefined,
   };
 }
 
@@ -180,6 +191,20 @@ function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
+const depositMethodNotes: Record<string, string> = {
+  "Wire Transfer": "Wire funding request opened. Contact support for verified banking instructions, then upload your payment slip for review.",
+  "USDT Transfer": "USDT TRON (TRC20) funding request opened. Transfer to the displayed wallet and upload your payment proof for operations review.",
+  "Bank Card": "Bank card funding request opened. Contact support for secure card processing instructions, then upload your payment receipt for review.",
+};
+
+function normalizeDepositMethod(method: string) {
+  const normalized = method.trim();
+  if (!depositMethodNotes[normalized]) {
+    throw new Error("Choose a supported deposit method.");
+  }
+  return normalized;
+}
+
 function normalizeCurrencyCode(currency?: string | null) {
   const nextCurrency = currency?.trim().toUpperCase();
   return nextCurrency && /^[A-Z]{3}$/.test(nextCurrency) ? nextCurrency : "USD";
@@ -199,6 +224,25 @@ export async function ensureUsersCurrencyColumn() {
       throw error;
     }
   }
+}
+
+async function ensureDepositProofsTable() {
+  await execute(
+    `CREATE TABLE IF NOT EXISTS deposit_proofs (
+      id TEXT PRIMARY KEY,
+      transaction_id TEXT NOT NULL UNIQUE,
+      user_id TEXT NOT NULL,
+      file_name TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      file_size INTEGER NOT NULL,
+      proof_data TEXT NOT NULL,
+      submitted_at TEXT NOT NULL,
+      FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )`,
+  );
+  await execute("CREATE INDEX IF NOT EXISTS idx_deposit_proofs_transaction_id ON deposit_proofs(transaction_id)");
+  await execute("CREATE INDEX IF NOT EXISTS idx_deposit_proofs_user_id ON deposit_proofs(user_id)");
 }
 
 async function requireUserRecord(userId: string) {
@@ -226,11 +270,23 @@ function getTraderById(traderId: string) {
 }
 
 async function listTransactions(userId: string) {
+  await ensureDepositProofsTable();
   const rows = await queryAll<TransactionRow>(
-    `SELECT id, user_id, kind, label, amount, status, note, method, created_at
+    `SELECT transactions.id,
+            transactions.user_id,
+            transactions.kind,
+            transactions.label,
+            transactions.amount,
+            transactions.status,
+            transactions.note,
+            transactions.method,
+            transactions.created_at,
+            deposit_proofs.submitted_at AS proof_submitted_at,
+            deposit_proofs.file_name AS proof_file_name
      FROM transactions
-     WHERE user_id = ?
-     ORDER BY datetime(created_at) DESC`,
+     LEFT JOIN deposit_proofs ON deposit_proofs.transaction_id = transactions.id
+     WHERE transactions.user_id = ?
+     ORDER BY datetime(transactions.created_at) DESC`,
     [userId],
   );
   return rows.map(mapTransaction);
@@ -464,6 +520,7 @@ export async function requestDeposit(userId: string, amount: number, method: str
   if (amount <= 0) {
     throw new Error("Deposit amount must be greater than zero.");
   }
+  const normalizedMethod = normalizeDepositMethod(method);
 
   const pending = await queryFirst<{ id: string }>(
     `SELECT id FROM transactions
@@ -478,13 +535,67 @@ export async function requestDeposit(userId: string, amount: number, method: str
   await execute(
     `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, created_at)
      VALUES (?, ?, 'deposit', 'Deposit request', ?, 'pending', ?, ?, ?)`,
-    [crypto.randomUUID(), userId, amount, `Awaiting ${method} confirmation`, method, new Date().toISOString()],
+    [crypto.randomUUID(), userId, amount, depositMethodNotes[normalizedMethod], normalizedMethod, new Date().toISOString()],
   );
 
   return requireUserRecord(userId);
 }
 
+export async function submitDepositProof(userId: string, transactionId: string, proof: DepositProofInput) {
+  await ensureDepositProofsTable();
+
+  const pendingDeposit = await queryFirst<TransactionRow>(
+    `SELECT id, user_id, kind, label, amount, status, note, method, created_at
+     FROM transactions
+     WHERE id = ? AND user_id = ? AND kind = 'deposit' AND status = 'pending'`,
+    [transactionId, userId],
+  );
+  if (!pendingDeposit) {
+    throw new Error("We couldn't find a pending deposit request for this proof.");
+  }
+
+  const now = new Date().toISOString();
+  await getDb().batch([
+    getDb()
+      .prepare(
+        `INSERT INTO deposit_proofs (id, transaction_id, user_id, file_name, file_type, file_size, proof_data, submitted_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(transaction_id) DO UPDATE SET
+          file_name = excluded.file_name,
+          file_type = excluded.file_type,
+          file_size = excluded.file_size,
+          proof_data = excluded.proof_data,
+          submitted_at = excluded.submitted_at`,
+      )
+      .bind(
+        crypto.randomUUID(),
+        transactionId,
+        userId,
+        proof.fileName,
+        proof.fileType,
+        proof.fileSize,
+        proof.proofData,
+        now,
+      ),
+    getDb()
+      .prepare(
+        `UPDATE transactions
+         SET note = ?
+         WHERE id = ? AND user_id = ?`,
+      )
+      .bind(
+        `Payment proof uploaded (${proof.fileName}). Operations review is pending; your balance will remain unchanged until approval.`,
+        transactionId,
+        userId,
+      ),
+  ]);
+
+  return requireUserRecord(userId);
+}
+
 export async function completePendingDeposit(userId: string, transactionId: string) {
+  await ensureDepositProofsTable();
+
   const pendingDeposit = await queryFirst<TransactionRow>(
     `SELECT id, user_id, kind, label, amount, status, note, method, created_at
      FROM transactions
@@ -493,6 +604,17 @@ export async function completePendingDeposit(userId: string, transactionId: stri
   );
   if (!pendingDeposit) {
     throw new Error("We couldn't find a pending deposit to complete.");
+  }
+
+  const proof = await queryFirst<{ id: string }>(
+    `SELECT id
+     FROM deposit_proofs
+     WHERE transaction_id = ? AND user_id = ?
+     LIMIT 1`,
+    [transactionId, userId],
+  );
+  if (!proof) {
+    throw new Error("Payment proof must be uploaded before this deposit can be approved.");
   }
 
   const now = new Date().toISOString();

@@ -288,7 +288,7 @@
     "empty": {
       "eyebrow": "Ready to get started?",
       "title": "Your dashboard activates after your first completed deposit",
-      "description": "Create a deposit request, then use the simulation button to confirm it in this mock workflow. Once completed, your balance, chart, and transaction history will appear.",
+      "description": "Create a deposit request, follow the funding instructions, and upload payment proof. Once operations approves the payment, your balance, chart, and transaction history will appear.",
       "cta": "Make Your First Deposit"
     }
   }

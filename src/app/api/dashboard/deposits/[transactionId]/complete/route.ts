@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { completePendingDeposit } from "@/lib/server/account-service";
-import { getSessionUser } from "@/lib/session";
+import { getSessionUser, matchesSmokeSecret } from "@/lib/session";
 
 export async function POST(
-  _request: Request,
+  request: Request,
   context: {
     params: Promise<{ transactionId: string }>;
   },
@@ -11,6 +11,10 @@ export async function POST(
   const session = await getSessionUser();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  if (!matchesSmokeSecret(request.headers.get("x-auth-smoke-secret"))) {
+    return NextResponse.json({ error: "Deposit approval is restricted to operations." }, { status: 403 });
   }
 
   const { transactionId } = await context.params;
