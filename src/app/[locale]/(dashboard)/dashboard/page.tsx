@@ -53,7 +53,7 @@ export default function DashboardOverviewPage() {
           <div className="flex items-start justify-between mb-8">
             <div>
               <p className="text-sm font-semibold text-blue-100 mb-2 uppercase tracking-wide">Total Balance</p>
-              <p className="text-5xl font-bold font-heading">{formatCurrency(user.summary.totalPortfolioValue)}</p>
+              <p className="text-5xl font-bold font-heading">{formatCurrency(user.summary.totalPortfolioValue, user.profile.currency)}</p>
             </div>
             <div className="flex items-center gap-2 rounded-full bg-green-400/20 border border-green-400/30 px-4 py-2">
               <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></div>
@@ -75,19 +75,19 @@ export default function DashboardOverviewPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-white/10 backdrop-blur p-4 border border-white/10">
               <p className="text-xs font-semibold text-blue-100 mb-2 uppercase tracking-wide">Profit</p>
-              <p className="text-2xl font-bold text-green-300 font-heading">{profit >= 0 ? '+' : ''}{formatCurrency(profit)}</p>
+              <p className="text-2xl font-bold text-green-300 font-heading">{profit >= 0 ? '+' : ''}{formatCurrency(profit, user.profile.currency)}</p>
             </div>
             <div className="rounded-lg bg-white/10 backdrop-blur p-4 border border-white/10">
               <p className="text-xs font-semibold text-blue-100 mb-2 uppercase tracking-wide">Bonus</p>
-              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(0)}</p>
+              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(0, user.profile.currency)}</p>
             </div>
             <div className="rounded-lg bg-white/10 backdrop-blur p-4 border border-white/10">
               <p className="text-xs font-semibold text-blue-100 mb-2 uppercase tracking-wide">Deposits</p>
-              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(totalDeposited)}</p>
+              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(totalDeposited, user.profile.currency)}</p>
             </div>
             <div className="rounded-lg bg-white/10 backdrop-blur p-4 border border-white/10">
               <p className="text-xs font-semibold text-blue-100 mb-2 uppercase tracking-wide">Withdrawn</p>
-              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(withdrawn)}</p>
+              <p className="text-2xl font-bold text-white font-heading">{formatCurrency(withdrawn, user.profile.currency)}</p>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function DashboardOverviewPage() {
               <Users className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-ink font-heading">{formatCurrency(referralBonus)}</p>
+              <p className="text-2xl font-bold text-ink font-heading">{formatCurrency(referralBonus, user.profile.currency)}</p>
               <p className="text-sm text-body/72">Referral Bonus</p>
             </div>
           </div>
@@ -116,9 +116,9 @@ export default function DashboardOverviewPage() {
       {/* Additional Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { label: "Total portfolio value", value: formatCurrency(user.summary.totalPortfolioValue), accent: "text-gold", icon: Sparkles },
+          { label: "Total portfolio value", value: formatCurrency(user.summary.totalPortfolioValue, user.profile.currency), accent: "text-gold", icon: Sparkles },
           { label: "Total returns", value: formatPercent(user.summary.totalReturnsPct), accent: "text-cyan", icon: ArrowUpRight },
-          { label: "Available cash", value: formatCurrency(user.summary.cashBalance), accent: "text-ink", icon: Wallet },
+          { label: "Available cash", value: formatCurrency(user.summary.cashBalance, user.profile.currency), accent: "text-ink", icon: Wallet },
         ].map((card) => (
           <article key={card.label} className="surface p-5">
             <card.icon className="h-5 w-5 text-body/60" />
@@ -156,7 +156,7 @@ export default function DashboardOverviewPage() {
                   borderRadius: "20px",
                   color: "#fff",
                 }}
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number) => formatCurrency(value, user.profile.currency)}
               />
               <Area dataKey="value" type="monotone" stroke="#F5A623" strokeWidth={2.5} fill="url(#portfolioFill)" />
             </AreaChart>
@@ -206,7 +206,7 @@ export default function DashboardOverviewPage() {
                   <p className="text-sm text-body/65">{transaction.note}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-heading text-lg text-ink">{formatCurrency(transaction.amount)}</p>
+                  <p className="font-heading text-lg text-ink">{formatCurrency(transaction.amount, user.profile.currency)}</p>
                   <p className="text-xs uppercase tracking-[0.2em] text-body/45">{transaction.status}</p>
                 </div>
               </div>

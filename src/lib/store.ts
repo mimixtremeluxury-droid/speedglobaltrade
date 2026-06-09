@@ -16,6 +16,7 @@ type AuthPayload = {
   email: string;
   password: string;
   country: string;
+  currency: string;
   locale: UserRecord["profile"]["locale"];
 };
 

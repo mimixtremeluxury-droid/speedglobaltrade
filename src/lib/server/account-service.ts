@@ -18,6 +18,7 @@ type UserRow = {
   password_hash: string;
   full_name: string;
   country: string;
+  currency: string;
   locale: AppLocale;
   tier: UserProfile["tier"];
   two_factor_enabled: number;
@@ -134,6 +135,7 @@ function mapProfile(row: UserRow): UserProfile {
     fullName: row.full_name,
     email: row.email,
     country: row.country,
+    currency: row.currency,
     joinedAt: row.created_at,
     locale: row.locale ?? DEFAULT_LOCALE,
     tier: row.tier,

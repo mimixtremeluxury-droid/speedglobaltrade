@@ -1,7 +1,7 @@
-export const formatCurrency = (value: number) =>
+export const formatCurrency = (value: number, currencyCode: string = "USD") =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currencyCode,
     maximumFractionDigits: value >= 1000 ? 0 : 2,
   }).format(value);
 

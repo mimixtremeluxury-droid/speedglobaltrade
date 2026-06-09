@@ -109,6 +109,7 @@ export async function requestSignupVerification({
   email,
   password,
   country,
+  currency,
   locale,
   appBaseUrl,
 }: {
@@ -116,6 +117,7 @@ export async function requestSignupVerification({
   email: string;
   password: string;
   country: string;
+  currency: string;
   locale?: string | null;
   appBaseUrl?: string | null;
 }) {
@@ -133,18 +135,20 @@ export async function requestSignupVerification({
 
   const userId = existingUser?.id ?? crypto.randomUUID();
 
+  const normalizedCurrency = currency.trim().toUpperCase();
+
   if (existingUser) {
     await execute(
       `UPDATE users
-       SET password_hash = ?, full_name = ?, country = ?, locale = ?, updated_at = ?
+       SET password_hash = ?, full_name = ?, country = ?, currency = ?, locale = ?, updated_at = ?
        WHERE id = ?`,
-      [passwordHash, normalizedName, normalizedCountry, nextLocale, now, existingUser.id],
+      [passwordHash, normalizedName, normalizedCountry, normalizedCurrency, nextLocale, now, existingUser.id],
     );
   } else {
     await execute(
-      `INSERT INTO users (id, email, password_hash, full_name, country, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, 'Signature', 0, NULL, 0, ?, ?)`,
-      [userId, nextEmail, passwordHash, normalizedName, normalizedCountry, nextLocale, now, now],
+      `INSERT INTO users (id, email, password_hash, full_name, country, currency, locale, tier, two_factor_enabled, email_verified_at, cash_balance, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'Signature', 0, NULL, 0, ?, ?)`,
+      [userId, nextEmail, passwordHash, normalizedName, normalizedCountry, normalizedCurrency, nextLocale, now, now],
     );
   }
 

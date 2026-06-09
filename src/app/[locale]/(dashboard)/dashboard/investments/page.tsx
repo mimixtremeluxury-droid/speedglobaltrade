@@ -65,7 +65,7 @@ export default function InvestmentsPage() {
                   className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-sm text-ink outline-none transition focus:border-cyan/60"
                 />
                 <p className="mt-2 text-xs uppercase tracking-[0.18em] text-body/45">
-                  Minimum {formatCurrency(plan.minInvestment)}
+                  Minimum {formatCurrency(plan.minInvestment, user.profile.currency)}
                 </p>
               </div>
               <button type="button" className="ghost-button">Learn More</button>
@@ -118,7 +118,7 @@ export default function InvestmentsPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                   <div>
                     <p className="metric-label">Principal</p>
-                    <p className="mt-2 font-heading text-lg text-ink">{formatCurrency(investment.principal)}</p>
+                    <p className="mt-2 font-heading text-lg text-ink">{formatCurrency(investment.principal, user.profile.currency)}</p>
                   </div>
                   <div>
                     <p className="metric-label">ROI from</p>

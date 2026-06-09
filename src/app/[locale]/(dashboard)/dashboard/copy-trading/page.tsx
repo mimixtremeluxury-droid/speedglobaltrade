@@ -73,7 +73,7 @@ export default function CopyTradingPage() {
                     : "bg-gold-gradient text-midnight hover:-translate-y-0.5"
                 }`}
               >
-                {copied ? "Already Copied" : `Copy with ${formatCurrency(trader.allocation)}`}
+                {copied ? "Already Copied" : `Copy with ${formatCurrency(trader.allocation, user.profile.currency)}`}
               </button>
             </article>
           );
@@ -93,7 +93,7 @@ export default function CopyTradingPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                   <div>
                     <p className="metric-label">Allocation</p>
-                    <p className="mt-2 font-heading text-lg text-ink">{formatCurrency(position.allocation)}</p>
+                    <p className="mt-2 font-heading text-lg text-ink">{formatCurrency(position.allocation, user.profile.currency)}</p>
                   </div>
                   <div>
                     <p className="metric-label">Copied</p>
@@ -101,7 +101,7 @@ export default function CopyTradingPage() {
                   </div>
                   <div>
                     <p className="metric-label">Exposure</p>
-                    <p className="mt-2 font-heading text-lg text-gold">{formatCurrency(position.allocation * (1 + position.roiSnapshot / 100))}</p>
+                    <p className="mt-2 font-heading text-lg text-gold">{formatCurrency(position.allocation * (1 + position.roiSnapshot / 100), user.profile.currency)}</p>
                   </div>
                 </div>
               </div>

@@ -109,7 +109,7 @@ export default function DepositPage() {
           <div className="mt-6 space-y-4">
             <div className="rounded-3xl border border-cyan/20 bg-cyan/10 p-5">
               <p className="text-sm text-body/72">Amount</p>
-              <p className="mt-2 font-heading text-3xl text-ink">{formatCurrency(pendingDeposit.amount)}</p>
+              <p className="mt-2 font-heading text-3xl text-ink">{formatCurrency(pendingDeposit.amount, user.profile.currency)}</p>
               <p className="mt-4 text-sm text-body/72">Method</p>
               <p className="mt-1 text-base text-ink">{pendingDeposit.method ?? "Funding Desk"}</p>
               <p className="mt-4 text-sm text-body/72">{pendingDeposit.note}</p>

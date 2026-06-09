@@ -16,6 +16,7 @@ export interface UserProfile {
   fullName: string;
   email: string;
   country: string;
+  currency: string;
   joinedAt: string;
   locale: AppLocale;
   tier: "Signature" | "Premier" | "Institutional";

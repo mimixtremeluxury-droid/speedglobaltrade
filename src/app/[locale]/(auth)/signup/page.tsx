@@ -248,6 +248,7 @@ export default function SignupPage() {
                     email: values.email,
                     password: values.password,
                     country: values.nationality,
+                    currency: values.currency,
                     locale: locale as AppLocale,
                   });
                   pushToast({

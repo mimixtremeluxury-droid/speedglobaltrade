@@ -9,10 +9,11 @@ export async function POST(request: Request) {
     email?: string;
     password?: string;
     country?: string;
+    currency?: string;
     locale?: string;
   };
 
-  if (!body.fullName || !body.email || !body.password || !body.country) {
+  if (!body.fullName || !body.email || !body.password || !body.country || !body.currency) {
     return NextResponse.json({ error: "Missing signup payload." }, { status: 400 });
   }
 
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
       email: body.email,
       password: body.password,
       country: body.country,
+      currency: body.currency,
       locale: body.locale,
       appBaseUrl: new URL(request.url).origin,
     });

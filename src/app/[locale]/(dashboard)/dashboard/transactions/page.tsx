@@ -85,7 +85,7 @@ export default function TransactionsPage() {
                       <p className="font-medium text-ink">{transaction.label}</p>
                       <p className="text-xs uppercase tracking-[0.18em] text-body/45">{transaction.note}</p>
                     </td>
-                    <td className="px-5 py-4 font-heading text-ink">{formatCurrency(transaction.amount)}</td>
+                    <td className="px-5 py-4 font-heading text-ink">{formatCurrency(transaction.amount, user.profile.currency)}</td>
                     <td className="px-5 py-4">{formatDate(transaction.createdAt)}</td>
                     <td className="px-5 py-4">
                       <span className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.18em]">
