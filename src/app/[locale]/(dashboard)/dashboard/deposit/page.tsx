@@ -22,8 +22,7 @@ import { useAppStore } from "@/lib/store";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const USDT_WALLET_ADDRESS = "TQwKxo6PwSwH71PdX1HEeGXDHh2SpfYjPs";
-const SUPPORT_WHATSAPP_URL =
-  "https://wa.me/13432556574?text=Hello%20Speed%20Global%20Trade%2C%20I%20need%20deposit%20funding%20instructions.";
+const SUPPORT_EMAIL = "service@speedglobal.trade";
 
 const depositMethods = [
   {
@@ -72,6 +71,11 @@ function FundingInstructionDialog({
   const description = isUsdt
     ? "Deposit only USDT through the TRON (TRC20) network. After sending, upload your payment proof so operations can verify and approve the balance."
     : "Please contact support for verified funding instructions. Your dashboard balance remains unchanged until proof is uploaded and operations approves the deposit.";
+  const supportEmailHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
+    `${method} funding instructions`,
+  )}&body=${encodeURIComponent(
+    `Hello Speed Global Trade,\n\nI need verified ${method} funding instructions for a ${amountLabel} deposit request.\n\nThank you.`,
+  )}`;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-midnight/80 px-4 py-6 backdrop-blur-xl">
@@ -139,18 +143,13 @@ function FundingInstructionDialog({
             </button>
           </div>
         ) : (
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-6">
             <a
-              href={SUPPORT_WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-2xl border border-cyan/25 bg-cyan/10 px-5 py-3 text-center text-sm font-semibold text-cyan transition hover:border-cyan/60"
+              href={supportEmailHref}
+              className="block rounded-2xl border border-cyan/25 bg-cyan/10 px-5 py-3 text-center text-sm font-semibold text-cyan transition hover:border-cyan/60 hover:bg-cyan/15"
             >
               Contact Support
             </a>
-            <button type="button" onClick={onConfirm} disabled={busy} className="gold-button disabled:cursor-not-allowed disabled:opacity-60">
-              {busy ? "Creating request..." : "Okay, Create Request"}
-            </button>
           </div>
         )}
       </div>
