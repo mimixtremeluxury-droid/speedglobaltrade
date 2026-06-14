@@ -40,7 +40,14 @@ type AppStore = {
   requestDeposit: (amount: number, method: string) => Promise<void>;
   completeDeposit: (transactionId: string) => Promise<void>;
   submitDepositProof: (transactionId: string, proof: File) => Promise<void>;
-  withdraw: (amount: number, method: string) => Promise<void>;
+  withdraw: (amount: number, method: string, details?: {
+    usdtAddress?: string;
+    paypalEmail?: string;
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankRoutingNumber?: string;
+    cashAppTag?: string;
+  }) => Promise<string | undefined>;
   invest: (planId: string, amount: number) => Promise<void>;
   copyTrader: (traderId: string) => Promise<void>;
   updateSettings: (patch: Partial<Pick<UserRecord["profile"], "fullName" | "country" | "locale" | "twoFactorEnabled">>) => Promise<void>;
@@ -145,12 +152,13 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set({ user: payload.user });
     }
   },
-  withdraw: async (amount, method) => {
-    const payload = await requestJson<MutationResponse>("/api/dashboard/withdrawals", {
+  withdraw: async (amount, method, details?) => {
+    const payload = await requestJson<MutationResponse & { withdrawalCode?: string }>("/api/dashboard/withdrawals", {
       method: "POST",
-      body: JSON.stringify({ amount, method }),
+      body: JSON.stringify({ amount, method, ...details }),
     });
     set({ user: payload.user });
+    return payload.withdrawalCode;
   },
   invest: async (planId, amount) => {
     const payload = await requestJson<MutationResponse>("/api/dashboard/investments", {

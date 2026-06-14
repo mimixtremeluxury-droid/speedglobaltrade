@@ -639,7 +639,19 @@ export async function completePendingDeposit(userId: string, transactionId: stri
   return requireUserRecord(userId);
 }
 
-export async function withdrawFromAccount(userId: string, amount: number, method: string) {
+export async function withdrawFromAccount(
+  userId: string,
+  amount: number,
+  method: string,
+  details?: {
+    usdtAddress?: string;
+    paypalEmail?: string;
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankRoutingNumber?: string;
+    cashAppTag?: string;
+  },
+) {
   if (amount <= 0) {
     throw new Error("Withdrawal amount must be greater than zero.");
   }
@@ -652,6 +664,21 @@ export async function withdrawFromAccount(userId: string, amount: number, method
     throw new Error("Insufficient available balance.");
   }
 
+  const transactionId = crypto.randomUUID();
+  const withdrawalCode = generateWithdrawalCode();
+
+  const detailParts: string[] = [];
+  if (details?.usdtAddress) detailParts.push(`USDT Address: ${details.usdtAddress}`);
+  if (details?.paypalEmail) detailParts.push(`PayPal: ${details.paypalEmail}`);
+  if (details?.bankName) detailParts.push(`Bank: ${details.bankName}`);
+  if (details?.bankAccountNumber) detailParts.push(`Account: ****${details.bankAccountNumber.slice(-4)}`);
+  if (details?.bankRoutingNumber) detailParts.push(`Routing: ${details.bankRoutingNumber}`);
+  if (details?.cashAppTag) detailParts.push(`Cash App: ${details.cashAppTag}`);
+
+  const note = detailParts.length > 0
+    ? `Awaiting ${method} release confirmation. ${detailParts.join(", ")}`
+    : `Awaiting ${method} release confirmation`;
+
   await getDb().batch([
     getDb()
       .prepare(
@@ -662,21 +689,36 @@ export async function withdrawFromAccount(userId: string, amount: number, method
       .bind(amount, new Date().toISOString(), userId),
     getDb()
       .prepare(
-        `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, created_at)
-         VALUES (?, ?, 'withdrawal', 'Withdrawal Request', ?, 'pending', ?, ?, ?)`,
+        `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, withdrawal_code, created_at)
+         VALUES (?, ?, 'withdrawal', 'Withdrawal Request', ?, 'pending', ?, ?, ?, ?)`,
       )
       .bind(
-        crypto.randomUUID(),
+        transactionId,
         userId,
         amount,
-        `Awaiting ${method} release confirmation`,
+        note,
         method,
+        withdrawalCode,
         new Date().toISOString(),
       ),
   ]);
 
   await syncPortfolioSnapshots(userId);
-  return requireUserRecord(userId);
+  const updatedUser = await requireUserRecord(userId);
+  return { user: updatedUser, withdrawalCode };
+}
+
+function generateWithdrawalCode(): string {
+  const prefix = "SGT";
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const array = new Uint8Array(4);
+  crypto.getRandomValues(array);
+  const random = Array.from(array)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase()
+    .slice(0, 8);
+  return `${prefix}-${timestamp}-${random}`;
 }
 
 export async function investInPlan(userId: string, planId: string, amount: number) {
