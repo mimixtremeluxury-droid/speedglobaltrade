@@ -215,6 +215,8 @@ function isMissingCurrencyColumnError(error: unknown) {
   return /no such column:\s*currency|has no column named currency/i.test(message);
 }
 
+let transactionsWithdrawalCodeColumnReady = false;
+
 export async function ensureUsersCurrencyColumn() {
   try {
     await execute("ALTER TABLE users ADD COLUMN currency TEXT NOT NULL DEFAULT 'USD'");
@@ -224,6 +226,23 @@ export async function ensureUsersCurrencyColumn() {
       throw error;
     }
   }
+}
+
+async function ensureTransactionsWithdrawalCodeColumn() {
+  if (transactionsWithdrawalCodeColumnReady) {
+    return;
+  }
+
+  try {
+    await execute("ALTER TABLE transactions ADD COLUMN withdrawal_code TEXT");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/duplicate column name:\s*withdrawal_code/i.test(message)) {
+      throw error;
+    }
+  }
+
+  transactionsWithdrawalCodeColumnReady = true;
 }
 
 async function ensureDepositProofsTable() {
@@ -666,6 +685,7 @@ export async function withdrawFromAccount(
 
   const transactionId = crypto.randomUUID();
   const withdrawalCode = generateWithdrawalCode();
+  await ensureTransactionsWithdrawalCodeColumn();
 
   const detailParts: string[] = [];
   if (details?.usdtAddress) detailParts.push(`USDT Address: ${details.usdtAddress}`);
