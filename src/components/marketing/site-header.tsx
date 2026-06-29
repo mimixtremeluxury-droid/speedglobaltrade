@@ -1,11 +1,12 @@
 "use client";
 
-import { Menu, ShieldCheck } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { cn } from "@/lib/cn";
+import Image from "next/image";
 
 const links = [
   { href: "/", key: "home" },
@@ -46,7 +47,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold">
-            <ShieldCheck className="h-5 w-5" />
+            <Image src="/logo/Speed Global Trade.svg" alt="Speed Global Trade" width={1080} height={1080} className="h-5 w-5" />
           </div>
           <div>
             <p className="font-heading text-lg text-ink">{tBrand("name")}</p>

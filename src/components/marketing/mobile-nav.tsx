@@ -1,13 +1,14 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Menu, ShieldCheck, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { MobileLanguageSwitcher } from "@/components/marketing/language-switcher";
 import { cn } from "@/lib/cn";
 import { AppLocale } from "@/lib/types";
+import Image from "next/image";
 
 const links = [
   { href: "/", key: "home" },
@@ -66,7 +67,7 @@ export function MobileNav() {
             <div className="flex items-center justify-between gap-3">
               <Link href="/" onClick={() => setOpen(false)} className="flex min-w-0 items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold">
-                  <ShieldCheck className="h-5 w-5" />
+                  <Image src="/logo/Speed Global Trade.svg" alt="Speed Global Trade" width={1080} height={1080} className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
                   <p className="truncate font-heading text-lg text-ink">{tBrand("name")}</p>
