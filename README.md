@@ -7,8 +7,8 @@
 3. Create or update `.env.local` in the project root and set:
 
 ```bash
-NEXT_PUBLIC_TAWK_PROPERTY_ID=property_id_from_tawk
-NEXT_PUBLIC_TAWK_WIDGET_ID=widget_id_from_tawk
+NEXT_PUBLIC_TAWK_PROPERTY_ID=6a41072f43e9051d4585b513
+NEXT_PUBLIC_TAWK_WIDGET_ID=1js7084u2
 SGT_SESSION_SECRET=replace-this-with-a-long-random-secret
 SGT_PASSWORD_PEPPER=replace-this-with-a-second-long-random-secret
 APP_BASE_URL=https://speedglobal.trade
