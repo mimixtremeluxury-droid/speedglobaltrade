@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useAppStore } from "@/lib/store";
@@ -68,9 +69,14 @@ export function DashboardSidebar() {
         )}
       >
         <div className="mb-6 flex items-center justify-between gap-3">
-          <div className={cn("overflow-hidden transition", collapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100")}>
-            <p className="font-heading text-lg text-ink">{t("title")}</p>
-            <p className="text-xs uppercase tracking-[0.22em] text-body/45">{t("subtitle")}</p>
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 shadow-[0_0_26px_rgba(245,166,35,0.12)]">
+              <Image src="/logo/Speed Global Trade.svg" alt="Speed Global Trade" width={1080} height={1080} className="h-6 w-6" priority />
+            </div>
+            <div className={cn("min-w-0 overflow-hidden transition", collapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100")}>
+              <p className="truncate font-heading text-lg text-ink">{t("title")}</p>
+              <p className="truncate text-xs uppercase tracking-[0.22em] text-body/45">{t("subtitle")}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button

@@ -8,16 +8,15 @@ import { ToastStack } from "@/components/ui/toast-stack";
 export const metadata: Metadata = {
   title: "Speed Global Trade",
   description: "A premium investment platform with multilingual marketing surfaces and refined dashboard experiences.",
-  icons: [
-    {
-      url: '/logo/Speed Global Trade.svg',
-      type: 'image/svg+xml',
-    },
-    {
-      url: '/favicon.ico',
-      type: 'image/x-icon',
-    },
-  ],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/logo/Speed Global Trade.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
