@@ -38,7 +38,6 @@ type AppStore = {
   signUp: (payload: AuthPayload) => Promise<void>;
   signOut: () => void;
   requestDeposit: (amount: number, method: string) => Promise<void>;
-  completeDeposit: (transactionId: string) => Promise<void>;
   submitDepositProof: (transactionId: string, proof: File) => Promise<void>;
   withdraw: (amount: number, method: string, details?: {
     usdtAddress?: string;
@@ -119,12 +118,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const payload = await requestJson<MutationResponse>("/api/dashboard/deposits", {
       method: "POST",
       body: JSON.stringify({ amount, method }),
-    });
-    set({ user: payload.user });
-  },
-  completeDeposit: async (transactionId) => {
-    const payload = await requestJson<MutationResponse>(`/api/dashboard/deposits/${transactionId}/complete`, {
-      method: "POST",
     });
     set({ user: payload.user });
   },

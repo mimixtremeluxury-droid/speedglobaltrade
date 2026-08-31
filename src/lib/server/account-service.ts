@@ -613,6 +613,9 @@ export async function submitDepositProof(userId: string, transactionId: string, 
 }
 
 export async function completePendingDeposit(userId: string, transactionId: string) {
+  if (process.env.NODE_ENV === "production" || process.env.SGT_ENABLE_LEGACY_DEPOSIT_SMOKE_COMPLETE !== "true") {
+    throw new Error("legacy_deposit_completion_disabled");
+  }
   await ensureDepositProofsTable();
 
   const pendingDeposit = await queryFirst<TransactionRow>(

@@ -8,6 +8,10 @@ export async function POST(
     params: Promise<{ transactionId: string }>;
   },
 ) {
+  if (process.env.NODE_ENV === "production" || process.env.SGT_ENABLE_LEGACY_DEPOSIT_SMOKE_COMPLETE !== "true") {
+    return NextResponse.json({ error: "legacy_deposit_completion_disabled" }, { status: 410 });
+  }
+
   const session = await getSessionUser();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
