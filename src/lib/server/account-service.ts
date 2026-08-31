@@ -661,6 +661,17 @@ export async function completePendingDeposit(userId: string, transactionId: stri
   return requireUserRecord(userId);
 }
 
+function requireWithdrawalRequestId(requestId: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
+    throw new Error("A valid withdrawal idempotency key is required.");
+  }
+}
+
+async function hashWithdrawalRequestId(requestId: string) {
+  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(requestId)));
+  return Array.from(bytes).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export async function withdrawFromAccount(
   userId: string,
   amount: number,
@@ -673,11 +684,21 @@ export async function withdrawFromAccount(
     bankRoutingNumber?: string;
     cashAppTag?: string;
   },
+  requestId?: string,
 ) {
   if (amount <= 0) {
     throw new Error("Withdrawal amount must be greater than zero.");
   }
 
+  if (!requestId) throw new Error("A valid withdrawal idempotency key is required.");
+  requireWithdrawalRequestId(requestId);
+  const requestIdHash = await hashWithdrawalRequestId(requestId);
+  const existing = await queryFirst<{ withdrawal_code: string | null }>(
+    `SELECT t.withdrawal_code FROM withdrawal_reservations wr JOIN transactions t ON t.id = wr.transaction_id
+       WHERE wr.user_id = ? AND wr.request_id_hash = ? LIMIT 1`,
+    [userId, requestIdHash],
+  );
+  if (existing) return { user: await requireUserRecord(userId), withdrawalCode: existing.withdrawal_code ?? "" };
   const user = await getUserRowById(userId);
   if (!user) {
     throw new Error("Unable to locate this investor profile.");
@@ -702,29 +723,48 @@ export async function withdrawFromAccount(
     ? `Awaiting ${method} release confirmation. ${detailParts.join(", ")}`
     : `Awaiting ${method} release confirmation`;
 
+  const now = new Date().toISOString();
+  try {
   await getDb().batch([
     getDb()
       .prepare(
-        `UPDATE users
-         SET cash_balance = cash_balance - ?, updated_at = ?
-         WHERE id = ?`,
+        `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, withdrawal_code, created_at)
+         SELECT ?, id, 'withdrawal', 'Withdrawal Request', ?, 'pending', ?, ?, ?, ?
+         FROM users WHERE id = ? AND cash_balance >= ?`,
       )
-      .bind(amount, new Date().toISOString(), userId),
+      .bind(transactionId, amount, note, method, withdrawalCode, now, userId, amount),
     getDb()
       .prepare(
-        `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, withdrawal_code, created_at)
-         VALUES (?, ?, 'withdrawal', 'Withdrawal Request', ?, 'pending', ?, ?, ?, ?)`,
+        `UPDATE users SET cash_balance = cash_balance - (SELECT amount FROM transactions WHERE id = ?), updated_at = ?
+         WHERE id = ? AND EXISTS (SELECT 1 FROM transactions WHERE id = ? AND user_id = users.id AND kind = 'withdrawal' AND status = 'pending')`,
       )
-      .bind(
-        transactionId,
-        userId,
-        amount,
-        note,
-        method,
-        withdrawalCode,
-        new Date().toISOString(),
-      ),
+      .bind(transactionId, now, userId, transactionId),
+    getDb().prepare(
+      `INSERT INTO withdrawal_reservations (transaction_id, user_id, amount_snapshot, request_id_hash, source, reserved_at)
+       SELECT id, user_id, amount, ?, 'customer_request', ? FROM transactions
+       WHERE id = ? AND kind = 'withdrawal' AND status = 'pending' AND amount > 0`,
+    ).bind(requestIdHash, now, transactionId),
+    getDb().prepare(
+      `INSERT INTO withdrawal_cases (transaction_id, user_id, review_status, reservation_state, created_at, updated_at, version)
+       SELECT transaction_id, user_id, 'awaiting_review', 'reserved', ?, ?, 0 FROM withdrawal_reservations WHERE transaction_id = ?`,
+    ).bind(now, now, transactionId),
+    getDb().prepare(
+      `INSERT INTO withdrawal_request_commits (transaction_id, invariant_ok, committed_at)
+       VALUES (?, CASE WHEN EXISTS (SELECT 1 FROM transactions WHERE id = ? AND kind = 'withdrawal' AND status = 'pending')
+                         AND EXISTS (SELECT 1 FROM withdrawal_reservations WHERE transaction_id = ? AND user_id = ? AND amount_snapshot > 0)
+                         AND EXISTS (SELECT 1 FROM withdrawal_cases WHERE transaction_id = ? AND review_status = 'awaiting_review' AND reservation_state = 'reserved')
+                    THEN 1 ELSE 0 END, ?)`,
+    ).bind(transactionId, transactionId, transactionId, userId, transactionId, now),
   ]);
+  } catch (error) {
+    const retry = await queryFirst<{ withdrawal_code: string | null }>(
+      `SELECT t.withdrawal_code FROM withdrawal_reservations wr JOIN transactions t ON t.id = wr.transaction_id
+       WHERE wr.user_id = ? AND wr.request_id_hash = ? LIMIT 1`,
+      [userId, requestIdHash],
+    );
+    if (retry) return { user: await requireUserRecord(userId), withdrawalCode: retry.withdrawal_code ?? "" };
+    throw error;
+  }
 
   await syncPortfolioSnapshots(userId);
   const updatedUser = await requireUserRecord(userId);

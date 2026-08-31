@@ -54,7 +54,7 @@ export default function WithdrawPage() {
     try {
       const response = await fetch("/api/dashboard/withdrawals", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
         body: JSON.stringify({
           amount: values.amount,
           method: values.method,

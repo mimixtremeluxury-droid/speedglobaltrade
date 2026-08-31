@@ -21,6 +21,8 @@ export async function POST(request: Request) {
   if (typeof body.amount !== "number" || !body.method) {
     return NextResponse.json({ error: "Missing withdrawal payload." }, { status: 400 });
   }
+  const requestId = request.headers.get("Idempotency-Key");
+  if (!requestId) return NextResponse.json({ error: "A withdrawal idempotency key is required." }, { status: 400 });
 
   try {
     const result = await withdrawFromAccount(session.userId, body.amount, body.method, {
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
       bankAccountNumber: body.bankAccountNumber,
       bankRoutingNumber: body.bankRoutingNumber,
       cashAppTag: body.cashAppTag,
-    });
+    }, requestId);
     return NextResponse.json({ ok: true, user: result.user, withdrawalCode: result.withdrawalCode });
   } catch (error) {
     return NextResponse.json(
