@@ -12,6 +12,7 @@
     "build": "npm run next:build && npm run open-next:build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "npx tsx --test tests/withdrawal-reservation-sql-contract.test.ts",
     "cf:build": "npm run build",
     "cf:preview": "npm run build && npm run open-next:preview",
     "cf:deploy": "npm run build && npm run open-next:deploy",
