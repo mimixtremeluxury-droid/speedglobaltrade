@@ -4,6 +4,7 @@ import { createSessionToken } from "@/lib/session";
 import { wait } from "@/lib/utils";
 import { execute, getDb, queryFirst } from "@/lib/server/db";
 import { isAuthConfigurationError } from "@/lib/server/auth-config";
+import { isCashLedgerEnforced } from "@/lib/server/cash-ledger-config";
 import { buildVerificationUrl, sendVerificationEmail } from "@/lib/server/email";
 import { ensureUsersCurrencyColumn, getUserRowByEmail, getUserRowById } from "@/lib/server/account-service";
 import {
@@ -139,6 +140,10 @@ export async function requestSignupVerification({
   await ensureUsersCurrencyColumn();
 
   if (existingUser) {
+    if (existingUser.currency !== normalizedCurrency && isCashLedgerEnforced()) {
+      const initialized = await queryFirst<{ id: string }>(`SELECT a.id FROM cash_ledger_accounts a JOIN cash_ledger_entries e ON e.account_id=a.id WHERE a.user_id=? AND a.status='active' GROUP BY a.id HAVING ABS(SUM(e.amount_delta)) > 0 LIMIT 1`, [existingUser.id]);
+      if (initialized) throw new Error("Currency cannot change after a non-zero ledger has been initialized.");
+    }
     await execute(
       `UPDATE users
        SET password_hash = ?, full_name = ?, country = ?, currency = ?, locale = ?, updated_at = ?

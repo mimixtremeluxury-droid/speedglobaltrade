@@ -11,6 +11,7 @@ import {
 } from "@/lib/types";
 import { clamp } from "@/lib/utils";
 import { execute, getDb, queryAll, queryFirst } from "@/lib/server/db";
+import { isCashLedgerEnforced } from "@/lib/server/cash-ledger-config";
 
 type UserRow = {
   id: string;
@@ -708,6 +709,8 @@ export async function withdrawFromAccount(
   }
 
   const transactionId = crypto.randomUUID();
+  const ledgerEntryId = crypto.randomUUID();
+  const ledgerRequired = isCashLedgerEnforced() ? 1 : 0;
   const withdrawalCode = generateWithdrawalCode();
   await ensureTransactionsWithdrawalCodeColumn();
 
@@ -745,6 +748,12 @@ export async function withdrawFromAccount(
        WHERE id = ? AND kind = 'withdrawal' AND status = 'pending' AND amount > 0`,
     ).bind(requestIdHash, now, transactionId),
     getDb().prepare(
+      `INSERT INTO cash_ledger_entries (id,account_id,user_id,currency,event_type,amount_delta,source_type,source_id,transaction_id,admin_user_id,created_by_type,created_by_id,idempotency_key_hash,effective_at,created_at,metadata_json)
+       SELECT ?,a.id,t.user_id,u.currency,'withdrawal_reserve',-t.amount,'withdrawal_reservation',wr.transaction_id,t.id,NULL,'customer',t.user_id,wr.request_id_hash,?,?,json_object('reservationId',wr.transaction_id)
+       FROM withdrawal_reservations wr JOIN transactions t ON t.id=wr.transaction_id JOIN users u ON u.id=t.user_id JOIN cash_ledger_accounts a ON a.user_id=t.user_id AND a.currency=u.currency AND a.status='active'
+       WHERE wr.transaction_id=? AND ?=1`,
+    ).bind(ledgerEntryId, now, now, transactionId, ledgerRequired),
+    getDb().prepare(
       `INSERT INTO withdrawal_cases (transaction_id, user_id, review_status, reservation_state, created_at, updated_at, version)
        SELECT transaction_id, user_id, 'awaiting_review', 'reserved', ?, ?, 0 FROM withdrawal_reservations WHERE transaction_id = ?`,
     ).bind(now, now, transactionId),
@@ -753,8 +762,9 @@ export async function withdrawFromAccount(
        VALUES (?, CASE WHEN EXISTS (SELECT 1 FROM transactions WHERE id = ? AND kind = 'withdrawal' AND status = 'pending')
                          AND EXISTS (SELECT 1 FROM withdrawal_reservations WHERE transaction_id = ? AND user_id = ? AND amount_snapshot > 0)
                          AND EXISTS (SELECT 1 FROM withdrawal_cases WHERE transaction_id = ? AND review_status = 'awaiting_review' AND reservation_state = 'reserved')
+                         AND (? = 0 OR EXISTS (SELECT 1 FROM cash_ledger_entries le JOIN withdrawal_reservations wr ON wr.transaction_id=le.source_id JOIN transactions t ON t.id=wr.transaction_id JOIN users u ON u.id=t.user_id WHERE wr.transaction_id=? AND le.event_type='withdrawal_reserve' AND le.source_type='withdrawal_reservation' AND le.user_id=t.user_id AND le.currency=u.currency AND le.amount_delta=-wr.amount_snapshot))
                     THEN 1 ELSE 0 END, ?)`,
-    ).bind(transactionId, transactionId, transactionId, userId, transactionId, now),
+    ).bind(transactionId, transactionId, transactionId, userId, transactionId, ledgerRequired, transactionId, now),
   ]);
   } catch (error) {
     const retry = await queryFirst<{ withdrawal_code: string | null }>(
@@ -797,6 +807,13 @@ export async function investInPlan(userId: string, planId: string, amount: numbe
     throw new Error("Insufficient available balance.");
   }
 
+  const now = new Date().toISOString();
+  const positionId = crypto.randomUUID();
+  const transactionId = crypto.randomUUID();
+  const ledgerEntryId = crypto.randomUUID();
+  const ledgerOperationId = crypto.randomUUID();
+  const ledgerRequired = isCashLedgerEnforced() ? 1 : 0;
+
   await getDb().batch([
     getDb()
       .prepare(
@@ -804,14 +821,14 @@ export async function investInPlan(userId: string, planId: string, amount: numbe
          SET cash_balance = cash_balance - ?, updated_at = ?
          WHERE id = ?`,
       )
-      .bind(amount, new Date().toISOString(), userId),
+      .bind(amount, now, userId),
     getDb()
       .prepare(
         `INSERT INTO investment_positions (id, user_id, plan_id, plan_name, principal, roi_from, term, status, accent, started_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .bind(
-        crypto.randomUUID(),
+        positionId,
         userId,
         plan.id,
         plan.name,
@@ -820,7 +837,7 @@ export async function investInPlan(userId: string, planId: string, amount: numbe
         plan.term,
         plan.premium ? "scaling" : "active",
         plan.accent,
-        new Date().toISOString(),
+        now,
       ),
     getDb()
       .prepare(
@@ -828,13 +845,20 @@ export async function investInPlan(userId: string, planId: string, amount: numbe
          VALUES (?, ?, 'investment', ?, ?, 'completed', ?, NULL, ?)`,
       )
       .bind(
-        crypto.randomUUID(),
+        transactionId,
         userId,
         `Allocated to ${plan.name}`,
         amount,
         `${plan.term} mandate activated`,
-        new Date().toISOString(),
+        now,
       ),
+    getDb().prepare(
+      `INSERT INTO cash_ledger_entries (id,account_id,user_id,currency,event_type,amount_delta,source_type,source_id,transaction_id,admin_user_id,created_by_type,created_by_id,idempotency_key_hash,effective_at,created_at,metadata_json)
+       SELECT ?,a.id,p.user_id,u.currency,'investment_allocation',-p.principal,'investment_position',p.id,?,NULL,'customer',p.user_id,NULL,?,?,json_object('planId',p.plan_id)
+       FROM investment_positions p JOIN users u ON u.id=p.user_id JOIN cash_ledger_accounts a ON a.user_id=p.user_id AND a.currency=u.currency AND a.status='active'
+       WHERE p.id=? AND ?=1`,
+    ).bind(ledgerEntryId, transactionId, now, now, positionId, ledgerRequired),
+    getDb().prepare(`INSERT INTO ledger_commit_assertions (operation_id,operation_type,invariant_ok,created_at) VALUES (?, 'investment_allocation', CASE WHEN ?=0 OR EXISTS(SELECT 1 FROM cash_ledger_entries WHERE source_type='investment_position' AND source_id=? AND event_type='investment_allocation' AND amount_delta=?) THEN 1 ELSE 0 END, ?)`).bind(ledgerOperationId, ledgerRequired, positionId, -amount, now),
   ]);
 
   await syncPortfolioSnapshots(userId);
@@ -864,6 +888,13 @@ export async function copyTraderAllocation(userId: string, traderId: string) {
     throw new Error("Top up your cash balance before copying this trader.");
   }
 
+  const now = new Date().toISOString();
+  const positionId = crypto.randomUUID();
+  const transactionId = crypto.randomUUID();
+  const ledgerEntryId = crypto.randomUUID();
+  const ledgerOperationId = crypto.randomUUID();
+  const ledgerRequired = isCashLedgerEnforced() ? 1 : 0;
+
   await getDb().batch([
     getDb()
       .prepare(
@@ -871,26 +902,33 @@ export async function copyTraderAllocation(userId: string, traderId: string) {
          SET cash_balance = cash_balance - ?, updated_at = ?
          WHERE id = ?`,
       )
-      .bind(allocation, new Date().toISOString(), userId),
+      .bind(allocation, now, userId),
     getDb()
       .prepare(
         `INSERT INTO copied_trader_positions (id, user_id, trader_id, trader_name, allocation, roi_snapshot, copied_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(crypto.randomUUID(), userId, trader.id, trader.name, allocation, trader.roi, new Date().toISOString()),
+      .bind(positionId, userId, trader.id, trader.name, allocation, trader.roi, now),
     getDb()
       .prepare(
         `INSERT INTO transactions (id, user_id, kind, label, amount, status, note, method, created_at)
          VALUES (?, ?, 'copy_trade', ?, ?, 'completed', ?, NULL, ?)`,
       )
       .bind(
-        crypto.randomUUID(),
+        transactionId,
         userId,
         `Copied ${trader.name}`,
         allocation,
         `${trader.specialty} sleeve activated`,
-        new Date().toISOString(),
+        now,
       ),
+    getDb().prepare(
+      `INSERT INTO cash_ledger_entries (id,account_id,user_id,currency,event_type,amount_delta,source_type,source_id,transaction_id,admin_user_id,created_by_type,created_by_id,idempotency_key_hash,effective_at,created_at,metadata_json)
+       SELECT ?,a.id,p.user_id,u.currency,'copy_trade_allocation',-p.allocation,'copied_trader_position',p.id,?,NULL,'customer',p.user_id,NULL,?,?,json_object('traderId',p.trader_id)
+       FROM copied_trader_positions p JOIN users u ON u.id=p.user_id JOIN cash_ledger_accounts a ON a.user_id=p.user_id AND a.currency=u.currency AND a.status='active'
+       WHERE p.id=? AND ?=1`,
+    ).bind(ledgerEntryId, transactionId, now, now, positionId, ledgerRequired),
+    getDb().prepare(`INSERT INTO ledger_commit_assertions (operation_id,operation_type,invariant_ok,created_at) VALUES (?, 'copy_trade_allocation', CASE WHEN ?=0 OR EXISTS(SELECT 1 FROM cash_ledger_entries WHERE source_type='copied_trader_position' AND source_id=? AND event_type='copy_trade_allocation' AND amount_delta=?) THEN 1 ELSE 0 END, ?)`).bind(ledgerOperationId, ledgerRequired, positionId, -allocation, now),
   ]);
 
   await syncPortfolioSnapshots(userId);
