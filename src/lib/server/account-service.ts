@@ -12,7 +12,10 @@ import {
 import { clamp } from "@/lib/utils";
 import { execute, getDb, queryAll, queryFirst } from "@/lib/server/db";
 import { isCashLedgerEnforced } from "@/lib/server/cash-ledger-config";
-import { getCloudflareContext } from "@/lib/server/cloudflare";
+import {
+  submitCustomerPaymentProof,
+  type PaymentProofInput,
+} from "@/lib/server/payment-proof-service";
 
 type UserRow = {
   id: string;
@@ -44,33 +47,6 @@ type TransactionRow = {
   proof_file_name?: string | null;
 };
 
-type DepositProofInput = {
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  proofData: string;
-};
-
-function decodeProofData(proofData: string, fileType: string, fileSize: number) {
-  const match = /^data:([^;,]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(proofData);
-  if (!match || match[1] !== fileType) throw new Error("Payment proof MIME does not match its content.");
-  const bytes = Buffer.from(match[2].replace(/[\r\n]/g, ""), "base64");
-  if (bytes.length === 0 || bytes.length !== fileSize) throw new Error("Payment proof size does not match its content.");
-  const magic = fileType === "image/png"
-    ? bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
-    : fileType === "image/jpeg"
-      ? bytes.subarray(0, 3).equals(Buffer.from([255, 216, 255]))
-      : fileType === "image/webp"
-        ? bytes.length >= 12 && bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP"
-        : bytes.subarray(0, 5).toString("ascii") === "%PDF-";
-  if (!magic) throw new Error("Payment proof magic bytes are invalid.");
-  return bytes;
-}
-
-async function sha256Hex(bytes: Uint8Array) {
-  const digest = await crypto.subtle.digest("SHA-256", bytes as unknown as BufferSource);
-  return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
 type InvestmentRow = {
   id: string;
   user_id: string;
@@ -582,66 +558,9 @@ export async function requestDeposit(userId: string, amount: number, method: str
   return requireUserRecord(userId);
 }
 
-export async function submitDepositProof(userId: string, transactionId: string, proof: DepositProofInput) {
+export async function submitDepositProof(userId: string, transactionId: string, proof: PaymentProofInput, idempotencyKey: string) {
   await ensureDepositProofsTable();
-  const bytes = decodeProofData(proof.proofData, proof.fileType, proof.fileSize);
-  const contentHash = await sha256Hex(bytes);
-  const objectKey = "proofs/v1/customer/" + await sha256Hex(new TextEncoder().encode(transactionId + ":" + contentHash));
-  const bucket = getCloudflareContext().env.PAYMENT_PROOFS;
-  if (!bucket) throw new Error("Payment proof storage is unavailable.");
-
-  const pendingDeposit = await queryFirst<TransactionRow>(
-    `SELECT id, user_id, kind, label, amount, status, note, method, created_at
-     FROM transactions
-     WHERE id = ? AND user_id = ? AND kind = 'deposit' AND status = 'pending'`,
-    [transactionId, userId],
-  );
-  if (!pendingDeposit) throw new Error("We couldn't find a pending deposit request for this proof.");
-
-  const existingObject = await bucket.head(objectKey);
-  if (existingObject && existingObject.size !== bytes.length) throw new Error("Payment proof storage integrity conflict.");
-  const createdObject = !existingObject;
-  if (createdObject) {
-    await bucket.put(objectKey, bytes, { httpMetadata: { contentType: proof.fileType }, customMetadata: { sha256: contentHash } });
-  }
-
-  const now = new Date().toISOString();
-  try {
-    await getDb().batch([
-      getDb().prepare(
-        `UPDATE payment_proof_files
-         SET storage_state = 'superseded', superseded_at = ?
-         WHERE transaction_id = ? AND storage_state = 'active' AND object_key <> ?`,
-      ).bind(now, transactionId, objectKey),
-      getDb().prepare(
-        `UPDATE payment_proof_files
-         SET storage_state = 'active', original_filename = ?, content_type = ?, size_bytes = ?, sha256_hex = ?, uploaded_at = COALESCE(uploaded_at, ?), verified_at = ?, failure_code = NULL
-         WHERE transaction_id = ? AND object_key = ?`,
-      ).bind(proof.fileName, proof.fileType, bytes.length, contentHash, now, now, transactionId, objectKey),
-      getDb().prepare(
-        `INSERT INTO payment_proof_files (id, transaction_id, user_id, source_type, storage_state, object_key, original_filename, content_type, size_bytes, sha256_hex, created_at, uploaded_at, verified_at)
-         SELECT ?, ?, ?, 'customer_upload', 'active', ?, ?, ?, ?, ?, ?, ?, ?
-         WHERE NOT EXISTS (SELECT 1 FROM payment_proof_files WHERE transaction_id = ? AND object_key = ?)`,
-      ).bind(crypto.randomUUID(), transactionId, userId, objectKey, proof.fileName, proof.fileType, bytes.length, contentHash, now, now, now, transactionId, objectKey),
-      getDb().prepare(
-        `INSERT INTO deposit_proofs (id, transaction_id, user_id, file_name, file_type, file_size, proof_data, submitted_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT(transaction_id) DO UPDATE SET
-          file_name = excluded.file_name,
-          file_type = excluded.file_type,
-          file_size = excluded.file_size,
-          proof_data = excluded.proof_data,
-          submitted_at = excluded.submitted_at`,
-      ).bind(crypto.randomUUID(), transactionId, userId, proof.fileName, proof.fileType, proof.fileSize, proof.proofData, now),
-      getDb().prepare(
-        `UPDATE transactions SET note = ? WHERE id = ? AND user_id = ?`,
-      ).bind(`Payment proof uploaded (${proof.fileName}). Operations review is pending; your balance will remain unchanged until approval.`, transactionId, userId),
-    ]);
-  } catch (error) {
-    if (createdObject) await bucket.delete(objectKey).catch(() => undefined);
-    throw error;
-  }
-
+  await submitCustomerPaymentProof(userId, transactionId, proof, idempotencyKey);
   return requireUserRecord(userId);
 }
 export async function completePendingDeposit(userId: string, transactionId: string) {

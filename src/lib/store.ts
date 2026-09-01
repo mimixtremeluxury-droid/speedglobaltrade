@@ -56,6 +56,7 @@ type AppStore = {
 };
 
 const createToastId = () => crypto.randomUUID();
+const proofUploadKeys = new Map<string, string>();
 
 async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
   const response = await fetch(input, {
@@ -122,10 +123,14 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set({ user: payload.user });
   },
   submitDepositProof: async (transactionId, proof) => {
+    const intent = `${transactionId}:${proof.name}:${proof.size}:${proof.lastModified}`;
+    const idempotencyKey = proofUploadKeys.get(intent) ?? crypto.randomUUID();
+    proofUploadKeys.set(intent, idempotencyKey);
     const formData = new FormData();
     formData.append("proof", proof);
     const response = await fetch(`/api/dashboard/deposits/${transactionId}/proof`, {
       method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
       body: formData,
     });
     const text = await response.text();
@@ -142,6 +147,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }
 
     if (payload?.user) {
+      proofUploadKeys.delete(intent);
       set({ user: payload.user });
     }
   },

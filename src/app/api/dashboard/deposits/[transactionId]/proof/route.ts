@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { submitDepositProof } from "@/lib/server/account-service";
+import {
+  CustomerPaymentProofError,
+  requirePaymentProofIdempotencyKey,
+} from "@/lib/server/payment-proof-service";
 
 const MAX_PROOF_SIZE_BYTES = 1024 * 1024;
 const allowedProofTypes = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
@@ -40,17 +44,22 @@ export async function POST(
   const { transactionId } = await context.params;
 
   try {
+    const idempotencyKey = requirePaymentProofIdempotencyKey(request.headers.get("Idempotency-Key"));
     const user = await submitDepositProof(session.userId, transactionId, {
       fileName: proof.name || "payment-proof",
       fileType: proof.type,
       fileSize: proof.size,
       proofData: await fileToDataUrl(proof),
-    });
+    }, idempotencyKey);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
+    const status = error instanceof CustomerPaymentProofError ? error.status : 400;
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to upload this payment proof." },
-      { status: 400 },
+      {
+        error: error instanceof Error ? error.message : "Unable to upload this payment proof.",
+        code: error instanceof CustomerPaymentProofError ? error.code : "payment_proof_upload_failed",
+      },
+      { status },
     );
   }
 }
