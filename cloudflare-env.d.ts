@@ -8,6 +8,7 @@ declare namespace Cloudflare {
 	interface Env {
 		DB: D1Database;
 		ASSETS: Fetcher;
+		PAYMENT_PROOFS: R2Bucket;
 		NEXTJS_ENV: string;
 		WORKER_SELF_REFERENCE: Service<typeof import("./.open-next/worker").default>;
 	}
