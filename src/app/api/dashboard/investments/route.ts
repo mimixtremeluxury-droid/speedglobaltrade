@@ -17,9 +17,10 @@ export async function POST(request: Request) {
     const user = await investInPlan(session.userId, body.planId, body.amount);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
+    const known = error as { message?: string; code?: string; status?: number };
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to activate this plan." },
-      { status: 400 },
+      { error: known.message ?? "Unable to activate this plan.", code: known.code ?? "investment_failed" },
+      { status: known.status ?? 400 },
     );
   }
 }

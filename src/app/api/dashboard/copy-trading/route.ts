@@ -17,9 +17,10 @@ export async function POST(request: Request) {
     const user = await copyTraderAllocation(session.userId, body.traderId);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
+    const known = error as { message?: string; code?: string; status?: number };
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to copy this trader." },
-      { status: 400 },
+      { error: known.message ?? "Unable to copy this trader.", code: known.code ?? "copy_trade_failed" },
+      { status: known.status ?? 400 },
     );
   }
 }

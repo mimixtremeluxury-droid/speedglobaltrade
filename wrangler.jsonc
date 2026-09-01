@@ -8,6 +8,12 @@
     "directory": ".open-next/assets"
   },
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "vars": {
+    "SGT_RELEASE_WRITE_PAUSE": "true",
+    "SGT_PAYMENT_PROOF_STORAGE_MODE": "legacy",
+    "SGT_CASH_LEDGER_MODE": "off",
+    "SGT_PAYMENT_PROOF_LEGACY_CLEANUP_ENABLED": "false"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",

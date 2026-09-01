@@ -26,9 +26,10 @@ export async function POST(
     const user = await completePendingDeposit(session.userId, transactionId);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
+    const known = error as { message?: string; code?: string; status?: number };
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to complete the deposit." },
-      { status: 400 },
+      { error: known.message ?? "Unable to complete the deposit.", code: known.code ?? "deposit_completion_failed" },
+      { status: known.status ?? 400 },
     );
   }
 }

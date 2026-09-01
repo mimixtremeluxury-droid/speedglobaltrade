@@ -53,11 +53,12 @@ export async function POST(
     }, idempotencyKey);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
-    const status = error instanceof CustomerPaymentProofError ? error.status : 400;
+    const known = error as { message?: string; code?: string; status?: number };
+    const status = error instanceof CustomerPaymentProofError ? error.status : known.status ?? 400;
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unable to upload this payment proof.",
-        code: error instanceof CustomerPaymentProofError ? error.code : "payment_proof_upload_failed",
+        error: known.message ?? "Unable to upload this payment proof.",
+        code: error instanceof CustomerPaymentProofError ? error.code : known.code ?? "payment_proof_upload_failed",
       },
       { status },
     );

@@ -12,6 +12,7 @@ import {
 import { clamp } from "@/lib/utils";
 import { execute, getDb, queryAll, queryFirst } from "@/lib/server/db";
 import { isCashLedgerEnforced } from "@/lib/server/cash-ledger-config";
+import { requireReleaseWritesEnabled } from "@/lib/server/release-write-guard";
 import {
   submitCustomerPaymentProof,
   type PaymentProofInput,
@@ -534,6 +535,7 @@ export async function updateUserSettings(
 }
 
 export async function requestDeposit(userId: string, amount: number, method: string) {
+  requireReleaseWritesEnabled();
   if (amount <= 0) {
     throw new Error("Deposit amount must be greater than zero.");
   }
@@ -559,11 +561,13 @@ export async function requestDeposit(userId: string, amount: number, method: str
 }
 
 export async function submitDepositProof(userId: string, transactionId: string, proof: PaymentProofInput, idempotencyKey: string) {
+  requireReleaseWritesEnabled();
   await ensureDepositProofsTable();
   await submitCustomerPaymentProof(userId, transactionId, proof, idempotencyKey);
   return requireUserRecord(userId);
 }
 export async function completePendingDeposit(userId: string, transactionId: string) {
+  requireReleaseWritesEnabled();
   if (process.env.NODE_ENV === "production" || process.env.SGT_ENABLE_LEGACY_DEPOSIT_SMOKE_COMPLETE !== "true") {
     throw new Error("legacy_deposit_completion_disabled");
   }
@@ -637,6 +641,7 @@ export async function withdrawFromAccount(
   },
   requestId?: string,
 ) {
+  requireReleaseWritesEnabled();
   if (amount <= 0) {
     throw new Error("Withdrawal amount must be greater than zero.");
   }
@@ -745,6 +750,7 @@ function generateWithdrawalCode(): string {
 }
 
 export async function investInPlan(userId: string, planId: string, amount: number) {
+  requireReleaseWritesEnabled();
   const plan = getPlanById(planId);
   const user = await getUserRowById(userId);
   if (!user) {
@@ -816,6 +822,7 @@ export async function investInPlan(userId: string, planId: string, amount: numbe
 }
 
 export async function copyTraderAllocation(userId: string, traderId: string) {
+  requireReleaseWritesEnabled();
   const trader = getTraderById(traderId);
   const user = await getUserRowById(userId);
   if (!user) {

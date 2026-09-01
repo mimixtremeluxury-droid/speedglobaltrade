@@ -17,9 +17,10 @@ export async function POST(request: Request) {
     const user = await requestDeposit(session.userId, body.amount, body.method);
     return NextResponse.json({ ok: true, user });
   } catch (error) {
+    const known = error as { message?: string; code?: string; status?: number };
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to create the deposit request." },
-      { status: 400 },
+      { error: known.message ?? "Unable to create the deposit request.", code: known.code ?? "deposit_request_failed" },
+      { status: known.status ?? 400 },
     );
   }
 }

@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@/lib/server/cloudflare";
 import { getDb, queryFirst } from "@/lib/server/db";
+import { requireReleaseWritesEnabled } from "@/lib/server/release-write-guard";
 
 export const MAX_PAYMENT_PROOF_BYTES = 1024 * 1024;
 export const SUPPORTED_PAYMENT_PROOF_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"] as const;
@@ -142,6 +143,7 @@ export async function submitCustomerPaymentProof(
   idempotencyKey: string,
   options: { database?: D1Database; bucket?: CloudflareEnv["PAYMENT_PROOFS"]; storageMode?: PaymentProofStorageMode; now?: string } = {},
 ) {
+  requireReleaseWritesEnabled();
   const database = options.database ?? getDb();
   const key = requirePaymentProofIdempotencyKey(idempotencyKey);
   const validated = await validatePaymentProofInput(proof);

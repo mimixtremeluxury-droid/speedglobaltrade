@@ -35,9 +35,10 @@ export async function POST(request: Request) {
     }, requestId);
     return NextResponse.json({ ok: true, user: result.user, withdrawalCode: result.withdrawalCode });
   } catch (error) {
+    const known = error as { message?: string; code?: string; status?: number };
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to create the withdrawal request." },
-      { status: 400 },
+      { error: known.message ?? "Unable to create the withdrawal request.", code: known.code ?? "withdrawal_request_failed" },
+      { status: known.status ?? 400 },
     );
   }
 }
