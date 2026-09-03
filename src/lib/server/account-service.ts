@@ -566,55 +566,6 @@ export async function submitDepositProof(userId: string, transactionId: string, 
   await submitCustomerPaymentProof(userId, transactionId, proof, idempotencyKey);
   return requireUserRecord(userId);
 }
-export async function completePendingDeposit(userId: string, transactionId: string) {
-  requireReleaseWritesEnabled();
-  if (process.env.NODE_ENV === "production" || process.env.SGT_ENABLE_LEGACY_DEPOSIT_SMOKE_COMPLETE !== "true") {
-    throw new Error("legacy_deposit_completion_disabled");
-  }
-  await ensureDepositProofsTable();
-
-  const pendingDeposit = await queryFirst<TransactionRow>(
-    `SELECT id, user_id, kind, label, amount, status, note, method, created_at
-     FROM transactions
-     WHERE id = ? AND user_id = ? AND kind = 'deposit' AND status = 'pending'`,
-    [transactionId, userId],
-  );
-  if (!pendingDeposit) {
-    throw new Error("We couldn't find a pending deposit to complete.");
-  }
-
-  const proof = await queryFirst<{ id: string }>(
-    `SELECT id
-     FROM deposit_proofs
-     WHERE transaction_id = ? AND user_id = ?
-     LIMIT 1`,
-    [transactionId, userId],
-  );
-  if (!proof) {
-    throw new Error("Payment proof must be uploaded before this deposit can be approved.");
-  }
-
-  const now = new Date().toISOString();
-  await getDb().batch([
-    getDb()
-      .prepare(
-        `UPDATE transactions
-         SET status = 'completed', note = ?, created_at = created_at
-         WHERE id = ?`,
-      )
-      .bind(`${pendingDeposit.method ?? "Deposit"} confirmed and settled`, transactionId),
-    getDb()
-      .prepare(
-        `UPDATE users
-         SET cash_balance = cash_balance + ?, updated_at = ?
-         WHERE id = ?`,
-      )
-      .bind(Number(pendingDeposit.amount), now, userId),
-  ]);
-
-  await syncPortfolioSnapshots(userId);
-  return requireUserRecord(userId);
-}
 
 function requireWithdrawalRequestId(requestId: string) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
 import {
@@ -8,7 +8,6 @@ import {
   requireReleaseWritesEnabled,
 } from "../src/lib/server/release-write-guard";
 import {
-  completePendingDeposit,
   copyTraderAllocation,
   investInPlan,
   requestDeposit,
@@ -35,7 +34,7 @@ describe("C7 customer release write guard", () => {
 
   it("blocks financial and proof writers before any database access", async () => {
     const original = process.env.SGT_RELEASE_WRITE_PAUSE;
-    process.env.SGT_RELEASE_WRITE_PAUSE = "true";
+    Reflect.set(process.env, "SGT_RELEASE_WRITE_PAUSE", "true");
     const blocked = (error: unknown) => error instanceof ReleaseWritePausedError
       && error.status === 503
       && error.code === "release_maintenance";
@@ -43,7 +42,6 @@ describe("C7 customer release write guard", () => {
       await assert.rejects(() => requestDeposit("user", 100, "bank"), blocked);
       await assert.rejects(() => submitDepositProof("user", "deposit", proof, crypto.randomUUID()), blocked);
       await assert.rejects(() => submitCustomerPaymentProof("user", "deposit", proof, crypto.randomUUID()), blocked);
-      await assert.rejects(() => completePendingDeposit("user", "deposit"), blocked);
       await assert.rejects(() => withdrawFromAccount("user", 100, "bank", {}, crypto.randomUUID()), blocked);
       await assert.rejects(() => investInPlan("user", "plan", 100), blocked);
       await assert.rejects(() => copyTraderAllocation("user", "trader"), blocked);
@@ -56,8 +54,10 @@ describe("C7 customer release write guard", () => {
   it("keeps the guard at all service boundaries without a generic bypass", () => {
     const account = readFileSync("src/lib/server/account-service.ts", "utf8");
     const paymentProof = readFileSync("src/lib/server/payment-proof-service.ts", "utf8");
-    assert.equal((account.match(/requireReleaseWritesEnabled\(\)/g) ?? []).length, 6);
+    assert.equal((account.match(/requireReleaseWritesEnabled\(\)/g) ?? []).length, 5);
     assert.equal((paymentProof.match(/requireReleaseWritesEnabled\(\)/g) ?? []).length, 1);
+    assert.equal(existsSync("src/app/api/dashboard/deposits/[transactionId]/complete/route.ts"), false);
+    assert.doesNotMatch(account, /completePendingDeposit|cash_balance\s*=\s*cash_balance\s*\+/);
     assert.doesNotMatch(account + paymentProof, /maintenance.*bypass|bypass.*maintenance/i);
   });
 });

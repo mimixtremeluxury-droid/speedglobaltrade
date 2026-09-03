@@ -63,7 +63,7 @@ export function requirePaymentProofIdempotencyKey(value: string | null | undefin
   return value.toLowerCase();
 }
 
-export function getPaymentProofStorageMode(value = process.env.SGT_PAYMENT_PROOF_STORAGE_MODE): PaymentProofStorageMode {
+export function getPaymentProofStorageMode(value: string | undefined = process.env.SGT_PAYMENT_PROOF_STORAGE_MODE): PaymentProofStorageMode {
   if (!value || value === "legacy") return "legacy";
   if (value === "r2_primary") return "r2_primary";
   return fail("payment_proof_storage_mode_invalid", 500, "Payment proof storage mode is invalid.");
